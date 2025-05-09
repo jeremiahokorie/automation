@@ -7,5 +7,4 @@ public enum LandApplicationType {
     CofO,
     GroundRent,
     StatutoryAllocation
-
 }
