@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByemail(userRequest.getEmail());
-        Roles role = roleRepository.findById(user.get().getId())
+        Roles role = roleRepository.findById(userRequest.getRoleId())
                 .orElseThrow(() -> new CustomException("Role not found"));
 
         if (user.isPresent()) {
@@ -49,6 +49,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
                 .phoneNumber(userRequest.getPhoneNumber())
+                .role(userRequest.getRole())
                 .build();
     }
 

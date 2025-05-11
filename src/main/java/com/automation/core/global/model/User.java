@@ -30,8 +30,6 @@ public class User implements UserDetails, Serializable {
     private String lastName;
     @Column(name = "password")
     private String password;
-    @Column(name = "name")
-    private String name;
     @Column(name = "email")
     private String email;
     @Column(name = "createDate")

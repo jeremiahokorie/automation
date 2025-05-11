@@ -18,4 +18,5 @@ public class UserRequest {
     private String phoneNumber;
     private String role;
     private String address;
+    private Long roleId;
 }
