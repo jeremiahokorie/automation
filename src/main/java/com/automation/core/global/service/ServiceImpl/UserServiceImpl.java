@@ -3,10 +3,13 @@ package com.automation.core.global.service.ServiceImpl;
 import com.automation.core.global.dto.request.UserRequest;
 import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.exception.CustomException;
+import com.automation.core.global.model.Roles;
 import com.automation.core.global.model.User;
+import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +21,15 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByemail(userRequest.getEmail());
+        Roles role = roleRepository.findById(user.get().getId())
+                .orElseThrow(() -> new CustomException("Role not found"));
+
         if (user.isPresent()) {
             throw new CustomException("User already exists");
         }
@@ -30,9 +38,10 @@ public class UserServiceImpl implements UserService {
         createUser.setEmail(userRequest.getEmail());
         createUser.setFirstName(userRequest.getFirstName());
         createUser.setLastName(userRequest.getLastName());
-        createUser.setPassword(userRequest.getPassword());
+        createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
+        createUser.setRoles(role);
         userRepository.save(createUser);
 
         return UserResponse.builder()
