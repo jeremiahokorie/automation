@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -33,5 +35,17 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .applicationType(LandApplicationType.CofO)
                 .status(GlobalStatus.PENDING)
                 .applicantName(landApplicationRequest.getApplicantName()).build();
+    }
+
+    @Override
+    public List<LandApplicationResponse> getAllApplication() {
+        List<LandApplication> landApplications = landApplicationRepository.findAll();
+        return landApplications.stream().map(landApplication -> LandApplicationResponse.builder()
+                .email(landApplication.getEmail())
+                .applicationType(landApplication.getApplicationType())
+                .applicationDate(landApplication.getApplicationDate())
+                .status(landApplication.getStatus())
+                .build()
+        ).collect(Collectors.toList());
     }
 }

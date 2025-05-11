@@ -8,10 +8,9 @@ import com.automation.util.constant.AppConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/lands")
@@ -26,6 +25,14 @@ public class LandApplicationController {
                 .message(AppConstant.ApiResponseMessage.CREATED)
                 .status(HttpStatus.OK.value()).data(landApplicationResponse).build();
         return new ResponseEntity<>(lands, HttpStatus.OK);
+    }
+
+    @GetMapping("/lands")
+    public ResponseEntity<AppResponse<List<LandApplicationResponse>>> getAllLands() {
+        List<LandApplicationResponse> landApplicationResponse = landApplicationService.getAllApplication();
+        return ResponseEntity.ok().body(AppResponse.<List<LandApplicationResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.CREATED)
+                .status(HttpStatus.OK.value()).data(landApplicationResponse).error("").build());
     }
 
 

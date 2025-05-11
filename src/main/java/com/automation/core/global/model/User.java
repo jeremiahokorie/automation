@@ -30,8 +30,6 @@ public class User implements UserDetails, Serializable {
     private String lastName;
     @Column(name = "password")
     private String password;
-    @Column(name = "role")
-    private String role;
     @Column(name = "name")
     private String name;
     @Column(name = "email")
@@ -44,6 +42,10 @@ public class User implements UserDetails, Serializable {
     private String address;
     @Column(name = "username")
     private String username;
+
+
+    @ManyToOne
+    private Roles roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

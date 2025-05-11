@@ -1,4 +1,5 @@
-package com.automation.core.lands.model;
+package com.automation.core.global.model;
+
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,18 +7,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "ground_rent")
-public class GroundRent {
+@Table(name = "permission")
+public class Permission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
-    private String applicantName;
-    private String email;
-    private String formUrl;
+    private Long id;
+    private String name;
+    private String description;
+    private String code;
 }
+
