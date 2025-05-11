@@ -3,6 +3,7 @@ package com.automation.core.mda.controller;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.mda.dto.request.mdaRequest;
 import com.automation.core.mda.dto.response.mdaResponse;
+import com.automation.core.mda.model.ServicesModel;
 import com.automation.core.mda.service.service.mdaService;
 import com.automation.util.constant.AppConstant;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/mda/")
+@RequestMapping("api/auth")
 @RequiredArgsConstructor
 public class mdaController {
     private final mdaService service;
@@ -56,14 +57,21 @@ public class mdaController {
         }
     }
 
-//    @DeleteMapping("/{mdaCode}")
-//    public ResponseEntity<AppResponse<mdaResponse>> deleteMda(@PathVariable String mdaCode) {
-//        mdaResponse mda = service.deleteMda(mdaCode);
-//        AppResponse<mdaResponse> mdaservice = AppResponse.<mdaResponse>builder()
-//                .message(AppConstant.ApiResponseMessage.DELETE)
-//                .status(HttpStatus.OK.value()).data(mda).error("").build();
-//        return new ResponseEntity<>(mdaservice, HttpStatus.OK);
-// }
+    @PostMapping("/mdawithservice")
+    public ResponseEntity<AppResponse<mdaResponse>> createMdaWithServices(@RequestParam String mdaName, @RequestBody List<String> services) {
+        mdaResponse mda = service.createMdaWithServices(mdaName, services);
+        return ResponseEntity.ok().body(AppResponse.<mdaResponse>builder()
+                .message(AppConstant.ApiResponseMessage.CREATED)
+                .status(HttpStatus.OK.value()).data(mda).error("").build());
+
+    }
+
+    @GetMapping("/{id}/services")
+    public ResponseEntity<List<ServicesModel>> getServicesByMda(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getServicesByMda(id));
+    }
+
+
 
 
 }

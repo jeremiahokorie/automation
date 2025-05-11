@@ -61,6 +61,9 @@ public class UserServiceImpl implements UserService {
                 .address(user.getAddress())
                 .phoneNumber(user.getPhoneNumber())
                 .lastName(user.getLastName())
+                .firstName(user.getFirstName())
+                .address(user.getAddress())
+                .roleId(user.getId())
                 .build()).collect(Collectors.toList());
     }
 }

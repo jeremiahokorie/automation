@@ -7,23 +7,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "mda")
-public class mdaModel {
+@Table(name = "services")
+public class ServicesModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long Id;
     private String name;
-    private String code;
+    private String description;
 
-    @OneToMany(mappedBy = "mda", cascade = CascadeType.ALL)
-    private List<ServicesModel> services = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "mda_id")
+    private mdaModel mda;
 }
