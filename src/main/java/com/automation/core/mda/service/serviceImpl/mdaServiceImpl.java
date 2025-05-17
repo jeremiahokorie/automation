@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class mdaServiceImpl implements mdaService {
 
-    private final mdaRepository repository;
+    private final mdaRepository mdarepository;
     private final ServiceRepository serviceRepository;
 
     @Override
@@ -36,13 +36,13 @@ public class mdaServiceImpl implements mdaService {
                     return service;
                 }).collect(Collectors.toList());
         mda.setServices(mdanameservice);
-        repository.save(mda);
+        mdarepository.save(mda);
         return mdaResponse.builder().code(mda.getCode()).name(mda.getName()).build();
     }
 
     @Override
     public mdaResponse createMda(mdaRequest mdaRequest) {
-        Optional<mdaModel> mda = repository.findBycode(mdaRequest.getCode());
+        Optional<mdaModel> mda = mdarepository.findBycode(mdaRequest.getCode());
         if (mda.isPresent()) {
             throw new CustomException("MDA already exists");
         }
@@ -55,7 +55,7 @@ public class mdaServiceImpl implements mdaService {
 
     @Override
     public List<mdaResponse> getMdas() {
-        List<mdaModel> mdas = repository.findAll();
+        List<mdaModel> mdas = mdarepository.findAll();
         return mdas.stream().map(mda -> mdaResponse.builder()
                 .code(mda.getCode())
                 .name(mda.getName())
@@ -66,15 +66,30 @@ public class mdaServiceImpl implements mdaService {
     @Transactional
     @Override
     public void deleteMdaByCode(String mdaCode) {
-        if (!repository.existsByCode(mdaCode)) {
+        if (!mdarepository.existsByCode(mdaCode)) {
             throw new EntityNotFoundException("MDA with code " + mdaCode + " not found");
         }
-        repository.deleteByCode(mdaCode);
+        mdarepository.deleteByCode(mdaCode);
     }
 
     @Override
     public List<ServicesModel> getServicesByMda(Long mdaId) {
         return serviceRepository.findByMdaId(mdaId);
+    }
+
+    public String deleteMda(Long id) {
+        Optional<mdaModel> mdaOptional = mdarepository.findById(Math.toIntExact(id));
+        if (mdaOptional.isPresent()) {
+            mdaModel mda = mdaOptional.get();
+            // Delete all associated services
+            serviceRepository.deleteByMdaId(id);
+            // Delete the MDA itself
+            mdarepository.deleteById(Math.toIntExact(id));
+
+            return "MDA with ID " + id + " and its associated services deleted successfully";
+        } else {
+            throw new EntityNotFoundException("MDA with ID " + id + " not found");
+        }
     }
 
 }

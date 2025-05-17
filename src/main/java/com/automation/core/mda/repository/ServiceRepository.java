@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ServiceRepository extends JpaRepository<ServicesModel,Long> {
     List<ServicesModel> findByMdaId(Long mdaId);
+    void deleteByMdaId(Long mdaId);
 }

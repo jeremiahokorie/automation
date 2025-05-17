@@ -31,7 +31,7 @@ public class mdaController {
         return new ResponseEntity<>(appResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/getMdas")
+    @GetMapping("/mda")
     public ResponseEntity<AppResponse<List<mdaResponse>>> getMda() {
         List<mdaResponse> responses = service.getMdas();
         return ResponseEntity.ok().body(AppResponse.<List<mdaResponse>>builder()
@@ -39,8 +39,8 @@ public class mdaController {
                 .status(HttpStatus.OK.value()).data(responses).build());
     }
 
-    @DeleteMapping("/{mdaCode}")
-    public ResponseEntity<AppResponse<String>> deleteMda(@PathVariable String mdaCode) {
+    @DeleteMapping("/mda/{mdaCode}")
+    public ResponseEntity<AppResponse<String>> deleteMdaByCode(@PathVariable String mdaCode) {
         try {
             service.deleteMdaByCode(mdaCode);
             return ResponseEntity.ok(
@@ -57,18 +57,25 @@ public class mdaController {
         }
     }
 
-    @PostMapping("/mdawithservice")
+    @PostMapping("/mda/service")
     public ResponseEntity<AppResponse<mdaResponse>> createMdaWithServices(@RequestParam String mdaName, @RequestBody List<String> services) {
         mdaResponse mda = service.createMdaWithServices(mdaName, services);
         return ResponseEntity.ok().body(AppResponse.<mdaResponse>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
                 .status(HttpStatus.OK.value()).data(mda).error("").build());
-
     }
 
     @GetMapping("/{id}/services")
     public ResponseEntity<List<ServicesModel>> getServicesByMda(@PathVariable Long id) {
         return ResponseEntity.ok(service.getServicesByMda(id));
+    }
+
+
+    @DeleteMapping("/mda/{id}")
+    public ResponseEntity<AppResponse<String>> deleteMda(@PathVariable Long id) {
+        String message = service.deleteMda(id);
+        AppResponse<String> response = new AppResponse<>(true, message);
+        return ResponseEntity.ok(response);
     }
 
 

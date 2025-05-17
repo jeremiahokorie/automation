@@ -34,6 +34,9 @@ public class AppResponse<T> {
     public AppResponse(String mdaDeletedSuccessfully, boolean b, Object o) {
     }
 
+    public AppResponse(boolean b, String message) {
+    }
+
     public static <T> AppResponse<T> of(int status, T data) {
         return new AppResponse<>(status, data);
     }

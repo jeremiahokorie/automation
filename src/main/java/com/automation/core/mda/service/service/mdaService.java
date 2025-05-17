@@ -16,4 +16,6 @@ public interface mdaService {
     void deleteMdaByCode(String mdaCode);
 
     List<ServicesModel> getServicesByMda(Long id);
+
+    String deleteMda(Long id);
 }
