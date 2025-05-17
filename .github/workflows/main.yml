@@ -23,10 +23,11 @@ jobs:
       run: mvn clean package -DskipTests
 
     - name: Publish to GitHub Packages
+    - name: Publish to GitHub Packages
       run: |
-        mvn deploy
+        mvn deploy -Dtoken=${{ secrets.GITHUB_TOKEN }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
     - name: SSH into VPS and Deploy
       env:
