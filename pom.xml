@@ -122,6 +122,12 @@
 		</dependency>
 	</dependencies>
 
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/jeremiahokorie/automation/</url>
+		</repository>
+	</distributionManagement>
 
 
 	<build>
