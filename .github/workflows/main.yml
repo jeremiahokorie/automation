@@ -26,7 +26,7 @@ jobs:
       run: |
         mvn deploy
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
     - name: SSH into VPS and Deploy
       env:
