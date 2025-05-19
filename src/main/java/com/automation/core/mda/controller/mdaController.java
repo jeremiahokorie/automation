@@ -19,6 +19,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class mdaController {
     private final mdaService service;
 
