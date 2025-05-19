@@ -15,7 +15,17 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/api/mda/")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(
+        origins = {
+                "http://localhost:5174"
+        },
+        methods = {
+                RequestMethod.OPTIONS,
+                RequestMethod.GET,
+                RequestMethod.PUT,
+                RequestMethod.DELETE,
+                RequestMethod.POST
+        })
 public class ServiceController {
 
     private final mdaService service;
