@@ -6,20 +6,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "statutory_allocation")
+@Table(name = "statutory_allocations")
 public class StatutoryAllocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
     private String applicantName;
-    private String email;
-    private String taxClearanceUrl;
-    private String declarationOfAgeUrl;
-    private String formUrl;
+    private String passportPhotos;
+    private String taxClearances;
+    private String declarationOfAge;
+    private String administrativeCharges;
+    private String processingFees;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
