@@ -8,6 +8,7 @@ import com.automation.core.global.model.User;
 import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
+import com.automation.util.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByemail(userRequest.getEmail());
-        Roles role = roleRepository.findById(userRequest.getRoleId())
-                .orElseThrow(() -> new CustomException("Role not found"));
+//        Roles role = roleRepository.findById(userRequest.getRoleId())
+//                .orElseThrow(() -> new CustomException("Role not found"));
 
         if (user.isPresent()) {
             throw new CustomException("User already exists");
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
         createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
-        createUser.setRoles(role);
+        createUser.setRole("USER");
         userRepository.save(createUser);
 
         return UserResponse.builder()
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
                 .phoneNumber(userRequest.getPhoneNumber())
-                .role(role.getName())
+                .address(userRequest.getAddress())
                 .build();
     }
 
@@ -63,7 +64,6 @@ public class UserServiceImpl implements UserService {
                 .lastName(user.getLastName())
                 .firstName(user.getFirstName())
                 .address(user.getAddress())
-                .roleId(user.getId())
                 .build()).collect(Collectors.toList());
     }
 }

@@ -31,8 +31,11 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setPhone(businessRegistrationRequest.getPhone());
             businessRegistration.setAddress(businessRegistrationRequest.getAddress());
             businessRegistration.setStatus("PENDING");
+            businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
             businessRegistration.setDateRegistered(LocalDate.now());
             businessRepository.save(businessRegistration);
+        }else {
+            throw new CustomException("Business already exists");
         }
 
         return BusinessRegistrationResponse.builder()
@@ -42,7 +45,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .ownerName(businessRegistrationRequest.getOwnerName())
                 .phone(businessRegistrationRequest.getPhone())
                 .address(businessRegistrationRequest.getAddress())
-                .status(businessRegistrationRequest.getStatus())
+                .email(businessRegistrationRequest.getEmail())
                 .isRenewal(true)
                 .build();
     }
@@ -52,11 +55,12 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         List<BusinessRegistration> businessRegistrations = businessRepository.findAll();
         return businessRegistrations.stream().map(businessRegistration -> BusinessRegistrationResponse.builder()
                 .email(businessRegistration.getEmail())
+                .ownerName(businessRegistration.getOwnerName())
+                .businessName(businessRegistration.getBusinessName())
                 .address(businessRegistration.getAddress())
                 .businessNumber(businessRegistration.getBusinessNumber())
                 .isRenewal(true)
                 .phone(businessRegistration.getPhone())
-                .status(businessRegistration.getStatus())
                 .dateRegistered(businessRegistration.getDateRegistered()).build()
         ).collect(Collectors.toList());
     }
@@ -73,6 +77,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .address(businessRegistration.getAddress())
                 .email(businessRegistration.getEmail())
                 .phone(businessRegistration.getPhone())
+                .ownerName(businessRegistration.getOwnerName())
                 .dateRegistered(businessRegistration.getDateRegistered())
                 .isRenewal(businessRegistration.isRenewal())
                 .build();
@@ -104,6 +109,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         return BusinessRenewalResponse.builder()
                 .businessNumber(registration.getBusinessNumber())
                 .renewalDate(registration.getRenewalDate())
+                .status(registration.getStatus())
+                .businessName(registration.getBusinessName())
                 .status(registration.getStatus())
                 .businessName(registration.getBusinessName()).build();
     }

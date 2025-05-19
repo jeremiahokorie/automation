@@ -40,7 +40,7 @@ public class User implements UserDetails, Serializable {
     private String address;
     @Column(name = "username")
     private String username;
-
+    private String role;
 
     @ManyToOne
     private Roles roles;
