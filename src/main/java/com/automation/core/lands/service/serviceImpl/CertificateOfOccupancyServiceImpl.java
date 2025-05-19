@@ -1,9 +1,10 @@
 package com.automation.core.lands.service.serviceImpl;
 
-import com.automation.core.lands.model.StatutoryAllocation;
-import com.automation.core.lands.repository.StatutoryAllocationRepository;
-import com.automation.core.lands.service.service.StatutoryAllocationService;
+import com.automation.core.lands.model.CertificateOfOccupancy;
+import com.automation.core.lands.repository.CertificateOfOccupancyRepository;
+import com.automation.core.lands.service.service.CertificateOfOccupancyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,36 +12,36 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static javax.swing.UIManager.put;
+
 @RequiredArgsConstructor
 @Service
-public class StatutoryAllocationServiceImpl implements StatutoryAllocationService {
+public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancyService {
 
-    private final StatutoryAllocationRepository statutoryAllocationRepository;
-
-    private static final String UPLOAD_DIR = "/opt/uploads/statutory-allocation/";
+    private static final String UPLOAD_DIR = "/opt/uploads/certificate-of-occupancy/";
     private static final Map<String, String> REQUIRED_DOCUMENTS = new HashMap<>() {{
-        put("passport_photos", "Two Passport Photographs");
-        put("tax_clearances", "Tax Clearances");
+        put("district_head_letter", "District Head Letter");
+        put("sales_agreement", "Sales Agreement");
         put("declaration_of_age", "Declaration of Age");
-        put("administrative_charges", "Administrative Charges");
-        put("processing_fees", "Processing Fees");
+        put("tax_clearance", "Tax Clearance");
+        put("survey_data", "Survey Data");
+        put("local_government_confirmation_letter", "Local Government Confirmation Letter");
     }};
 
+    @Autowired
+    private CertificateOfOccupancyRepository repository;
 
-    public void StatutoryAllocationService() throws IOException {
+    public void CertificateOfOccupancyService() throws IOException {
         Files.createDirectories(Paths.get(UPLOAD_DIR));
     }
 
     public Map<String, String> uploadDocuments(String applicantName, Map<String, MultipartFile> documents) throws IOException {
-        StatutoryAllocation allocation = new StatutoryAllocation();
+        CertificateOfOccupancy allocation = new CertificateOfOccupancy();
         allocation.setApplicantName(applicantName);
-        allocation.setCreatedAt(LocalDateTime.now());
 
         Map<String, String> response = new HashMap<>();
         for (String key : REQUIRED_DOCUMENTS.keySet()) {
@@ -54,21 +55,20 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
             response.put(key, "Uploaded Successfully");
             // Save file path to entity
             switch (key) {
-                case "passport_photos" -> allocation.setPassportPhotos(filePath);
-                case "tax_clearances" -> allocation.setTaxClearances(filePath);
+                case "district_head_letter" -> allocation.setDistrictHeadLetter(filePath);
+                case "sales_agreement" -> allocation.setSalesAgreement(filePath);
                 case "declaration_of_age" -> allocation.setDeclarationOfAge(filePath);
-                case "administrative_charges" -> allocation.setAdministrativeCharges(filePath);
-                case "processing_fees" -> allocation.setProcessingFees(filePath);
+                case "tax_clearance" -> allocation.setTaxClearance(filePath);
+                case "survey_data" -> allocation.setSurveyData(filePath);
+                case "local_government_confirmation_letter" -> allocation.setLocalGovernmentConfirmationLetter(filePath);
             }
         }
 
-        // Save the allocation record
-        statutoryAllocationRepository.save(allocation);
+        repository.save(allocation);
         return response;
     }
 
-    public List<StatutoryAllocation> getAllAllocations() {
-        return statutoryAllocationRepository.findAll();
+    public List<CertificateOfOccupancy> getAllCertificates() {
+        return repository.findAll();
     }
-
 }

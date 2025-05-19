@@ -13,23 +13,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "statutory_allocations")
-public class StatutoryAllocation {
+@Table(name = "certificate_of_occupancy")
+public class CertificateOfOccupancy {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String applicantName;
-    @Column(name = "passport_photos")
-    private String passportPhotos;
-    @Column(name = "tax_clearances")
-    private String taxClearances;
-    @Column(name = "declaration_of_age")
+    private String districtHeadLetter;
+    private String salesAgreement;
     private String declarationOfAge;
-    @Column(name = "administrative_charges")
-    private String administrativeCharges;
-    @Column(name = "processing_fees")
-    private String processingFees;
-    @Column(name = "created_at")
+    private String taxClearance;
+    private String surveyData;
+    private String localGovernmentConfirmationLetter;
     private LocalDateTime createdAt = LocalDateTime.now();
 }
