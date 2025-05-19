@@ -101,7 +101,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     @Override
     public BusinessRenewalResponse approveRequest(String businessNumber) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
-        if (registration == null || !registration.isExpired()) {
+        if (registration == null) {
             throw new CustomException("Business not found or not yet due for renewal.");
         }
         registration.setStatus("APPROVED");
@@ -114,5 +114,22 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .status(registration.getStatus())
                 .businessName(registration.getBusinessName()).build();
     }
+
+//    @Override
+//    public BusinessRenewalResponse approveRequest(String businessNumber) {
+//        BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
+//        if (registration == null || !registration.isExpired()) {
+//            throw new CustomException("Business not found or not yet due for renewal.");
+//        }
+//        registration.setStatus("APPROVED");
+//        businessRepository.save(registration);
+//        return BusinessRenewalResponse.builder()
+//                .businessNumber(registration.getBusinessNumber())
+//                .renewalDate(registration.getRenewalDate())
+//                .status(registration.getStatus())
+//                .businessName(registration.getBusinessName())
+//                .status(registration.getStatus())
+//                .businessName(registration.getBusinessName()).build();
+//    }
 }
 
