@@ -1,6 +1,9 @@
 package com.automation.core.mda.service.serviceImpl;
 
+import com.automation.core.global.dto.request.RolesRequest;
+import com.automation.core.global.dto.response.RolesResponse;
 import com.automation.core.global.exception.CustomException;
+import com.automation.core.global.model.Roles;
 import com.automation.core.mda.dto.request.ServiceRequest;
 import com.automation.core.mda.dto.request.mdaRequest;
 import com.automation.core.mda.dto.response.ServiceResponse;
@@ -44,16 +47,28 @@ public class mdaServiceImpl implements mdaService {
 
     @Override
     public mdaResponse createMda(mdaRequest mdaRequest) {
-        Optional<mdaModel> mda = mdarepository.findBycode(mdaRequest.getCode());
-        if (mda.isPresent()) {
-            throw new CustomException("MDA already exists");
-        }
-
-        mdaModel mdaModel = new mdaModel();
-        mdaModel.setCode(mdaRequest.getCode());
-        mdaModel.setName(mdaRequest.getName());
-        return mdaResponse.builder().name(mdaRequest.getName()).code(mdaRequest.getCode()).build();
+        mdaModel mda  = new mdaModel();
+        mda.setName(mdaRequest.getName());
+        mda.setCode(mdaRequest.getCode());
+        mdarepository.save(mda);
+        return mdaResponse.builder()
+                .name(mdaRequest.getName())
+                .code(mdaRequest.getCode())
+                .build();
     }
+//
+//    @Override
+//    public mdaResponse createMda(mdaRequest mdaRequest) {
+//        Optional<mdaModel> mda = mdarepository.findBycode(mdaRequest.getCode());
+//        if (mda.isPresent()) {
+//            throw new CustomException("MDA already exists");
+//        }
+//
+//        mdaModel mdaModel = new mdaModel();
+//        mdaModel.setCode(mdaRequest.getCode());
+//        mdaModel.setName(mdaRequest.getName());
+//        return mdaResponse.builder().name(mdaRequest.getName()).code(mdaRequest.getCode()).build();
+//    }
 
     @Override
     public List<mdaResponse> getMdas() {
