@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
                 .phoneNumber(userRequest.getPhoneNumber())
-                .role(userRequest.getRole())
+                .role(role.getName())
                 .build();
     }
 
