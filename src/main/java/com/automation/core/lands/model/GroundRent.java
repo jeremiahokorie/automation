@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -16,8 +18,11 @@ public class GroundRent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
-    private String applicantName;
-    private String email;
-    private String formUrl;
+    private Long id;
+    private String baNo;
+    private String landNo;
+    private String record;
+    private Double rent;
+    private String optionalFile;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
