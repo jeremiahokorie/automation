@@ -1,6 +1,8 @@
 package com.automation.core.mda.service.service;
 
+import com.automation.core.mda.dto.request.ServiceRequest;
 import com.automation.core.mda.dto.request.mdaRequest;
+import com.automation.core.mda.dto.response.ServiceResponse;
 import com.automation.core.mda.dto.response.mdaResponse;
 import com.automation.core.mda.model.ServicesModel;
 
@@ -18,4 +20,6 @@ public interface mdaService {
     List<ServicesModel> getServicesByMda(Long id);
 
     String deleteMda(Long id);
+
+    ServiceResponse createService(ServiceRequest serviceRequest);
 }

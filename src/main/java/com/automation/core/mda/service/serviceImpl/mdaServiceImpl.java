@@ -1,7 +1,9 @@
 package com.automation.core.mda.service.serviceImpl;
 
 import com.automation.core.global.exception.CustomException;
+import com.automation.core.mda.dto.request.ServiceRequest;
 import com.automation.core.mda.dto.request.mdaRequest;
+import com.automation.core.mda.dto.response.ServiceResponse;
 import com.automation.core.mda.dto.response.mdaResponse;
 import com.automation.core.mda.model.ServicesModel;
 import com.automation.core.mda.model.mdaModel;
@@ -81,15 +83,18 @@ public class mdaServiceImpl implements mdaService {
         Optional<mdaModel> mdaOptional = mdarepository.findById(Math.toIntExact(id));
         if (mdaOptional.isPresent()) {
             mdaModel mda = mdaOptional.get();
-            // Delete all associated services
             serviceRepository.deleteByMdaId(id);
-            // Delete the MDA itself
             mdarepository.deleteById(Math.toIntExact(id));
 
             return "MDA with ID " + id + " and its associated services deleted successfully";
         } else {
             throw new EntityNotFoundException("MDA with ID " + id + " not found");
         }
+    }
+
+    @Override
+    public ServiceResponse createService(ServiceRequest serviceRequest) {
+        return null;
     }
 
 }
