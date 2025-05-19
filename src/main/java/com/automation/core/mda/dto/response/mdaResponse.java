@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class mdaResponse {
-    private Long id;
     private String name;
     private String code;
 }
