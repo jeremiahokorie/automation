@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ServiceResponse {
-    private Long Id;
     private String name;
     private String description;
 }
