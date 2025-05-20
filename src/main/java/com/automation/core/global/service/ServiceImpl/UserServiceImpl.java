@@ -28,8 +28,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByemail(userRequest.getEmail());
-//        Roles role = roleRepository.findById(userRequest.getRoleId())
-//                .orElseThrow(() -> new CustomException("Role not found"));
+        Roles defaultRole = new Roles();
+        defaultRole.setId(1L);
+        defaultRole.setName("USER");
 
         if (user.isPresent()) {
             throw new CustomException("User already exists");
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
         createUser.setRole("USER");
+        createUser.setRoles(defaultRole);
         userRepository.save(createUser);
 
         return UserResponse.builder()

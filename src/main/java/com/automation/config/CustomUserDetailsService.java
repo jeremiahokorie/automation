@@ -1,6 +1,7 @@
 package com.automation.config;
 
 
+import com.automation.core.global.model.Roles;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 
+//    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
+//        Roles role = user.getRoles();
+//        if (role == null) {
+//            throw new UsernameNotFoundException("User has no role assigned");
+//        }
+//        return List.of(new SimpleGrantedAuthority(user.getRoles().getName()));
+//    }
+
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         return Collections.singletonList(new SimpleGrantedAuthority(user.getRoles().getName()));
     }
+
 }

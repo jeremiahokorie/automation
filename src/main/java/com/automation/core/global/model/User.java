@@ -42,6 +42,7 @@ public class User implements UserDetails, Serializable {
     private String username;
     private String role;
 
+
     @ManyToOne
     private Roles roles;
 
