@@ -1,7 +1,9 @@
 package com.automation.core.commerce.service.serviceImpl;
 
+import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
 import com.automation.core.commerce.dto.request.BusinessRegistrationRequest;
 import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
+import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
@@ -11,9 +13,7 @@ import com.automation.core.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -99,47 +99,26 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .businessName(registration.getBusinessName()).build();
     }
 
-//    @Override
-//    public BusinessRenewalResponse renewBusiness(BusinessRenewalRequest businessRenewalRequest) {
-//        BusinessRegistration registration = businessRepository.findBybusinessNumber(businessRenewalRequest.getBusinessNumber());
-//        if (registration == null || !registration.isExpired()) {
-//            throw new CustomException("Business not found or not yet due for renewal.");
-//        }
-//        registration.setStatus("PENDING");
-//        businessRepository.save(registration);
-//        return BusinessRenewalResponse.builder()
-//                .businessNumber(registration.getBusinessNumber())
-//                .renewalDate(registration.getRenewalDate())
-//                .status(registration.getStatus())
-//                .businessName(registration.getBusinessName()).build();
-//    }
-
 
 
     @Override
-    public BusinessRenewalResponse approveRequest(String businessNumber, BusinessRenewalRequest businessRenewalRequest) {
+    public ApprovalandRejectResponse approveRequest(String businessNumber, ApprovalandRejectRequest comment) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
         if (registration == null) {
             throw new CustomException("Business not found or not yet due for renewal.");
         }
         registration.setStatus("APPROVED");
-        registration.setComment(businessRenewalRequest.getComment());
+        registration.setComment(comment.getComment());
         registration.setRenewalDate(LocalDate.now());
         businessRepository.save(registration);
-        return BusinessRenewalResponse.builder()
-                .businessNumber(registration.getBusinessNumber())
-                .renewalDate(registration.getRenewalDate())
-                .status(registration.getStatus())
-                .businessName(registration.getBusinessName())
-                .status(registration.getStatus())
+        return ApprovalandRejectResponse.builder()
                 .comment(registration.getComment())
-                .renewalDate(registration.getRenewalDate())
-                .businessName(registration.getBusinessName()).build();
+                .build();
     }
 
 
     @Override
-    public BusinessRenewalResponse rejectRequest(String businessNumber, BusinessRenewalRequest request) {
+    public ApprovalandRejectResponse rejectRequest(String businessNumber, ApprovalandRejectRequest request) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
         if (registration == null) {
             throw new CustomException("Business not found or not yet due for renewal.");
@@ -150,11 +129,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
 
         businessRepository.save(registration);
 
-        return BusinessRenewalResponse.builder()
-                .businessNumber(registration.getBusinessNumber())
-                .renewalDate(registration.getRenewalDate())
-                .status(registration.getStatus())
-                .businessName(registration.getBusinessName())
+        return ApprovalandRejectResponse.builder()
                 .comment(registration.getComment())
                 .build();
     }

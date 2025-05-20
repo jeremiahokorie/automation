@@ -1,7 +1,9 @@
 package com.automation.core.commerce.service.service;
 
+import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
 import com.automation.core.commerce.dto.request.BusinessRegistrationRequest;
 import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
+import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
 import java.util.List;
@@ -15,7 +17,7 @@ public interface BusinessRegistrationService {
 
     BusinessRenewalResponse renewBusiness(BusinessRenewalRequest businessRenewalRequest);
 
-    BusinessRenewalResponse approveRequest(String businessNumber, BusinessRenewalRequest comment);
+    ApprovalandRejectResponse approveRequest(String businessNumber, ApprovalandRejectRequest comment);
 
-    BusinessRenewalResponse rejectRequest(String businessNumber, BusinessRenewalRequest comment);
+    ApprovalandRejectResponse rejectRequest(String businessNumber, ApprovalandRejectRequest comment);
 }

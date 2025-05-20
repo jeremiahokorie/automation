@@ -1,12 +1,15 @@
 package com.automation.core.commerce.controller;
 
+import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
 import com.automation.core.commerce.dto.request.BusinessRegistrationRequest;
 import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
+import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.util.constant.AppConstant;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -69,33 +72,29 @@ public class BusinessRegistrationController {
     }
 
     @PutMapping("/{businessNumber}/approve")
-    public ResponseEntity<AppResponse<BusinessRenewalResponse>> approveBusiness(
+    public ResponseEntity<AppResponse<ApprovalandRejectResponse>> approveBusiness(
             @PathVariable String businessNumber,
-            @RequestBody BusinessRenewalRequest commentRequest) {
+            @Valid @RequestBody ApprovalandRejectRequest commentRequest) {
 
-        BusinessRenewalResponse businessRenewalResponse = businessRegistrationService.approveRequest(businessNumber, commentRequest);
+        ApprovalandRejectResponse businessRenewalResponse = businessRegistrationService.approveRequest(businessNumber, commentRequest);
 
-        AppResponse<BusinessRenewalResponse> response = AppResponse.<BusinessRenewalResponse>builder()
+        AppResponse<ApprovalandRejectResponse> response = AppResponse.<ApprovalandRejectResponse>builder()
                 .message(AppConstant.ApiResponseMessage.UPDATE)
                 .status(HttpStatus.OK.value())
                 .data(businessRenewalResponse)
                 .error("")
                 .build();
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
-
-
     @PutMapping("/{businessNumber}/reject")
-    public ResponseEntity<AppResponse<BusinessRenewalResponse>> rejectBusiness(
+    public ResponseEntity<AppResponse<ApprovalandRejectResponse>> rejectBusiness(
             @PathVariable String businessNumber,
-            @RequestBody BusinessRenewalRequest commentRequest) {
+            @RequestBody ApprovalandRejectRequest commentRequest) {
 
-        BusinessRenewalResponse businessRenewalResponse = businessRegistrationService.rejectRequest(businessNumber, commentRequest);
+        ApprovalandRejectResponse businessRenewalResponse = businessRegistrationService.rejectRequest(businessNumber, commentRequest);
 
-        AppResponse<BusinessRenewalResponse> response = AppResponse.<BusinessRenewalResponse>builder()
+        AppResponse<ApprovalandRejectResponse> response = AppResponse.<ApprovalandRejectResponse>builder()
                 .message(AppConstant.ApiResponseMessage.UPDATE)
                 .status(HttpStatus.OK.value())
                 .data(businessRenewalResponse)
