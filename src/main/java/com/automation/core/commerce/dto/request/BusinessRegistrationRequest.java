@@ -16,6 +16,7 @@ public class BusinessRegistrationRequest {
     private String address;
     private String phone;
     private String email;
+    private String status;
     private LocalDate dateRegistered;
     private boolean isRenewal;
     private String comment;

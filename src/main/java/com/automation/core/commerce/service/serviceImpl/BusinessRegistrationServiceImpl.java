@@ -61,6 +61,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .address(businessRegistration.getAddress())
                 .businessNumber(businessRegistration.getBusinessNumber())
                 .isRenewal(true)
+                .comment(businessRegistration.getComment())
+                .status(businessRegistration.getStatus())
                 .phone(businessRegistration.getPhone())
                 .dateRegistered(businessRegistration.getDateRegistered()).build()
         ).collect(Collectors.toList());
@@ -78,6 +80,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .address(businessRegistration.getAddress())
                 .email(businessRegistration.getEmail())
                 .phone(businessRegistration.getPhone())
+                .comment(businessRegistration.getComment())
                 .ownerName(businessRegistration.getOwnerName())
                 .dateRegistered(businessRegistration.getDateRegistered())
                 .isRenewal(businessRegistration.isRenewal())
