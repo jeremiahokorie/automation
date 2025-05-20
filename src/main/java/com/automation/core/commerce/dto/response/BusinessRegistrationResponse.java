@@ -19,6 +19,7 @@ public class BusinessRegistrationResponse {
     private String email;
     private LocalDate dateRegistered;
     private boolean isRenewal;
+    private String comment;
     private String businessNumber;
 
 }

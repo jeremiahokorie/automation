@@ -15,6 +15,7 @@ public interface BusinessRegistrationService {
 
     BusinessRenewalResponse renewBusiness(BusinessRenewalRequest businessRenewalRequest);
 
-    BusinessRenewalResponse approveRequest(String businessNumber);
+    BusinessRenewalResponse approveRequest(String businessNumber, BusinessRenewalRequest comment);
 
+    BusinessRenewalResponse rejectRequest(String businessNumber, BusinessRenewalRequest comment);
 }

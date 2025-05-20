@@ -6,4 +6,5 @@ import lombok.Data;
 public class BusinessRenewalRequest {
     private String businessNumber;
     private String email;
+    private String comment;
 }

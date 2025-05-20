@@ -11,6 +11,7 @@ import com.automation.core.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -86,7 +87,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     @Override
     public BusinessRenewalResponse renewBusiness(BusinessRenewalRequest businessRenewalRequest) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessRenewalRequest.getBusinessNumber());
-        if (registration == null || !registration.isExpired()) {
+        if (registration == null) {
             throw new CustomException("Business not found or not yet due for renewal.");
         }
         registration.setStatus("PENDING");
@@ -98,13 +99,32 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .businessName(registration.getBusinessName()).build();
     }
 
+//    @Override
+//    public BusinessRenewalResponse renewBusiness(BusinessRenewalRequest businessRenewalRequest) {
+//        BusinessRegistration registration = businessRepository.findBybusinessNumber(businessRenewalRequest.getBusinessNumber());
+//        if (registration == null || !registration.isExpired()) {
+//            throw new CustomException("Business not found or not yet due for renewal.");
+//        }
+//        registration.setStatus("PENDING");
+//        businessRepository.save(registration);
+//        return BusinessRenewalResponse.builder()
+//                .businessNumber(registration.getBusinessNumber())
+//                .renewalDate(registration.getRenewalDate())
+//                .status(registration.getStatus())
+//                .businessName(registration.getBusinessName()).build();
+//    }
+
+
+
     @Override
-    public BusinessRenewalResponse approveRequest(String businessNumber) {
+    public BusinessRenewalResponse approveRequest(String businessNumber, BusinessRenewalRequest businessRenewalRequest) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
         if (registration == null) {
             throw new CustomException("Business not found or not yet due for renewal.");
         }
         registration.setStatus("APPROVED");
+        registration.setComment(businessRenewalRequest.getComment());
+        registration.setRenewalDate(LocalDate.now());
         businessRepository.save(registration);
         return BusinessRenewalResponse.builder()
                 .businessNumber(registration.getBusinessNumber())
@@ -112,8 +132,33 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .status(registration.getStatus())
                 .businessName(registration.getBusinessName())
                 .status(registration.getStatus())
+                .comment(registration.getComment())
+                .renewalDate(registration.getRenewalDate())
                 .businessName(registration.getBusinessName()).build();
     }
+
+
+    @Override
+    public BusinessRenewalResponse rejectRequest(String businessNumber, BusinessRenewalRequest request) {
+        BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
+        if (registration == null) {
+            throw new CustomException("Business not found or not yet due for renewal.");
+        }
+
+        registration.setStatus("REJECT");
+        registration.setComment(request.getComment());
+
+        businessRepository.save(registration);
+
+        return BusinessRenewalResponse.builder()
+                .businessNumber(registration.getBusinessNumber())
+                .renewalDate(registration.getRenewalDate())
+                .status(registration.getStatus())
+                .businessName(registration.getBusinessName())
+                .comment(registration.getComment())
+                .build();
+    }
+
 
 //    @Override
 //    public BusinessRenewalResponse approveRequest(String businessNumber) {

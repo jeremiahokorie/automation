@@ -31,5 +31,6 @@ public class BusinessRegistration {
     private boolean isRenewal;
     private boolean isExpired;
     private String businessNumber;
+    private String comment;
     private LocalDate renewalDate;
 }

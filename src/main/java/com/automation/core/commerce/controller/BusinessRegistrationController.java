@@ -69,13 +69,42 @@ public class BusinessRegistrationController {
     }
 
     @PutMapping("/{businessNumber}/approve")
-    public ResponseEntity<AppResponse<BusinessRenewalResponse>> approveBusiness(@PathVariable String businessNumber) {
-        BusinessRenewalResponse businessRenewalResponse = businessRegistrationService.approveRequest(businessNumber);
-        AppResponse<BusinessRenewalResponse>businessRenewalResponseAppResponse = AppResponse.<BusinessRenewalResponse>builder()
+    public ResponseEntity<AppResponse<BusinessRenewalResponse>> approveBusiness(
+            @PathVariable String businessNumber,
+            @RequestBody BusinessRenewalRequest commentRequest) {
+
+        BusinessRenewalResponse businessRenewalResponse = businessRegistrationService.approveRequest(businessNumber, commentRequest);
+
+        AppResponse<BusinessRenewalResponse> response = AppResponse.<BusinessRenewalResponse>builder()
                 .message(AppConstant.ApiResponseMessage.UPDATE)
-                .status(HttpStatus.OK.value()).data(businessRenewalResponse).error("").build();
-        return new ResponseEntity<>(businessRenewalResponseAppResponse,HttpStatus.OK);
+                .status(HttpStatus.OK.value())
+                .data(businessRenewalResponse)
+                .error("")
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
+
+
+    @PutMapping("/{businessNumber}/reject")
+    public ResponseEntity<AppResponse<BusinessRenewalResponse>> rejectBusiness(
+            @PathVariable String businessNumber,
+            @RequestBody BusinessRenewalRequest commentRequest) {
+
+        BusinessRenewalResponse businessRenewalResponse = businessRegistrationService.rejectRequest(businessNumber, commentRequest);
+
+        AppResponse<BusinessRenewalResponse> response = AppResponse.<BusinessRenewalResponse>builder()
+                .message(AppConstant.ApiResponseMessage.UPDATE)
+                .status(HttpStatus.OK.value())
+                .data(businessRenewalResponse)
+                .error("")
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
 
 
