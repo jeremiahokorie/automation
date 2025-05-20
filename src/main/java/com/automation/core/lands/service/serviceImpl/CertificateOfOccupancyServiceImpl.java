@@ -23,6 +23,8 @@ import static javax.swing.UIManager.put;
 public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancyService {
 
     private static final String UPLOAD_DIR = "/opt/uploads/certificate-of-occupancy/";
+
+
     private static final Map<String, String> REQUIRED_DOCUMENTS = new HashMap<>() {{
         put("district_head_letter", "District Head Letter");
         put("sales_agreement", "Sales Agreement");
@@ -44,15 +46,24 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
         allocation.setApplicantName(applicantName);
 
         Map<String, String> response = new HashMap<>();
+
         for (String key : REQUIRED_DOCUMENTS.keySet()) {
             MultipartFile file = documents.get(key);
             if (file == null || file.isEmpty()) {
                 response.put(key, "Missing " + REQUIRED_DOCUMENTS.get(key));
                 continue;
             }
+
+            // Ensure the upload directory exists
+            Path uploadDirPath = Path.of(UPLOAD_DIR);
+            Files.createDirectories(uploadDirPath);
+
+            // Build and save the file path
             String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Files.copy(file.getInputStream(), Path.of(filePath));
+
             response.put(key, "Uploaded Successfully");
+
             // Save file path to entity
             switch (key) {
                 case "district_head_letter" -> allocation.setDistrictHeadLetter(filePath);
@@ -67,6 +78,36 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
         repository.save(allocation);
         return response;
     }
+
+
+//    public Map<String, String> uploadDocuments(String applicantName, Map<String, MultipartFile> documents) throws IOException {
+//        CertificateOfOccupancy allocation = new CertificateOfOccupancy();
+//        allocation.setApplicantName(applicantName);
+//
+//        Map<String, String> response = new HashMap<>();
+//        for (String key : REQUIRED_DOCUMENTS.keySet()) {
+//            MultipartFile file = documents.get(key);
+//            if (file == null || file.isEmpty()) {
+//                response.put(key, "Missing " + REQUIRED_DOCUMENTS.get(key));
+//                continue;
+//            }
+//            String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//            Files.copy(file.getInputStream(), Path.of(filePath));
+//            response.put(key, "Uploaded Successfully");
+//            // Save file path to entity
+//            switch (key) {
+//                case "district_head_letter" -> allocation.setDistrictHeadLetter(filePath);
+//                case "sales_agreement" -> allocation.setSalesAgreement(filePath);
+//                case "declaration_of_age" -> allocation.setDeclarationOfAge(filePath);
+//                case "tax_clearance" -> allocation.setTaxClearance(filePath);
+//                case "survey_data" -> allocation.setSurveyData(filePath);
+//                case "local_government_confirmation_letter" -> allocation.setLocalGovernmentConfirmationLetter(filePath);
+//            }
+//        }
+//
+//        repository.save(allocation);
+//        return response;
+//    }
 
     public List<CertificateOfOccupancy> getAllCertificates() {
         return repository.findAll();

@@ -24,7 +24,6 @@ public class WebSecurityConfig{
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationProvider customUserDetailService;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

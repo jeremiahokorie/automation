@@ -20,16 +20,10 @@ public class StatutoryAllocation {
     private Long id;
 
     private String applicantName;
-    @Column(name = "passport_photos")
     private String passportPhotos;
-    @Column(name = "tax_clearances")
     private String taxClearances;
-    @Column(name = "declaration_of_age")
     private String declarationOfAge;
-    @Column(name = "administrative_charges")
     private String administrativeCharges;
-    @Column(name = "processing_fees")
     private String processingFees;
-    @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -49,8 +49,15 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
                 response.put(key, "Missing " + REQUIRED_DOCUMENTS.get(key));
                 continue;
             }
+
+            // Ensure the upload directory exists
+            Path uploadDirPath = Path.of(UPLOAD_DIR);
+            Files.createDirectories(uploadDirPath);
+
+            // Build and save the file path
             String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Files.copy(file.getInputStream(), Path.of(filePath));
+
             response.put(key, "Uploaded Successfully");
             // Save file path to entity
             switch (key) {

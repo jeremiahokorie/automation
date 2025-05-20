@@ -1,16 +1,22 @@
 package com.automation.core.lands.controller;
 
 import com.automation.core.lands.model.GroundRent;
+import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.GroundRentRepository;
+import com.automation.core.lands.service.service.GrountRentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/lands/ground-rent")
@@ -28,32 +34,26 @@ import java.util.List;
         })
 public class GroundRentController {
 
-    @Autowired
-    private GroundRentRepository repository;
-    private static final String UPLOAD_DIR = "/opt/uploads/ground-rent/";
+    private final GrountRentService grountRentService;
 
-    @PostMapping("/submit")
-    public ResponseEntity<GroundRent> submitGroundRent(@RequestParam String baNo,
-                                                       @RequestParam String landNo,
-                                                       @RequestParam String record,
-                                                       @RequestParam Double rent,
-                                                       @RequestParam(required = false) MultipartFile file) throws Exception {
-        GroundRent groundRent = new GroundRent();
-        groundRent.setBaNo(baNo);
-        groundRent.setLandNo(landNo);
-        groundRent.setRecord(record);
-        groundRent.setRent(rent);
-        if (file != null && !file.isEmpty()) {
-            String filePath = UPLOAD_DIR + file.getOriginalFilename();
-            Files.copy(file.getInputStream(), Path.of(filePath));
-            groundRent.setOptionalFile(filePath);
-        }
-        repository.save(groundRent);
-        return ResponseEntity.ok(groundRent);
+    @PostMapping("/upload")
+    public ResponseEntity<Map<String, String>> uploadDocuments(@RequestParam String baNo,
+                                                               @RequestParam String landNo,
+                                                               @RequestParam String record,
+                                                               @RequestParam Double rent,
+                                                               @RequestParam(required = false) MultipartFile file) throws Exception {
+        Map<String, String> response = grountRentService.submitform(baNo,landNo,record, rent , file);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<GroundRent>> getAllGroundRents() {
-        return ResponseEntity.ok(repository.findAll());
+        List<GroundRent> rent = grountRentService.getAllRentService();
+        return ResponseEntity.ok(rent);
     }
+
+//    @GetMapping("/all")
+//    public ResponseEntity<List<GroundRent>> getAllGroundRents() {
+//        return ResponseEntity.ok(gr.findAll());
+//    }
 }
