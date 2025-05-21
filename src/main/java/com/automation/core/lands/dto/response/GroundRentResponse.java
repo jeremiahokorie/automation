@@ -1,10 +1,23 @@
 package com.automation.core.lands.dto.response;
 
+import com.automation.util.enums.Status;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
+@Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class GroundRentResponse {
-    private String applicantName;
-    private String email;
-    private String formUrl;
+    private String baNo;
+    private String landNo;
+    private String record;
+    private Double rent;
+    private Status status;
+    private String optionalFile;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

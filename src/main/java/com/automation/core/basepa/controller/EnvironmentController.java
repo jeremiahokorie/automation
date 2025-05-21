@@ -4,9 +4,11 @@ import com.automation.core.basepa.dto.request.EnvironmentRequest;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
 import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
 import com.automation.core.global.dto.response.AppResponse;
+import com.automation.util.constant.AppConstant;
 import io.swagger.models.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +30,13 @@ import org.springframework.web.bind.annotation.*;
 public class EnvironmentController {
     private final EnvironmentService environmentService;
 
-//    public ResponseEntity<AppResponse<EnvironmentResponse>> applyPermit(@RequestBody EnvironmentRequest environmentRequest) {
-//
-//    }
-
-
+    @PostMapping("/apply-permit")
+    public ResponseEntity<AppResponse<EnvironmentResponse>> applyPermit(@RequestBody EnvironmentRequest environmentRequest) {
+        EnvironmentResponse response = environmentService.apply(environmentRequest);
+        AppResponse<EnvironmentResponse> appResponse = AppResponse.<EnvironmentResponse>builder()
+                .message(AppConstant.ApiResponseMessage.CREATED)
+                .status(HttpStatus.OK.value()).data(response).build();
+        return new ResponseEntity<>(appResponse, HttpStatus.OK);
+    }
 
 }

@@ -1,8 +1,13 @@
 package com.automation.core.lands.service.serviceImpl;
 
+import com.automation.core.lands.dto.request.GroundRentRequest;
+import com.automation.core.lands.dto.response.GroundRentResponse;
+import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.GroundRent;
+import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.GroundRentRepository;
 import com.automation.core.lands.service.service.GrountRentService;
+import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +20,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -33,8 +39,10 @@ public class GroundRentServiceImpl implements GrountRentService {
             groundRent.setLandNo(landNo);
             groundRent.setRecord(record);
             groundRent.setRent(rent);
+            groundRent.setStatus(Status.PENDING);
 
             // Check and save file if provided
+
             if (file != null && !file.isEmpty()) {
                 String uploadDir = UPLOAD_DIR;
                 Files.createDirectories(Path.of(uploadDir));
@@ -47,7 +55,6 @@ public class GroundRentServiceImpl implements GrountRentService {
             } else {
                 response.put("file", "No file uploaded (optional)");
             }
-
             groundRentRepository.save(groundRent);
             response.put("status", "Form submitted successfully");
 
@@ -55,13 +62,23 @@ public class GroundRentServiceImpl implements GrountRentService {
             e.printStackTrace();
             response.put("error", "Failed to process form: " + e.getMessage());
         }
-
         return response;
     }
 
+
     @Override
-    public List<GroundRent> getAllRentService() {
-        return groundRentRepository.findAll();
+    public List<GroundRentResponse> getCofOs() {
+        List<GroundRent> groundrent = groundRentRepository.findAll();
+        return groundrent.stream().map(rent -> GroundRentResponse.builder()
+                .status(rent.getStatus())
+                .baNo(rent.getBaNo())
+                .landNo(rent.getLandNo())
+                .record(rent.getRecord())
+                .rent(rent.getRent())
+                .optionalFile(rent.getOptionalFile())
+                .createdAt(rent.getCreatedAt())
+                .build()
+        ).collect(Collectors.toList());
     }
 
 }

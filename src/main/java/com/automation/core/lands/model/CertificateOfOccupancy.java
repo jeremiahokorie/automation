@@ -1,5 +1,6 @@
 package com.automation.core.lands.model;
 
+import com.automation.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,7 @@ public class CertificateOfOccupancy {
     private String declarationOfAge;
     private String taxClearance;
     private String surveyData;
+    private Status status;
     private String localGovernmentConfirmationLetter;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

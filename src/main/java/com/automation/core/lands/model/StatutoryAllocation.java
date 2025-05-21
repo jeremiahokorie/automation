@@ -1,5 +1,6 @@
 package com.automation.core.lands.model;
 
+import com.automation.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +26,6 @@ public class StatutoryAllocation {
     private String declarationOfAge;
     private String administrativeCharges;
     private String processingFees;
+    private Status status;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -1,8 +1,10 @@
 package com.automation.core.lands.service.serviceImpl;
 
+import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.StatutoryAllocationRepository;
 import com.automation.core.lands.service.service.StatutoryAllocationService;
+import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -41,6 +44,7 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
         StatutoryAllocation allocation = new StatutoryAllocation();
         allocation.setApplicantName(applicantName);
         allocation.setCreatedAt(LocalDateTime.now());
+        allocation.setStatus(Status.PENDING);
 
         Map<String, String> response = new HashMap<>();
         for (String key : REQUIRED_DOCUMENTS.keySet()) {
@@ -74,8 +78,18 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
         return response;
     }
 
-    public List<StatutoryAllocation> getAllAllocations() {
-        return statutoryAllocationRepository.findAll();
+    public List<StatutoryAllocationResponse> getAllAllocations() {
+        List<StatutoryAllocation> statutoryAllocations = statutoryAllocationRepository.findAll();
+        return statutoryAllocations.stream().map(statutoryAllocation -> StatutoryAllocationResponse.builder()
+                        .createdAt(statutoryAllocation.getCreatedAt())
+                        .administrativeCharges(statutoryAllocation.getAdministrativeCharges())
+                        .applicantName(statutoryAllocation.getApplicantName())
+                        .passportPhotos(statutoryAllocation.getPassportPhotos())
+                        .processingFees(statutoryAllocation.getProcessingFees())
+                        .taxClearances(statutoryAllocation.getTaxClearances())
+                        .status(statutoryAllocation.getStatus())
+                        .declarationOfAge(statutoryAllocation.getDeclarationOfAge()).build()
+        ).collect(Collectors.toList());
     }
 
 }

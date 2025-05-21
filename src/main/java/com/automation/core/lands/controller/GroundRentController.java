@@ -1,9 +1,13 @@
 package com.automation.core.lands.controller;
 
+import com.automation.core.global.dto.response.AppResponse;
+import com.automation.core.lands.dto.response.GroundRentResponse;
+import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.GroundRent;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.GroundRentRepository;
 import com.automation.core.lands.service.service.GrountRentService;
+import com.automation.util.constant.AppConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,14 +50,19 @@ public class GroundRentController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<GroundRent>> getAllGroundRents() {
-        List<GroundRent> rent = grountRentService.getAllRentService();
-        return ResponseEntity.ok(rent);
-    }
-
 //    @GetMapping("/all")
 //    public ResponseEntity<List<GroundRent>> getAllGroundRents() {
-//        return ResponseEntity.ok(gr.findAll());
+//        List<GroundRent> rent = grountRentService.getAllRentService();
+//        return ResponseEntity.ok(rent);
 //    }
+
+
+    @GetMapping("/all")
+    public ResponseEntity<AppResponse<List<GroundRentResponse>>> getAllAllocations() {
+        List<GroundRentResponse> applyCofO = grountRentService.getCofOs();
+        return ResponseEntity.ok().body(AppResponse.<List<GroundRentResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value()).data(applyCofO).error("").build());
+    }
+
 }

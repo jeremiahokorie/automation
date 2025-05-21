@@ -1,7 +1,10 @@
 package com.automation.core.lands.controller;
 
+import com.automation.core.global.dto.response.AppResponse;
+import com.automation.core.lands.dto.response.CertificateResponse;
 import com.automation.core.lands.model.CertificateOfOccupancy;
 import com.automation.core.lands.service.service.CertificateOfOccupancyService;
+import com.automation.util.constant.AppConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,9 +50,11 @@ public class CertificateOfOccupancyController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<CertificateOfOccupancy>> getAllCertificates() {
-        List<CertificateOfOccupancy> certificates = certificateOfOccupancyService.getAllCertificates();
-        return ResponseEntity.ok(certificates);
+    public ResponseEntity<AppResponse<List<CertificateResponse>>> getAllAllocations() {
+        List<CertificateResponse> applyCofO = certificateOfOccupancyService.getCofOs();
+        return ResponseEntity.ok().body(AppResponse.<List<CertificateResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value()).data(applyCofO).error("").build());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.automation.core.lands.model;
 
+import com.automation.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class GroundRent {
     private String landNo;
     private String record;
     private Double rent;
+    private Status status;
     private String optionalFile;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

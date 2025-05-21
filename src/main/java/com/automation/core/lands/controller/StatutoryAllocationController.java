@@ -1,7 +1,11 @@
 package com.automation.core.lands.controller;
 
+import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
+import com.automation.core.global.dto.response.AppResponse;
+import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.service.service.StatutoryAllocationService;
+import com.automation.util.constant.AppConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,9 +57,11 @@ public class StatutoryAllocationController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<StatutoryAllocation>> getAllAllocations() {
-        List<StatutoryAllocation> allocations = statutoryAllocationService.getAllAllocations();
-        return ResponseEntity.ok(allocations);
+    public ResponseEntity<AppResponse<List<StatutoryAllocationResponse>>> getAllAllocations() {
+        List<StatutoryAllocationResponse> allocations = statutoryAllocationService.getAllAllocations();
+        return ResponseEntity.ok().body(AppResponse.<List<StatutoryAllocationResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value()).data(allocations).error("").build());
     }
 
 
