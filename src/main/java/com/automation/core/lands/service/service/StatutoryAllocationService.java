@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface StatutoryAllocationService {
-    Map<String, String> uploadDocuments(String applicantName, Map<String, MultipartFile> documents) throws IOException;
+    Map<String, String> uploadDocuments(String applicantName, String applicantEmail, Map<String, MultipartFile> documents) throws IOException;
 
     List<StatutoryAllocationResponse> getAllAllocations();
 }

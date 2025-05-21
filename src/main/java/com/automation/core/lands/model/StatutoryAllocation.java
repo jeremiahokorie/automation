@@ -20,6 +20,7 @@ public class StatutoryAllocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String applicantName;
+    private String applicantEmail;
     private String passportPhotos;
     private String taxClearances;
     private String declarationOfAge;

@@ -20,5 +20,6 @@ public class StatutoryAllocationResponse {
     private String administrativeCharges;
     private String processingFees;
     private String status;
+    private String applicantEmail;
     private LocalDateTime createdAt = LocalDateTime.now();
 }
