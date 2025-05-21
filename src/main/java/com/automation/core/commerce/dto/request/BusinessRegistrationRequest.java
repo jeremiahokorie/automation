@@ -1,5 +1,6 @@
 package com.automation.core.commerce.dto.request;
 
+import com.automation.core.commerce.model.BusinessType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,6 @@ public class BusinessRegistrationRequest {
     private boolean isRenewal;
     private String comment;
     private String businessNumber;
+    private Long businessTypeId;
 
 }

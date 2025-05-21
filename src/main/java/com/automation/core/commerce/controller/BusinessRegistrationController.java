@@ -3,10 +3,13 @@ package com.automation.core.commerce.controller;
 import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
 import com.automation.core.commerce.dto.request.BusinessRegistrationRequest;
 import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
+import com.automation.core.commerce.dto.request.BusinessTypeRequest;
 import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
+import com.automation.core.commerce.dto.response.BusinessTypeResponse;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
+import com.automation.core.commerce.service.service.BusinessTypeService;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.util.constant.AppConstant;
 import jakarta.validation.Valid;
@@ -35,6 +38,7 @@ import java.util.List;
         })
 public class BusinessRegistrationController {
     private final BusinessRegistrationService businessRegistrationService;
+    private final BusinessTypeService businessTypeService;
 
     @PostMapping("registration")
     public ResponseEntity<AppResponse<BusinessRegistrationResponse>> registerBusiness(@RequestBody BusinessRegistrationRequest businessRegistrationRequest) {
@@ -105,6 +109,23 @@ public class BusinessRegistrationController {
     }
 
 
+    @PostMapping("/businessType")
+    public ResponseEntity<AppResponse<BusinessTypeResponse>> createBusinessTypes(@RequestBody BusinessTypeRequest businessTypeRequest) {
+        BusinessTypeResponse businessTypeResponse = businessTypeService.createBusinessType(businessTypeRequest);
+        AppResponse<BusinessTypeResponse> response = AppResponse.<BusinessTypeResponse>builder()
+                .message(AppConstant.ApiResponseMessage.CREATED)
+                .status(HttpStatus.OK.value()).data(businessTypeResponse).error("").build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/businessTpes")
+    public ResponseEntity<AppResponse<List<BusinessTypeResponse>>> getBusinessTypes() {
+        List<BusinessTypeResponse> businesses = businessTypeService.getAllBusiness();
+        return ResponseEntity.ok().body(AppResponse.<List<BusinessTypeResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value()).data(businesses).error("").build());
+    }
 
 
 }

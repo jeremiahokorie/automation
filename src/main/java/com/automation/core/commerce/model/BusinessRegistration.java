@@ -1,9 +1,6 @@
 package com.automation.core.commerce.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,4 +30,7 @@ public class BusinessRegistration {
     private String businessNumber;
     private String comment;
     private LocalDate renewalDate;
+
+    @ManyToOne
+    private BusinessType businessType;
 }

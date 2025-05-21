@@ -1,5 +1,6 @@
 package com.automation.core.commerce.dto.response;
 
+import com.automation.core.commerce.model.BusinessType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +23,6 @@ public class BusinessRegistrationResponse {
     private boolean isRenewal;
     private String comment;
     private String businessNumber;
+    private BusinessType businessType;
 
 }

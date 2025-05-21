@@ -7,7 +7,9 @@ import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
+import com.automation.core.commerce.model.BusinessType;
 import com.automation.core.commerce.repository.BusinessRepository;
+import com.automation.core.commerce.repository.BusinessTypeRepository;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +22,15 @@ import java.util.stream.Collectors;
 @Service
 public class BusinessRegistrationServiceImpl implements BusinessRegistrationService {
     private final BusinessRepository businessRepository;
+    private final BusinessTypeRepository businessTypeRepository;
 
     @Override
     public BusinessRegistrationResponse register(BusinessRegistrationRequest businessRegistrationRequest) {
         BusinessRegistration businessRegistration = businessRepository.findBybusinessNumber(businessRegistrationRequest.getBusinessNumber());
+
+        BusinessType businessType = businessTypeRepository.findById(businessRegistrationRequest.getBusinessTypeId())
+                .orElseThrow(() -> new CustomException("Business Type not found"));
+
         if (businessRegistration == null) {
             businessRegistration = new BusinessRegistration();
             businessRegistration.setBusinessNumber(businessRegistrationRequest.getBusinessNumber());
@@ -34,6 +41,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setStatus("PENDING");
             businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
             businessRegistration.setDateRegistered(LocalDate.now());
+           // businessRegistration.setBusinessType(businessType);
             businessRepository.save(businessRegistration);
         }else {
             throw new CustomException("Business already exists");
@@ -47,6 +55,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .phone(businessRegistrationRequest.getPhone())
                 .address(businessRegistrationRequest.getAddress())
                 .email(businessRegistrationRequest.getEmail())
+               // .businessType(businessRegistration.getBusinessType())
                 .isRenewal(true)
                 .build();
     }
