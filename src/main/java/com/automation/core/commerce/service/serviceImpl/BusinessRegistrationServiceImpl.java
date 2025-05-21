@@ -28,8 +28,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     public BusinessRegistrationResponse register(BusinessRegistrationRequest businessRegistrationRequest) {
         BusinessRegistration businessRegistration = businessRepository.findBybusinessNumber(businessRegistrationRequest.getBusinessNumber());
 
-        BusinessType businessType = businessTypeRepository.findById(businessRegistrationRequest.getBusinessTypeId())
-                .orElseThrow(() -> new CustomException("Business Type not found"));
+//        BusinessType businessType = businessTypeRepository.findById(businessRegistrationRequest.getBusinessTypeId())
+//                .orElseThrow(() -> new CustomException("Business Type not found"));
 
         if (businessRegistration == null) {
             businessRegistration = new BusinessRegistration();

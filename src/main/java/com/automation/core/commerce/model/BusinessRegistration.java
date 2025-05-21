@@ -31,6 +31,6 @@ public class BusinessRegistration {
     private String comment;
     private LocalDate renewalDate;
 
-    @ManyToOne
-    private BusinessType businessType;
+//    @ManyToOne
+//    private BusinessType businessType;
 }

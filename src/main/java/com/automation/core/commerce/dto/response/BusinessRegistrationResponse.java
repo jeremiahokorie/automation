@@ -23,6 +23,6 @@ public class BusinessRegistrationResponse {
     private boolean isRenewal;
     private String comment;
     private String businessNumber;
-    private BusinessType businessType;
+//    private BusinessType businessType;
 
 }
