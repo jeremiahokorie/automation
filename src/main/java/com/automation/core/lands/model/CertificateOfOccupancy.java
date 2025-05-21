@@ -26,7 +26,7 @@ public class CertificateOfOccupancy {
     private String declarationOfAge;
     private String taxClearance;
     private String surveyData;
-    private Status status;
+    private String status;
     private String localGovernmentConfirmationLetter;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

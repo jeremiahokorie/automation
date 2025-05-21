@@ -24,7 +24,7 @@ public class GroundRent {
     private String landNo;
     private String record;
     private Double rent;
-    private Status status;
+    private String status;
     private String optionalFile;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

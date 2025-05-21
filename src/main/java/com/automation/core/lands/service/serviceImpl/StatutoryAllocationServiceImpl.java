@@ -44,7 +44,7 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
         StatutoryAllocation allocation = new StatutoryAllocation();
         allocation.setApplicantName(applicantName);
         allocation.setCreatedAt(LocalDateTime.now());
-        allocation.setStatus(Status.PENDING);
+        allocation.setStatus("PENDING");
 
         Map<String, String> response = new HashMap<>();
         for (String key : REQUIRED_DOCUMENTS.keySet()) {

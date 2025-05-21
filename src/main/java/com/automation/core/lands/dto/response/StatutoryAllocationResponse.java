@@ -19,6 +19,6 @@ public class StatutoryAllocationResponse {
     private String declarationOfAge;
     private String administrativeCharges;
     private String processingFees;
-    private Status status;
+    private String status;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

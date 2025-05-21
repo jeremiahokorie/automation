@@ -52,7 +52,7 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
         CertificateOfOccupancy allocation = new CertificateOfOccupancy();
         allocation.setApplicantName(applicantName);
         allocation.setCreatedAt(LocalDateTime.now());
-        allocation.setStatus(Status.PENDING);
+        allocation.setStatus("PENDING");
 
         Map<String, String> response = new HashMap<>();
 

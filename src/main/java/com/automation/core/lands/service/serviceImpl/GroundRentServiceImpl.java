@@ -39,7 +39,7 @@ public class GroundRentServiceImpl implements GrountRentService {
             groundRent.setLandNo(landNo);
             groundRent.setRecord(record);
             groundRent.setRent(rent);
-            groundRent.setStatus(Status.PENDING);
+            groundRent.setStatus("PENDING");
 
             // Check and save file if provided
 
