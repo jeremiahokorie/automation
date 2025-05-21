@@ -39,7 +39,7 @@ public class CertificateOfOccupancyController {
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadDocuments(@RequestParam String applicantName,String applicantEmail, @RequestParam Map<String, MultipartFile> documents) {
         try {
-            Map<String, String> response = certificateOfOccupancyService.uploadDocuments(applicantName, applicantEmail, documents);
+            Map<String, String> response = certificateOfOccupancyService.uploadDocuments(applicantName, documents);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             e.printStackTrace();

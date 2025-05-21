@@ -39,12 +39,12 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
         Files.createDirectories(Paths.get(UPLOAD_DIR));
     }
 
-    public Map<String, String> uploadDocuments(String applicantName, String applicantEmail, Map<String, MultipartFile> documents) throws IOException {
+    public Map<String, String> uploadDocuments(String applicantName, Map<String, MultipartFile> documents) throws IOException {
         StatutoryAllocation allocation = new StatutoryAllocation();
         allocation.setApplicantName(applicantName);
         allocation.setCreatedAt(LocalDateTime.now());
         allocation.setStatus("PENDING");
-        allocation.setApplicantEmail(applicantEmail);
+//        allocation.setApplicantEmail(applicantEmail);
 
         Map<String, String> response = new HashMap<>();
         for (String key : REQUIRED_DOCUMENTS.keySet()) {

@@ -44,9 +44,9 @@ public class StatutoryAllocationController {
 //    }
 
     @PostMapping("/upload")
-    public ResponseEntity<Map<String, String>> uploadDocuments(@RequestParam String applicantName, @RequestParam String applicantEmail, @RequestParam Map<String, MultipartFile> documents) {
+    public ResponseEntity<Map<String, String>> uploadDocuments(@RequestParam String applicantName, @RequestParam Map<String, MultipartFile> documents) {
         try {
-            Map<String, String> response = statutoryAllocationService.uploadDocuments(applicantName,applicantEmail,  documents);
+            Map<String, String> response = statutoryAllocationService.uploadDocuments(applicantName, documents);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             e.printStackTrace();

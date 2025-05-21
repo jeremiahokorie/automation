@@ -48,12 +48,12 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
         Files.createDirectories(Paths.get(UPLOAD_DIR));
     }
 
-    public Map<String, String> uploadDocuments(String applicantName, String applicantEmail, Map<String, MultipartFile> documents) throws IOException {
+    public Map<String, String> uploadDocuments(String applicantName, Map<String, MultipartFile> documents) throws IOException {
         CertificateOfOccupancy allocation = new CertificateOfOccupancy();
         allocation.setApplicantName(applicantName);
         allocation.setCreatedAt(LocalDateTime.now());
         allocation.setStatus("PENDING");
-        allocation.setApplicantEmail(applicantEmail);
+//        allocation.setApplicantEmail(applicantEmail);
 
         Map<String, String> response = new HashMap<>();
 
