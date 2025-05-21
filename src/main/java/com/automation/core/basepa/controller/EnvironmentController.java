@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -18,8 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @CrossOrigin(
         origins = {
-                "http://localhost:5174"
-        },
+                "http://localhost:5174"},
         methods = {
                 RequestMethod.OPTIONS,
                 RequestMethod.GET,
@@ -38,5 +38,18 @@ public class EnvironmentController {
                 .status(HttpStatus.OK.value()).data(response).build();
         return new ResponseEntity<>(appResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/getPermits")
+    public ResponseEntity<AppResponse<List<EnvironmentResponse>>> getPermits() {
+        List<EnvironmentResponse> response = environmentService.getAll();
+        return ResponseEntity.ok().body(AppResponse.<List<EnvironmentResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.CREATED)
+                .status(HttpStatus.OK.value()).data(response).error("").build()
+        );
+    }
+
+
+
+
 
 }

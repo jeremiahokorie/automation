@@ -37,15 +37,15 @@ public class EnvironmentRequest {
     private Boolean hasEnvironmentalAudit;
 
     // Metadata
-    private LocalDate applicationDate;
-    private Integer durationInMonths;
-    private LocalDate preferredInspectionDate;
+      private LocalDate applicationDate;
+//    private Integer durationInMonths;
+//    private LocalDate preferredInspectionDate;
     private Status status;
 
     // File references (could be URLs or file names in a storage system)
-    private String businessRegistrationDoc;
-    private String wasteManagementPlan;
-    private String eiaReport;
-    private String previousPermitDoc;
-    private String taxClearanceCert;
+//    private String businessRegistrationDoc;
+//    private String wasteManagementPlan;
+//    private String eiaReport;
+//    private String previousPermitDoc;
+//    private String taxClearanceCert;
 }

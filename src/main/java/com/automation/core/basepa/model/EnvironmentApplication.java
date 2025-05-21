@@ -49,16 +49,16 @@ public class EnvironmentApplication {
 
         // Metadata
         private LocalDate applicationDate;
-        private Integer durationInMonths;
-        private LocalDate preferredInspectionDate;
+//        private Integer durationInMonths;
+//        private LocalDate preferredInspectionDate;
         private Status status;
 
         // File references (could be URLs or file names in a storage system)
-        private String businessRegistrationDoc;
-        private String wasteManagementPlan;
-        private String eiaReport;
-        private String previousPermitDoc;
-        private String taxClearanceCert;
+//        private String businessRegistrationDoc;
+//        private String wasteManagementPlan;
+//        private String eiaReport;
+//        private String previousPermitDoc;
+//        private String taxClearanceCert;
 
         // Constructors, Getters, Setters
     }
