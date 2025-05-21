@@ -20,6 +20,7 @@ public class CertificateRequest {
     private String taxClearance;
     private String surveyData;
     private String status;
+    private String applicantEmail;
     private String localGovernmentConfirmationLetter;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

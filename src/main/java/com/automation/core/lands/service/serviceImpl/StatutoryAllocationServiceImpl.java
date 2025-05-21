@@ -35,7 +35,6 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
         put("processing_fees", "Processing Fees");
     }};
 
-
     public void StatutoryAllocationService() throws IOException {
         Files.createDirectories(Paths.get(UPLOAD_DIR));
     }
