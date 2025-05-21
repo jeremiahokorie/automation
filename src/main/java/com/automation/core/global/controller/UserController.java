@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -48,15 +49,17 @@ public class UserController {
     private JwtUtil jwtUtil;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired private AuthenticationManager authManager;
+
 
     @PostMapping("/login")
     public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
         log.info("UserDetailsccc: {}", request.getEmail());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-        final String jwt = jwtUtil.generateToken(userDetails);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        String token = jwtUtil.generateToken(userDetails);
         return ResponseEntity.ok()
-                .body(AppResponse.of(HttpStatus.OK.value(),new AuthResponse(jwt)));
+                .body(AppResponse.of(HttpStatus.OK.value(),new AuthResponse(token)));
     }
 
     @PostMapping("/register")

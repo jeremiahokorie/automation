@@ -9,9 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 @Builder
 @Data
@@ -33,22 +32,32 @@ public class User implements UserDetails, Serializable {
     @Column(name = "email")
     private String email;
     @Column(name = "createDate")
-    private Date createDate;
+    private LocalDate createDate;
     @Column(name = "phone_number")
     private String phoneNumber;
     @Column(name = "address")
     private String address;
-    @Column(name = "username")
-    private String username;
-    private String role;
 
 
     @ManyToOne
-    private Roles roles;
+    private Roles role;
+
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(
+//            name = "user_roles", // join table
+//            joinColumns = @JoinColumn(name = "user_id"), // this side
+//            inverseJoinColumns = @JoinColumn(name = "role_id") // other side
+//    )
+//    private Set<Roles> roles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return "";
     }
 
     @Override

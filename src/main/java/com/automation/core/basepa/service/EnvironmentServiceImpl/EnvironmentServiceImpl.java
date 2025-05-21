@@ -34,6 +34,16 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setFacilityAddress(environmentRequest.getFacilityAddress());
             appyPermit.setFacilityName(environmentRequest.getFacilityName());
             appyPermit.setStatus(Status.PENDING);
+            appyPermit.setPermitType(environmentRequest.getPermitType());
+            appyPermit.setWasteDescription(environmentRequest.getWasteDescription());
+            appyPermit.setPhone(environmentRequest.getPhone());
+            appyPermit.setIndustryType(environmentRequest.getIndustryType());
+            appyPermit.setWasteQuantity(environmentRequest.getWasteQuantity());
+            appyPermit.setOperationalLicenseNumber(environmentRequest.getOperationalLicenseNumber());
+            appyPermit.setHasEnvironmentalAudit(true);
+            appyPermit.setDisposalFrequency(environmentRequest.getDisposalFrequency());
+            appyPermit.setDisposalMethod(environmentRequest.getDisposalMethod());
+
             appyPermit.setWasteSource(SourceOfWaste.Household);
             environmentRepository.save(appyPermit);
         }
@@ -49,6 +59,16 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .wasteSource(environmentRequest.getWasteSource())
                 .applicationDate(environmentRequest.getApplicationDate())
                 .status(environmentRequest.getStatus())
+                .wasteQuantity(environmentRequest.getWasteQuantity())
+                .disposalFrequency(environmentRequest.getDisposalFrequency())
+                .wasteDescription(environmentRequest.getWasteDescription())
+                .phone(environmentRequest.getPhone())
+                .industryType(environmentRequest.getIndustryType())
+                .operationalLicenseNumber(environmentRequest.getOperationalLicenseNumber())
+                .contactPerson(environmentRequest.getContactPerson())
+                .facilityAddress(environmentRequest.getFacilityAddress())
+                .hasEnvironmentalAudit(environmentRequest.getHasEnvironmentalAudit())
+
                 .build();
 
     }

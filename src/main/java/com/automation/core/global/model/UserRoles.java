@@ -21,7 +21,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 @Table(name = "user_roles")
-public class UserRole {
+public class UserRoles {
 
     private static final long serialVersionUID = 1L;
     @Id

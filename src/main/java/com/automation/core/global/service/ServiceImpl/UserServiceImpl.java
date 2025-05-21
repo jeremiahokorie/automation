@@ -8,15 +8,18 @@ import com.automation.core.global.model.User;
 import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
-import com.automation.util.enums.Role;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,9 +31,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByemail(userRequest.getEmail());
-        Roles defaultRole = new Roles();
-        defaultRole.setId(1L);
-        defaultRole.setName("USER");
+        Roles userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Default role USER not found"));
 
         if (user.isPresent()) {
             throw new CustomException("User already exists");
@@ -43,8 +45,8 @@ public class UserServiceImpl implements UserService {
         createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
-        createUser.setRole("USER");
-        createUser.setRoles(defaultRole);
+        createUser.setRole(userRole);
+        createUser.setCreateDate(LocalDate.now());
         userRepository.save(createUser);
 
         return UserResponse.builder()
