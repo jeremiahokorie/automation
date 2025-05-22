@@ -72,8 +72,8 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/users")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/users")
     public ResponseEntity<AppResponse<List<UserResponse>>> getUsers() {
         List<UserResponse> users = userService.getUsers();
         return ResponseEntity.ok().body(AppResponse.<List<UserResponse>>builder()
@@ -81,7 +81,7 @@ public class UserController {
                 .status(HttpStatus.OK.value()).data(users).build());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete-users")
     public ResponseEntity<AppResponse<UserResponse>> deleteUsers(@RequestBody UserRequest userRequest) {
         UserResponse response = userService.deleteUsers(userRequest);
@@ -91,7 +91,7 @@ public class UserController {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/{id}/user")
     public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {
         UserResponse userResponse = userService.deleteById(id);
