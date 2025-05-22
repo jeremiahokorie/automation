@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BusinessRegistrationResponse {
+    private Long id;
     private String businessName;
     private String ownerName;
     private String address;

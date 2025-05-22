@@ -81,6 +81,7 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
     public List<StatutoryAllocationResponse> getAllAllocations() {
         List<StatutoryAllocation> statutoryAllocations = statutoryAllocationRepository.findAll();
         return statutoryAllocations.stream().map(statutoryAllocation -> StatutoryAllocationResponse.builder()
+                        .id(statutoryAllocation.getId())
                         .createdAt(statutoryAllocation.getCreatedAt())
                         .administrativeCharges(statutoryAllocation.getAdministrativeCharges())
                         .applicantName(statutoryAllocation.getApplicantName())

@@ -64,6 +64,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(createUser);
 
         return UserResponse.builder()
+                .id(createUser.getId())
                 .email(userRequest.getEmail())
                 .firstName(userRequest.getFirstName())
                 .lastName(userRequest.getLastName())
@@ -76,6 +77,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getUsers() {
         List<User> users = userRepository.findAll();
         return users.stream().map(user -> UserResponse.builder()
+                .id(user.getId())
                 .email(user.getEmail())
                 .address(user.getAddress())
                 .phoneNumber(user.getPhoneNumber())

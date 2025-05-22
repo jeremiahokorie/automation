@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Data
 @Builder
 public class BusinessRenewalResponse {
+    private Long id;
     private String businessNumber;
     private String businessName;
     private String status;

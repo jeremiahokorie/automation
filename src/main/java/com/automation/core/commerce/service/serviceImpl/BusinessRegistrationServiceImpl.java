@@ -65,6 +65,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     public List<BusinessRegistrationResponse> getRegisteredBusiness() {
         List<BusinessRegistration> businessRegistrations = businessRepository.findAll();
         return businessRegistrations.stream().map(businessRegistration -> BusinessRegistrationResponse.builder()
+                .id(businessRegistration.getId())
                 .email(businessRegistration.getEmail())
                 .ownerName(businessRegistration.getOwnerName())
                 .businessName(businessRegistration.getBusinessName())
@@ -85,6 +86,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             throw new CustomException("Invalid business number");
         }
         return BusinessRegistrationResponse.builder()
+                .id(businessRegistration.getId())
                 .businessName(businessRegistration.getBusinessName())
                 .businessNumber(businessRegistration.getBusinessNumber())
                 .address(businessRegistration.getAddress())
@@ -106,6 +108,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         registration.setStatus("PENDING");
         businessRepository.save(registration);
         return BusinessRenewalResponse.builder()
+                .id(registration.getId())
                 .businessNumber(registration.getBusinessNumber())
                 .renewalDate(registration.getRenewalDate())
                 .status(registration.getStatus())
@@ -125,6 +128,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         registration.setRenewalDate(LocalDate.now());
         businessRepository.save(registration);
         return ApprovalandRejectResponse.builder()
+                .id(registration.getId())
                 .comment(registration.getComment())
                 .build();
     }
@@ -143,6 +147,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         businessRepository.save(registration);
 
         return ApprovalandRejectResponse.builder()
+                .id(registration.getId())
                 .comment(registration.getComment())
                 .build();
     }

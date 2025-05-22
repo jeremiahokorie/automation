@@ -85,6 +85,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     public List<EnvironmentResponse> getAll() {
         List<EnvironmentApplication> appyPermit = environmentRepository.findAll();
         return appyPermit.stream().map(permit -> EnvironmentResponse.builder()
+                .id(permit.getId())
                 .phone(permit.getPhone())
                 .applicationDate(permit.getApplicationDate())
                 .status(permit.getStatus())
@@ -134,6 +135,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
         return ApprovalResponse.builder()
                 .comment(rejectPermit.getComment())
+                .id(rejectPermit.getId())
                 .build();
     }
 }

@@ -42,7 +42,7 @@ public class mdaServiceImpl implements mdaService {
                 }).collect(Collectors.toList());
         mda.setServices(mdanameservice);
         mdarepository.save(mda);
-        return mdaResponse.builder().code(mda.getCode()).name(mda.getName()).build();
+        return mdaResponse.builder().id(mda.getId()).code(mda.getCode()).name(mda.getName()).build();
     }
 
     @Override
@@ -52,6 +52,7 @@ public class mdaServiceImpl implements mdaService {
         mda.setCode(mdaRequest.getCode());
         mdarepository.save(mda);
         return mdaResponse.builder()
+                .id(mda.getId())
                 .name(mdaRequest.getName())
                 .code(mdaRequest.getCode())
                 .build();
@@ -74,6 +75,7 @@ public class mdaServiceImpl implements mdaService {
     public List<mdaResponse> getMdas() {
         List<mdaModel> mdas = mdarepository.findAll();
         return mdas.stream().map(mda -> mdaResponse.builder()
+                .id(mda.getId())
                 .code(mda.getCode())
                 .name(mda.getName())
                 .build()

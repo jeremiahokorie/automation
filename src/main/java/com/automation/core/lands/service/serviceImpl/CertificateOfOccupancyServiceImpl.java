@@ -107,6 +107,7 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
      public List<CertificateResponse> getCofOs() {
         List<CertificateOfOccupancy> certificate = repository.findAll();
         return certificate.stream().map(cofos -> CertificateResponse.builder()
+                .id(cofos.getId())
                 .createdAt(cofos.getCreatedAt())
                 .applicantName(cofos.getApplicantName())
                 .taxClearance(cofos.getTaxClearance())

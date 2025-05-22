@@ -70,6 +70,7 @@ public class GroundRentServiceImpl implements GrountRentService {
     public List<GroundRentResponse> getCofOs() {
         List<GroundRent> groundrent = groundRentRepository.findAll();
         return groundrent.stream().map(rent -> GroundRentResponse.builder()
+                .id(rent.getId())
                 .status(rent.getStatus())
                 .baNo(rent.getBaNo())
                 .landNo(rent.getLandNo())
