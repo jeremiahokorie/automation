@@ -45,7 +45,8 @@ public class WebSecurityConfig{
                                         "/swagger-ui.html"
                                 ).permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers("/commissioner/**").hasRole("COMMISSIONER")
+                                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "OFFICER")
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

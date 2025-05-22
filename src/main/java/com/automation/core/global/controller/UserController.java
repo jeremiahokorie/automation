@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,18 +52,18 @@ public class UserController {
     private UserDetailsService userDetailsService;
     @Autowired private AuthenticationManager authManager;
 
+//    @PostMapping("/login")
+//    public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
+//        log.info("UserDetailsccc: {}", request.getEmail());
+//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+//        String token = jwtUtil.generateToken(userDetails);
+//        return ResponseEntity.ok()
+//                .body(AppResponse.of(HttpStatus.OK.value(),new AuthResponse(token)));
+//    }
 
-    @PostMapping("/login")
-    public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
-        log.info("UserDetailsccc: {}", request.getEmail());
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-        String token = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok()
-                .body(AppResponse.of(HttpStatus.OK.value(),new AuthResponse(token)));
-    }
 
-    @PostMapping("/register")
+    @PostMapping("/user/register")
     public ResponseEntity<AppResponse<UserResponse>> createUser(@RequestBody UserRequest userRequest) {
         UserResponse userResponse = userService.createUser(userRequest);
         AppResponse<UserResponse> response = AppResponse.<UserResponse>builder()
@@ -71,12 +72,33 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/users")
     public ResponseEntity<AppResponse<List<UserResponse>>> getUsers() {
         List<UserResponse> users = userService.getUsers();
         return ResponseEntity.ok().body(AppResponse.<List<UserResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value()).data(users).build());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/delete-users")
+    public ResponseEntity<AppResponse<UserResponse>> deleteUsers(@RequestBody UserRequest userRequest) {
+        UserResponse response = userService.deleteUsers(userRequest);
+        return ResponseEntity.ok().body(AppResponse.<UserResponse>builder()
+                .message(AppConstant.ApiResponseMessage.DELETE)
+                .status(HttpStatus.OK.value()).data(response).build()
+        );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/{id}/user")
+    public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {
+        UserResponse userResponse = userService.deleteById(id);
+        return ResponseEntity.ok().body(AppResponse.<UserResponse>builder()
+                .message(AppConstant.ApiResponseMessage.DELETE)
+                .status(HttpStatus.OK.value()).data(userResponse).build()
+        );
     }
 
 

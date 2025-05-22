@@ -1,6 +1,7 @@
 package com.automation.core.lands.controller;
 
 import com.automation.core.global.dto.response.AppResponse;
+import com.automation.core.global.exception.Exception;
 import com.automation.core.lands.dto.response.CertificateResponse;
 import com.automation.core.lands.model.CertificateOfOccupancy;
 import com.automation.core.lands.service.service.CertificateOfOccupancyService;

@@ -1,5 +1,6 @@
 package com.automation.core.lands.service.serviceImpl;
 
+import com.automation.core.global.exception.Exception;
 import com.automation.core.lands.dto.response.CertificateResponse;
 import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.CertificateOfOccupancy;
@@ -57,32 +58,37 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
 
         Map<String, String> response = new HashMap<>();
 
-        for (String key : REQUIRED_DOCUMENTS.keySet()) {
-            MultipartFile file = documents.get(key);
-            if (file == null || file.isEmpty()) {
-                response.put(key, "Missing " + REQUIRED_DOCUMENTS.get(key));
-                continue;
+        try {
+            for (String key : REQUIRED_DOCUMENTS.keySet()) {
+                MultipartFile file = documents.get(key);
+                if (file == null || file.isEmpty()) {
+                    response.put(key, "Missing " + REQUIRED_DOCUMENTS.get(key));
+                    continue;
+                }
+
+                // Ensure the upload directory exists
+                Path uploadDirPath = Path.of(UPLOAD_DIR);
+                Files.createDirectories(uploadDirPath);
+
+                // Build and save the file path
+                String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Files.copy(file.getInputStream(), Path.of(filePath));
+
+                response.put(key, "Uploaded Successfully");
+
+                // Save file path to entity
+                switch (key) {
+                    case "district_head_letter" -> allocation.setDistrictHeadLetter(filePath);
+                    case "sales_agreement" -> allocation.setSalesAgreement(filePath);
+                    case "declaration_of_age" -> allocation.setDeclarationOfAge(filePath);
+                    case "tax_clearance" -> allocation.setTaxClearance(filePath);
+                    case "survey_data" -> allocation.setSurveyData(filePath);
+                    case "local_government_confirmation_letter" ->
+                            allocation.setLocalGovernmentConfirmationLetter(filePath);
+                }
             }
-
-            // Ensure the upload directory exists
-            Path uploadDirPath = Path.of(UPLOAD_DIR);
-            Files.createDirectories(uploadDirPath);
-
-            // Build and save the file path
-            String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Files.copy(file.getInputStream(), Path.of(filePath));
-
-            response.put(key, "Uploaded Successfully");
-
-            // Save file path to entity
-            switch (key) {
-                case "district_head_letter" -> allocation.setDistrictHeadLetter(filePath);
-                case "sales_agreement" -> allocation.setSalesAgreement(filePath);
-                case "declaration_of_age" -> allocation.setDeclarationOfAge(filePath);
-                case "tax_clearance" -> allocation.setTaxClearance(filePath);
-                case "survey_data" -> allocation.setSurveyData(filePath);
-                case "local_government_confirmation_letter" -> allocation.setLocalGovernmentConfirmationLetter(filePath);
-            }
+        }catch (Exception e){
+            throw new Exception("Error occured while uploading documents");
         }
 
         repository.save(allocation);

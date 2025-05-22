@@ -1,10 +1,17 @@
 package com.automation.core.basepa.service.EnvironmentServiceImpl;
 
+import com.automation.core.basepa.dto.request.ApprovalRequest;
 import com.automation.core.basepa.dto.request.EnvironmentRequest;
+import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
 import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.basepa.repository.EnvironmentRepository;
 import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
+import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
+import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
+import com.automation.core.commerce.model.BusinessRegistration;
+import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.util.enums.PermitType;
 import com.automation.util.enums.SourceOfWaste;
 import com.automation.util.enums.Status;
@@ -47,6 +54,9 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setWasteSource(SourceOfWaste.Household);
             environmentRepository.save(appyPermit);
         }
+        else {
+            throw new ResourceNotFoundException("Resource Not Found");
+        }
 
         return EnvironmentResponse.builder()
                 .email(environmentRequest.getEmail())
@@ -68,9 +78,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .contactPerson(environmentRequest.getContactPerson())
                 .facilityAddress(environmentRequest.getFacilityAddress())
                 .hasEnvironmentalAudit(environmentRequest.getHasEnvironmentalAudit())
-
                 .build();
-
     }
 
     @Override
@@ -84,7 +92,48 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .disposalLocation(permit.getDisposalLocation())
                 .facilityAddress(permit.getFacilityAddress())
                 .industryType(permit.getIndustryType())
+                .applicantName(permit.getApplicantName())
+                .contactPerson(permit.getContactPerson())
+                .address(permit.getAddress())
+                .permitType(permit.getPermitType())
+                .wasteQuantity(permit.getWasteQuantity())
+                .disposalFrequency(permit.getDisposalFrequency())
+                .disposalMethod(permit.getDisposalMethod())
+                .disposalLocation(permit.getDisposalLocation())
+                .hasEnvironmentalAudit(permit.getHasEnvironmentalAudit())
+                .operationalLicenseNumber(permit.getOperationalLicenseNumber())
                 .email(permit.getEmail()).build()
         ).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public ApprovalResponse approveRequest(Long id, ApprovalRequest commentRequest) {
+        EnvironmentApplication permit = environmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
+
+        permit.setStatus(Status.APPROVED);
+        permit.setComment(commentRequest.getComment());
+        permit.setApprovalDate(LocalDate.now());
+        environmentRepository.save(permit);
+        return ApprovalResponse.builder()
+                .comment(permit.getComment())
+                .build();
+    }
+
+
+    @Override
+    public ApprovalResponse rejectRequest(Long id, ApprovalRequest commentRequest) {
+        EnvironmentApplication rejectPermit = environmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
+
+        rejectPermit.setStatus(Status.REJECTED);
+        rejectPermit.setComment(commentRequest.getComment());
+        rejectPermit.setRejectionDate(LocalDate.now());
+        environmentRepository.save(rejectPermit);
+
+        return ApprovalResponse.builder()
+                .comment(rejectPermit.getComment())
+                .build();
     }
 }

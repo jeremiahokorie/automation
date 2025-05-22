@@ -12,6 +12,7 @@ import com.automation.core.commerce.repository.BusinessRepository;
 import com.automation.core.commerce.repository.BusinessTypeRepository;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.exception.CustomException;
+import com.automation.core.global.exception.Exception;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -117,7 +118,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     public ApprovalandRejectResponse approveRequest(String businessNumber, ApprovalandRejectRequest comment) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
         if (registration == null) {
-            throw new CustomException("Business not found or not yet due for renewal.");
+            throw new Exception("Business not found or not yet due for renewal.");
         }
         registration.setStatus("APPROVED");
         registration.setComment(comment.getComment());
@@ -133,7 +134,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     public ApprovalandRejectResponse rejectRequest(String businessNumber, ApprovalandRejectRequest request) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
         if (registration == null) {
-            throw new CustomException("Business not found or not yet due for renewal.");
+            throw new Exception("Business not found or not yet due for renewal.");
         }
 
         registration.setStatus("REJECT");

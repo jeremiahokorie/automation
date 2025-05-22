@@ -15,4 +15,7 @@ public class UserResponse {
     private String email;
     private String phoneNumber;
     private String address;
+
+    public UserResponse(String s) {
+    }
 }

@@ -3,6 +3,7 @@ package com.automation.core.global.service.ServiceImpl;
 import com.automation.core.global.dto.request.PermissionRequest;
 import com.automation.core.global.dto.response.PermissionResponse;
 import com.automation.core.global.exception.CustomException;
+import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.Permission;
 import com.automation.core.global.repository.PermissionRepository;
 import com.automation.core.global.service.UserService.PermissionService;
@@ -21,22 +22,18 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PermissionResponse addPermission(PermissionRequest permission) {
-        Optional<Permission> permissions = permissionRepository.findBycode(permission.getCode());
+        Optional<Permission> permissions = permissionRepository.findByname(permission.getName());
 
-        if (!permissions.isEmpty()) {
-            throw new CustomException("Permission already exist");
+        if (permissions.isPresent()) {
+            throw new ResourceNotFoundException("Permission already exist");
         }
 
         Permission permissionEntity = new Permission();
         permissionEntity.setName(permission.getName());
-        permissionEntity.setDescription(permission.getDescription());
-        permissionEntity.setCode(permission.getCode());
         permissionRepository.save(permissionEntity);
 
         return PermissionResponse.builder()
                 .name(permission.getName())
-                .description(permission.getDescription())
-                .code(permission.getCode())
                 .build();
     }
 }

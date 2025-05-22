@@ -52,6 +52,9 @@ public class EnvironmentApplication {
 //        private Integer durationInMonths;
 //        private LocalDate preferredInspectionDate;
         private Status status;
+        private String comment;
+        private LocalDate approvalDate;
+        private LocalDate rejectionDate;
 
         // File references (could be URLs or file names in a storage system)
 //        private String businessRegistrationDoc;

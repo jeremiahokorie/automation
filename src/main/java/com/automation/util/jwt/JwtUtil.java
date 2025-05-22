@@ -20,20 +20,34 @@ public class JwtUtil {
 
     @Value("${jwt.secret}")
     private String SECRET_KEY;
-    private final long EXPIRATION_TIME = 86400000; // 1 day in ms
+    private final long EXPIRATION_TIME = 86400000;
+    private final String ACCESS_SECRET = "c2VjcmV0S2V5Rm9yTXlKd3RUb2tlbiEyMzQ1Ng++";
+    private final String REFRESH_SECRET = "c2VjcmV0S2V5Rm9yTXlKd3RUb2tlbiEyMzQ1Ng--";
+    private final long ACCESS_EXPIRATION = 1000 * 60 * 15; // 15 mins
+    private final long REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
+// 1 day in ms
 
 //    public String generateToken(UserDetails userDetails) {
 //        Map<String, Object> claims = new HashMap<>();
 //        return createToken(claims, userDetails.getUsername());
 //    }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+//    private String createToken(Map<String, Object> claims, String subject) {
+//        return Jwts.builder()
+//                .setClaims(claims)
+//                .setSubject(subject)
+//                .setIssuedAt(new Date(System.currentTimeMillis()))
+//                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+//                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+//                .compact();
+//    }
+
+    private String createToken(String username, long expiration, String secret) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
@@ -73,8 +87,28 @@ public class JwtUtil {
                 .getSubject();
     }
 
+    public boolean validateToken(String token, boolean isRefresh) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(isRefresh ? REFRESH_SECRET : ACCESS_SECRET)
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public boolean validateToken(String token, UserDetails userDetails) {
         return extractUsername(token).equals(userDetails.getUsername());
     }
+
+    public String generateAccessToken(UserDetails userDetails) {
+        return createToken(userDetails.getUsername(),REFRESH_EXPIRATION, REFRESH_SECRET);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return createToken(userDetails.getUsername(), REFRESH_EXPIRATION, REFRESH_SECRET);
+    }
+
 
 }

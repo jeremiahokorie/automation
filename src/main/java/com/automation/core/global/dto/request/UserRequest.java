@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequest {
+    private List<Long> userIds;
     private String firstName;
     private String lastName;
     private String email;

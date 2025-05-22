@@ -1,4 +1,5 @@
-package com.automation.core.global.dto.response;
+package com.automation.core.basepa.dto.response;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PermissionResponse {
-    private String name;
+public class ApprovalResponse {
+    private String comment;
 }

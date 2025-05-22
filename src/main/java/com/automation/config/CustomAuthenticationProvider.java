@@ -1,6 +1,7 @@
 package com.automation.config;
 
 
+import com.automation.core.global.exception.Exception;
 import com.automation.core.global.service.UserService.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BadCredentialsException("Invalid credentials");
+            throw new Exception("Invalid credentials");
         }
 
         return new UsernamePasswordAuthenticationToken(user, password, user.getAuthorities());

@@ -1,21 +1,28 @@
 package com.automation.core.global.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
-public class RolePermission implements Serializable {
-    private static final long serialVersionUID = 1L;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "role_permissions")
+public class RolePermission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     private Long id;
 
-    @Column(name = "PERMISSION_ID")
-    private Long permissionId;
-    @Column(name = "ROLE_ID")
-    private Long roleId;
+    @ManyToOne
+    private Roles role;
+
+    @ManyToOne
+    private Permission permission;
 }

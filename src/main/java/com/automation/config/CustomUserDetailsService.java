@@ -24,15 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
-
     private User user;
-//    @Override
-//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//        return userRepository.findByemail(email)
-//                .map(CustomUserDetails::new)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-//    }
-
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -45,7 +37,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 getAuthorities(user)
         );
     }
-
 
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()));
