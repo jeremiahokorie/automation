@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatutoryAllocationResponse {
+    private Long id;
     private String applicantName;
     private String passportPhotos;
     private String taxClearances;

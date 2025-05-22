@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class EnvironmentResponse {
 
+    private Long id;
     private String applicantName;
     private String contactPerson;
     private String phone;

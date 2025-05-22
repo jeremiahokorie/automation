@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroundRentResponse {
+    private Long id;
     private String baNo;
     private String landNo;
     private String record;

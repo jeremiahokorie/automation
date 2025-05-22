@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LandApplicationResponse {
+    private Long id;
     private String applicantName;
     private String email;
     private LandApplicationType applicationType;

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CertificateResponse {
+    private Long id;
     private String applicantName;
     private String districtHeadLetter;
     private String salesAgreement;
