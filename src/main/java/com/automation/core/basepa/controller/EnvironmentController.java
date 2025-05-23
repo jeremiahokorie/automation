@@ -51,9 +51,9 @@ public class EnvironmentController {
         return new ResponseEntity<>(appResponse, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/renew-permit")
-    public ResponseEntity<AppResponse<EnvironmentResponse>>renewal(@PathVariable Long id) {
-        EnvironmentResponse businessRenewalResponse = environmentService.renewPermit(id);
+    @PutMapping("/renew-permit")
+    public ResponseEntity<AppResponse<EnvironmentResponse>>renewal(@RequestBody PermitRenewRequest permitRenewRequest) {
+        EnvironmentResponse businessRenewalResponse = environmentService.renewPermit(permitRenewRequest);
         AppResponse<EnvironmentResponse> response = AppResponse.<EnvironmentResponse>builder()
                 .message(AppConstant.ApiResponseMessage.UPDATE)
                 .status(HttpStatus.OK.value()).data(businessRenewalResponse).error("").build();

@@ -17,5 +17,5 @@ public interface EnvironmentService {
 
     ApprovalResponse rejectRequest(Long id, ApprovalRequest commentRequest);
 
-    EnvironmentResponse renewPermit(Long id);
+    EnvironmentResponse renewPermit(PermitRenewRequest permitRenewRequest);
 }

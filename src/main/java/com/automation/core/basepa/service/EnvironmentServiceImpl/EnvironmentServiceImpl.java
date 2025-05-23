@@ -147,8 +147,8 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
 
     @Override
-    public EnvironmentResponse renewPermit(Long id) {
-        EnvironmentApplication renew = environmentRepository.findById(id).orElseThrow(()-> new Exception("Permit with Id not found"));
+    public EnvironmentResponse renewPermit(PermitRenewRequest permitRenewRequest) {
+        EnvironmentApplication renew = environmentRepository.findByoperationalLicenseNumber(permitRenewRequest.getOperationalLicenseNumber()).orElseThrow(()-> new Exception("Permit with Operational Id not found"));
         renew.setStatus(Status.PENDING);
         environmentRepository.save(renew);
         return EnvironmentResponse.builder()
