@@ -1,5 +1,6 @@
 package com.automation.core.commerce.model;
 
+import com.automation.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class BusinessRegistration {
     private String address;
     private String phone;
     private String email;
-    private String status;
+    private Status status;
     private LocalDate dateRegistered;
     private boolean isRenewal;
     private boolean isExpired;

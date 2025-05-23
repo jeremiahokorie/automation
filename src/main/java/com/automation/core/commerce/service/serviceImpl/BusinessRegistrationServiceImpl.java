@@ -13,6 +13,7 @@ import com.automation.core.commerce.repository.BusinessTypeRepository;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
+import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -39,7 +40,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setEmail(businessRegistrationRequest.getEmail());
             businessRegistration.setPhone(businessRegistrationRequest.getPhone());
             businessRegistration.setAddress(businessRegistrationRequest.getAddress());
-            businessRegistration.setStatus("PENDING");
+            businessRegistration.setStatus(Status.PENDING);
             businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
             businessRegistration.setDateRegistered(LocalDate.now());
            // businessRegistration.setBusinessType(businessType);
@@ -105,7 +106,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         if (registration == null) {
             throw new CustomException("Business not found or not yet due for renewal.");
         }
-        registration.setStatus("PENDING");
+        registration.setStatus(Status.PENDING);
         businessRepository.save(registration);
         return BusinessRenewalResponse.builder()
                 .id(registration.getId())
@@ -123,7 +124,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         if (registration == null) {
             throw new Exception("Business not found or not yet due for renewal.");
         }
-        registration.setStatus("APPROVED");
+        registration.setStatus(Status.APPROVED);
         registration.setComment(comment.getComment());
         registration.setRenewalDate(LocalDate.now());
         businessRepository.save(registration);
@@ -141,7 +142,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             throw new Exception("Business not found or not yet due for renewal.");
         }
 
-        registration.setStatus("REJECT");
+        registration.setStatus(Status.REJECTED);
         registration.setComment(request.getComment());
 
         businessRepository.save(registration);

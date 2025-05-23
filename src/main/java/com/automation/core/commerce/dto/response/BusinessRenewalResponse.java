@@ -1,5 +1,6 @@
 package com.automation.core.commerce.dto.response;
 
+import com.automation.util.enums.Status;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ public class BusinessRenewalResponse {
     private Long id;
     private String businessNumber;
     private String businessName;
-    private String status;
+    private Status status;
     private LocalDate renewalDate;
     private String comment;
 }
