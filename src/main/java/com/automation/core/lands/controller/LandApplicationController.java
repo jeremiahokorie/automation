@@ -29,6 +29,13 @@ import java.util.List;
 public class LandApplicationController {
     private final LandApplicationService landApplicationService;
 
+
+//    @PostMapping("/apply")
+//    public ResponseEntity<LandApplicationResponse> applyLandApplication(@RequestBody LandApplicationRequest landApplicationRequest) {
+//
+//    }
+
+
     @PostMapping("/land")
     public ResponseEntity<AppResponse<LandApplicationResponse>>applyForLand(@RequestBody LandApplicationRequest landApplicationRequest) {
         LandApplicationResponse landApplicationResponse = landApplicationService.applyForLand(landApplicationRequest);

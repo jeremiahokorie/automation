@@ -1,6 +1,7 @@
 package com.automation.core.commerce.dto.request;
 
 import com.automation.core.commerce.model.BusinessType;
+import com.automation.util.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class BusinessRegistrationRequest {
     private String address;
     private String phone;
     private String email;
-    private String status;
+    private Status status;
     private LocalDate dateRegistered;
     private boolean isRenewal;
     private String comment;

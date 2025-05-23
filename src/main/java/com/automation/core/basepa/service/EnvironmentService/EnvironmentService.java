@@ -2,6 +2,7 @@ package com.automation.core.basepa.service.EnvironmentService;
 
 import com.automation.core.basepa.dto.request.ApprovalRequest;
 import com.automation.core.basepa.dto.request.EnvironmentRequest;
+import com.automation.core.basepa.dto.request.PermitRenewRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
 
@@ -15,4 +16,6 @@ public interface EnvironmentService {
     ApprovalResponse approveRequest(Long id, ApprovalRequest commentRequest);
 
     ApprovalResponse rejectRequest(Long id, ApprovalRequest commentRequest);
+
+    EnvironmentResponse renewPermit(Long id);
 }

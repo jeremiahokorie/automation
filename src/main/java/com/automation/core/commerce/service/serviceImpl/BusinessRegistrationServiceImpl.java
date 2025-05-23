@@ -41,6 +41,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setPhone(businessRegistrationRequest.getPhone());
             businessRegistration.setAddress(businessRegistrationRequest.getAddress());
             businessRegistration.setStatus(Status.PENDING);
+            businessRegistration.setComment(businessRegistrationRequest.getComment());
             businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
             businessRegistration.setDateRegistered(LocalDate.now());
            // businessRegistration.setBusinessType(businessType);
@@ -50,6 +51,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         }
 
         return BusinessRegistrationResponse.builder()
+                .comment(businessRegistrationRequest.getComment())
+                .status(businessRegistrationRequest.getStatus())
                 .businessName(businessRegistrationRequest.getBusinessName())
                 .businessNumber(businessRegistrationRequest.getBusinessNumber())
                 .dateRegistered(LocalDate.now())
@@ -113,6 +116,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .businessNumber(registration.getBusinessNumber())
                 .renewalDate(registration.getRenewalDate())
                 .status(registration.getStatus())
+                .comment(registration.getComment())
                 .businessName(registration.getBusinessName()).build();
     }
 

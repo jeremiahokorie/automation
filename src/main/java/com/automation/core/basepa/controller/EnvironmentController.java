@@ -2,15 +2,20 @@ package com.automation.core.basepa.controller;
 
 import com.automation.core.basepa.dto.request.ApprovalRequest;
 import com.automation.core.basepa.dto.request.EnvironmentRequest;
+import com.automation.core.basepa.dto.request.PermitRenewRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
 import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
 import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
+import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
 import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
+import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
+import com.automation.core.commerce.service.serviceImpl.BusinessRegistrationServiceImpl;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.util.constant.AppConstant;
 import io.swagger.models.Response;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -44,6 +49,15 @@ public class EnvironmentController {
                 .message(AppConstant.ApiResponseMessage.CREATED)
                 .status(HttpStatus.OK.value()).data(response).build();
         return new ResponseEntity<>(appResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/renew-permit")
+    public ResponseEntity<AppResponse<EnvironmentResponse>>renewal(@PathVariable Long id) {
+        EnvironmentResponse businessRenewalResponse = environmentService.renewPermit(id);
+        AppResponse<EnvironmentResponse> response = AppResponse.<EnvironmentResponse>builder()
+                .message(AppConstant.ApiResponseMessage.UPDATE)
+                .status(HttpStatus.OK.value()).data(businessRenewalResponse).error("").build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/getPermits")

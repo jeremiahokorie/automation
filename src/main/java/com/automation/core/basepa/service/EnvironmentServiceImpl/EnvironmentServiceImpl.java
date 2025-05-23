@@ -2,14 +2,18 @@ package com.automation.core.basepa.service.EnvironmentServiceImpl;
 
 import com.automation.core.basepa.dto.request.ApprovalRequest;
 import com.automation.core.basepa.dto.request.EnvironmentRequest;
+import com.automation.core.basepa.dto.request.PermitRenewRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
 import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.basepa.repository.EnvironmentRepository;
 import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
 import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
+import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
 import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
+import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
+import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
 import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.util.enums.PermitType;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -137,5 +142,28 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .comment(rejectPermit.getComment())
                 .id(rejectPermit.getId())
                 .build();
+    }
+
+
+
+    @Override
+    public EnvironmentResponse renewPermit(Long id) {
+        EnvironmentApplication renew = environmentRepository.findById(id).orElseThrow(()-> new Exception("Permit with Id not found"));
+        renew.setStatus(Status.PENDING);
+        environmentRepository.save(renew);
+        return EnvironmentResponse.builder()
+                .id(renew.getId())
+                .disposalLocation(renew.getDisposalLocation())
+                .disposalMethod(renew.getDisposalMethod())
+                .status(renew.getStatus())
+                .applicantName(renew.getApplicantName())
+                .email(renew.getEmail())
+                .industryType(renew.getIndustryType())
+                .facilityName(renew.getFacilityName())
+                .phone(renew.getPhone())
+                .permitType(renew.getPermitType())
+                .operationalLicenseNumber(renew.getOperationalLicenseNumber()).build();
+
+
     }
 }
