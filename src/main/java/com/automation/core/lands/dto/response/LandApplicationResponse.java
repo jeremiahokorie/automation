@@ -24,4 +24,18 @@ public class LandApplicationResponse {
     private LocalDateTime approvalDate;
     private String documents;
     private String certificateUrl;
+
+    private String districtHeadLetter;
+    private String salesAgreement;
+    private String declarationOfAge;
+    private String taxClearance;
+    private String surveyData;
+    private String applicantEmail;
+    private String localGovernmentConfirmationLetter;
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private String passportPhotos;
+    private String taxClearances;
+    private String administrativeCharges;
+    private String processingFees;
 }

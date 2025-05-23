@@ -8,6 +8,7 @@ import com.automation.core.lands.repository.LandApplicationRepository;
 import com.automation.core.lands.service.service.LandApplicationService;
 import com.automation.util.enums.GlobalStatus;
 import com.automation.util.enums.LandApplicationType;
+import com.automation.util.enums.ReportType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +27,13 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     public LandApplicationResponse applyForLand(LandApplicationRequest landApplicationRequest) {
         LandApplication landApplication = new LandApplication();
         landApplication.setApplicantName(landApplicationRequest.getApplicantName());
-        landApplication.setApplicationType(LandApplicationType.CofO);
+        landApplication.setApplicationType(LandApplicationType.COFO);
         landApplication.setApplicationDate(LocalDateTime.now());
         landApplication.setStatus(GlobalStatus.PENDING);
         landApplicationRepository.save(landApplication);
         return LandApplicationResponse.builder()
                 .applicationDate(LocalDateTime.now())
-                .applicationType(LandApplicationType.CofO)
+                .applicationType(LandApplicationType.COFO)
                 .status(GlobalStatus.PENDING)
                 .applicantName(landApplicationRequest.getApplicantName()).build();
     }
@@ -47,5 +48,62 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .status(landApplication.getStatus())
                 .build()
         ).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<LandApplicationResponse> getByTypeAndDate(LandApplicationType type, LocalDate start, LocalDate end) {
+        List<LandApplication> applications = landApplicationRepository.findByApplicationTypeAndApplicationDateBetween(
+                type, start.atStartOfDay(), end.plusDays(1).atStartOfDay());
+        return applications.stream().map(landApplication -> LandApplicationResponse.builder()
+                .id(landApplication.getId())
+                .applicantEmail(landApplication.getApplicantEmail())
+                .approvalDate(landApplication.getApprovalDate())
+                .administrativeCharges(landApplication.getAdministrativeCharges())
+                .applicationDate(landApplication.getApplicationDate())
+                .certificateUrl(landApplication.getCertificateUrl())
+                .applicationType(landApplication.getApplicationType())
+                .status(landApplication.getStatus())
+                .districtHeadLetter(landApplication.getDistrictHeadLetter())
+                .documents(landApplication.getDocuments())
+                .processingFees(landApplication.getProcessingFees())
+                .declarationOfAge(landApplication.getDeclarationOfAge())
+                .localGovernmentConfirmationLetter(landApplication.getLocalGovernmentConfirmationLetter())
+                .taxClearances(landApplication.getTaxClearances())
+                .certificateUrl(landApplication.getCertificateUrl())
+                .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LandApplicationResponse> getFilteredReport(LandApplicationType type, String applicantName, ReportType reportType,
+                                                           LocalDate startDate, LocalDate endDate) {
+
+        List<LandApplication> applications = landApplicationRepository.findByApplicationTypeAndApplicationDateBetween(
+                type, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+
+        if (applicantName != null && !applicantName.isEmpty()) {
+            applications = applications.stream()
+                    .filter(app -> app.getApplicantName().equalsIgnoreCase(applicantName))
+                    .toList();
+        }
+        // Optionally group by daily/monthly/yearly
+        return applications.stream().map(landApplication -> LandApplicationResponse.builder()
+                .id(landApplication.getId())
+                .applicantEmail(landApplication.getApplicantEmail())
+                .approvalDate(landApplication.getApprovalDate())
+                .administrativeCharges(landApplication.getAdministrativeCharges())
+                .applicationDate(landApplication.getApplicationDate())
+                .certificateUrl(landApplication.getCertificateUrl())
+                .applicationType(landApplication.getApplicationType())
+                .status(landApplication.getStatus())
+                .districtHeadLetter(landApplication.getDistrictHeadLetter())
+                .documents(landApplication.getDocuments())
+                .processingFees(landApplication.getProcessingFees())
+                .declarationOfAge(landApplication.getDeclarationOfAge())
+                .localGovernmentConfirmationLetter(landApplication.getLocalGovernmentConfirmationLetter())
+                .taxClearances(landApplication.getTaxClearances())
+                .certificateUrl(landApplication.getCertificateUrl())
+                .build()).collect(Collectors.toList());
+
     }
 }

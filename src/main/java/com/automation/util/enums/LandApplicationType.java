@@ -4,7 +4,5 @@ import lombok.Getter;
 
 @Getter
 public enum LandApplicationType {
-    CofO,
-    GroundRent,
-    StatutoryAllocation
+    COFO, GROUND_RENT, STATUTORY_ALLOCATION
 }

@@ -37,11 +37,7 @@ import java.util.Map;
 public class StatutoryAllocationController {
     private final StatutoryAllocationService statutoryAllocationService;
 
-//    @PostMapping("/upload")
-//    public ResponseEntity<Map<String, String>> uploadDocuments(@RequestParam Map<String, MultipartFile> documents) throws IOException {
-//        Map<String, String> response = statutoryAllocationService.uploadDocuments(documents);
-//        return ResponseEntity.ok(response);
-//    }
+
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadDocuments(@RequestParam String applicantName, @RequestParam Map<String, MultipartFile> documents) {
