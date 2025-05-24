@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class BusinessRenewalRequest {
     private String businessNumber;
     private String email;
-    private String comment;
 }

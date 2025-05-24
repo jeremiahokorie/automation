@@ -15,4 +15,5 @@ public class BusinessRenewalResponse {
     private Status status;
     private LocalDate renewalDate;
     private String comment;
+    private String authorizationUrl;
 }

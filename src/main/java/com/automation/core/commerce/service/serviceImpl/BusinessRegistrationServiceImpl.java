@@ -150,8 +150,38 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     public BusinessRenewalResponse renewBusiness(BusinessRenewalRequest businessRenewalRequest) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessRenewalRequest.getBusinessNumber());
         if (registration == null) {
-            throw new CustomException("Business not found or not yet due for renewal.");
+            throw new Exception("Business not found or not yet due for renewal.");
         }
+
+        // Step 2: Build payment request
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .amount(250000)
+                .bearer(1)
+                .callbackUrl("https://example.com/")
+                .channels(List.of("card", "bank"))
+                .customerFirstName(registration.getOwnerName())
+                .customerLastName(registration.getOwnerName())
+                .customerPhoneNumber(registration.getPhone())
+                .email(registration.getEmail())
+                .build();
+
+        // Step 3: Call the payment gateway
+        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+            throw new Exception("Unable to initiate payment");
+        }
+
+        // Step 4: Parse the response JSON
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(paymentResponse.getBody());
+            int status = root.path("status").asInt();
+            if (status != 200) {
+                throw new Exception("Payment failed to initialize");
+            }
+
+            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+
         registration.setStatus(Status.PENDING);
         businessRepository.save(registration);
         return BusinessRenewalResponse.builder()
@@ -159,8 +189,11 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .businessNumber(registration.getBusinessNumber())
                 .renewalDate(registration.getRenewalDate())
                 .status(registration.getStatus())
-                .comment(registration.getComment())
+                .authorizationUrl(authorizationUrl)
                 .businessName(registration.getBusinessName()).build();
+        } catch (IOException e) {
+            throw new Exception("Payment gateway response parsing error");
+        }
     }
 
 
@@ -179,6 +212,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .id(registration.getId())
                 .comment(registration.getComment())
                 .build();
+
     }
 
 

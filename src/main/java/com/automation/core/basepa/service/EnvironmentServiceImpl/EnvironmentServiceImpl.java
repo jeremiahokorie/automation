@@ -195,7 +195,38 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     public EnvironmentResponse renewPermit(PermitRenewRequest permitRenewRequest) {
         EnvironmentApplication renew = environmentRepository.findByoperationalLicenseNumber(permitRenewRequest.getOperationalLicenseNumber()).orElseThrow(()-> new Exception("Permit with Operational Id not found"));
         renew.setStatus(Status.PENDING);
+
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .amount(15000)
+                .bearer(1)
+                .callbackUrl("https://example.com/")
+                .channels(List.of("card", "bank"))
+                .customerFirstName("jerry")
+                .customerLastName("imo")
+                .customerPhoneNumber(permitRenewRequest.getOperationalLicenseNumber())
+                .email(permitRenewRequest.getEmail())
+                .build();
+
+        // Step 3: Call the payment gateway
+        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+            throw new Exception("Unable to initiate payment");
+        }
+
+        // Step 4: Parse the response JSON
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(paymentResponse.getBody());
+            int status = root.path("status").asInt();
+            if (status != 200) {
+                throw new Exception("Payment failed to initialize");
+            }
+
+            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+
         environmentRepository.save(renew);
+
+
         return EnvironmentResponse.builder()
                 .id(renew.getId())
                 .disposalLocation(renew.getDisposalLocation())
@@ -206,9 +237,12 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .industryType(renew.getIndustryType())
                 .facilityName(renew.getFacilityName())
                 .phone(renew.getPhone())
+                .authorizationUrl(authorizationUrl)
                 .permitType(renew.getPermitType())
                 .operationalLicenseNumber(renew.getOperationalLicenseNumber()).build();
-
+        } catch (IOException e) {
+            throw new Exception("Payment gateway response parsing error");
+        }
 
     }
 }
