@@ -2,23 +2,14 @@ package com.automation.core.lands.controller;
 
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.lands.dto.response.GroundRentResponse;
-import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
-import com.automation.core.lands.model.GroundRent;
-import com.automation.core.lands.model.StatutoryAllocation;
-import com.automation.core.lands.repository.GroundRentRepository;
-import com.automation.core.lands.service.service.GrountRentService;
+import com.automation.core.lands.service.service.GroundRentService;
 import com.automation.util.constant.AppConstant;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +29,7 @@ import java.util.Map;
         })
 public class GroundRentController {
 
-    private final GrountRentService grountRentService;
+    private final GroundRentService grountRentService;
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadDocuments(@RequestParam String baNo,

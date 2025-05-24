@@ -7,6 +7,9 @@ import com.automation.core.lands.model.CertificateOfOccupancy;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.CertificateOfOccupancyRepository;
 import com.automation.core.lands.service.service.CertificateOfOccupancyService;
+import com.automation.core.lands.service.service.ReportService;
+import com.automation.util.ReportUtil;
+import com.automation.util.enums.ReportType;
 import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +31,7 @@ import static javax.swing.UIManager.put;
 
 @RequiredArgsConstructor
 @Service
-public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancyService {
+public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancyService, ReportService {
 
     private static final String UPLOAD_DIR = "/opt/uploads/certificate-of-occupancy/";
 
@@ -118,5 +121,14 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
                 .status(cofos.getStatus())
                 .declarationOfAge(cofos.getDeclarationOfAge()).build()
         ).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public byte[] generateReport(LocalDate startDate, LocalDate endDate, ReportType reportType) {
+        List<CertificateOfOccupancy> records = repository.findByCreatedAtBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+
+        // Generate and return report file (PDF, Excel, etc.)
+        return ReportUtil.generatePdfReportFromCofO(records, reportType); // Utility method
     }
 }

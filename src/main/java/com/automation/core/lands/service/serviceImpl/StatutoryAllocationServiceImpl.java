@@ -1,9 +1,13 @@
 package com.automation.core.lands.service.serviceImpl;
 
 import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
+import com.automation.core.lands.model.CertificateOfOccupancy;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.StatutoryAllocationRepository;
+import com.automation.core.lands.service.service.ReportService;
 import com.automation.core.lands.service.service.StatutoryAllocationService;
+import com.automation.util.ReportUtil;
+import com.automation.util.enums.ReportType;
 import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +26,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class StatutoryAllocationServiceImpl implements StatutoryAllocationService {
+public class StatutoryAllocationServiceImpl implements StatutoryAllocationService, ReportService {
 
     private final StatutoryAllocationRepository statutoryAllocationRepository;
 
@@ -93,4 +97,11 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
         ).collect(Collectors.toList());
     }
 
+    @Override
+    public byte[] generateReport(LocalDate startDate, LocalDate endDate, ReportType reportType) {
+        List<StatutoryAllocation> records = statutoryAllocationRepository.findByCreatedAtBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+
+        // Generate and return report file (PDF, Excel, etc.)
+        return ReportUtil.generatePdfReportFromStatutory(records, reportType); // Utility method
+    }
 }

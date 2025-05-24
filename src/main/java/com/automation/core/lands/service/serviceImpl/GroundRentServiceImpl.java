@@ -1,22 +1,21 @@
 package com.automation.core.lands.service.serviceImpl;
 
-import com.automation.core.lands.dto.request.GroundRentRequest;
 import com.automation.core.lands.dto.response.GroundRentResponse;
-import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.GroundRent;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.GroundRentRepository;
-import com.automation.core.lands.service.service.GrountRentService;
-import com.automation.util.enums.Status;
+import com.automation.core.lands.service.service.GroundRentService;
+import com.automation.core.lands.service.service.ReportService;
+import com.automation.util.ReportUtil;
+import com.automation.util.enums.ReportType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class GroundRentServiceImpl implements GrountRentService {
+public class GroundRentServiceImpl implements GroundRentService, ReportService {
 
     private static final String UPLOAD_DIR = "/opt/uploads/ground-rent/";
     private final GroundRentRepository groundRentRepository;
@@ -82,4 +81,11 @@ public class GroundRentServiceImpl implements GrountRentService {
         ).collect(Collectors.toList());
     }
 
+    @Override
+    public byte[] generateReport(LocalDate startDate, LocalDate endDate, ReportType reportType) {
+        List<GroundRent> records = groundRentRepository.findByCreatedAtBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
+
+        // Generate and return report file (PDF, Excel, etc.)
+        return ReportUtil.generatePdfReportFromGroundRent(records, reportType); // Utility method
+    }
 }

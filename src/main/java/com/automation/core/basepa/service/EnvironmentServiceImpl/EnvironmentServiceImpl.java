@@ -56,7 +56,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setDisposalFrequency(environmentRequest.getDisposalFrequency());
             appyPermit.setDisposalMethod(environmentRequest.getDisposalMethod());
 
-            appyPermit.setWasteSource(SourceOfWaste.Household);
+            appyPermit.setWasteSource(SourceOfWaste.HOUSEHOLD);
             environmentRepository.save(appyPermit);
         }
         else {

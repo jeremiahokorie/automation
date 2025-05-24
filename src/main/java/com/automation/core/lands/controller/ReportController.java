@@ -1,14 +1,19 @@
 package com.automation.core.lands.controller;
 
+import com.automation.core.lands.dto.request.ReportRequest;
 import com.automation.core.lands.dto.response.LandApplicationResponse;
 import com.automation.core.lands.service.service.CertificateOfOccupancyService;
-import com.automation.core.lands.service.service.GrountRentService;
+import com.automation.core.lands.service.service.GroundRentService;
 import com.automation.core.lands.service.service.LandApplicationService;
 import com.automation.core.lands.service.service.StatutoryAllocationService;
+import com.automation.core.lands.service.serviceImpl.ReportDispatcher;
 import com.automation.util.enums.LandApplicationType;
 import com.automation.util.enums.ReportType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -31,8 +36,26 @@ import java.util.List;
 public class ReportController {
     private final StatutoryAllocationService statutoryAllocationService;
     private final CertificateOfOccupancyService  certificateOfOccupancyService;
-    private final GrountRentService grountRentService;
+    private final GroundRentService grountRentService;
     private final LandApplicationService landApplicationService;
+
+
+    private final ReportDispatcher reportDispatcher;
+
+    @PostMapping("/generate-report")
+    public ResponseEntity<byte[]> generateReport(@RequestBody ReportRequest request) {
+        byte[] file = reportDispatcher.dispatch(
+                request.getApplicationType(),
+                request.getStartDate(),
+                request.getEndDate(),
+                request.getReportType()
+        );
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(file);
+    }
 
     @GetMapping("/by-type")
     public List<LandApplicationResponse> getReportByType(
