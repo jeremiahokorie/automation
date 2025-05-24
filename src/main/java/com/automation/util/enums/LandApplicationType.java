@@ -10,6 +10,7 @@ public enum LandApplicationType {
     GROUND_RENT(2),
     STATUTORY_ALLOCATION(3);
 
+
     private final int code;
 
     LandApplicationType(int code) {

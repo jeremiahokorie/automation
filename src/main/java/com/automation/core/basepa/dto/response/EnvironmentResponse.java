@@ -20,6 +20,8 @@ public class EnvironmentResponse {
     private String phone;
     private String email;
     private String address;
+    private String authorizationUrl;
+    private Boolean isPayed;
 
     // Permit Details
     private PermitType permitType;

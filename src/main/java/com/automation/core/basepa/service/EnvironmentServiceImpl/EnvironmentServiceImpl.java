@@ -16,12 +16,19 @@ import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
 import com.automation.core.global.exception.ResourceNotFoundException;
+import com.automation.core.payment.dto.request.PaymentRequest;
+import com.automation.core.payment.service.PaymentService;
 import com.automation.util.enums.PermitType;
 import com.automation.util.enums.SourceOfWaste;
 import com.automation.util.enums.Status;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +38,43 @@ import java.util.stream.Collectors;
 @Service
 public class EnvironmentServiceImpl implements EnvironmentService {
     private final EnvironmentRepository environmentRepository;
+    private final PaymentService paymentService;
 
 
     @Override
     public EnvironmentResponse apply(EnvironmentRequest environmentRequest) {
         EnvironmentApplication appyPermit = environmentRepository.findByemail(environmentRequest.getEmail());
+
+        // Step 2: Build payment request
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .amount(15000)
+                .bearer(1)
+                .callbackUrl("https://example.com/")
+                .channels(List.of("card", "bank"))
+                .customerFirstName(environmentRequest.getApplicantName())
+                .customerLastName(environmentRequest.getApplicantName())
+                .customerPhoneNumber(environmentRequest.getPhone())
+                .email(environmentRequest.getEmail())
+                .build();
+
+        // Step 3: Call the payment gateway
+        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+            throw new Exception("Unable to initiate payment");
+        }
+
+        // Step 4: Parse the response JSON
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(paymentResponse.getBody());
+            int status = root.path("status").asInt();
+            if (status != 200) {
+                throw new Exception("Payment failed to initialize");
+            }
+
+            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+
+
         if (appyPermit == null) {
             appyPermit = new EnvironmentApplication();
             appyPermit.setEmail(environmentRequest.getEmail());
@@ -53,8 +92,10 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setWasteQuantity(environmentRequest.getWasteQuantity());
             appyPermit.setOperationalLicenseNumber(environmentRequest.getOperationalLicenseNumber());
             appyPermit.setHasEnvironmentalAudit(true);
+            appyPermit.setIsPayed(true);
             appyPermit.setDisposalFrequency(environmentRequest.getDisposalFrequency());
             appyPermit.setDisposalMethod(environmentRequest.getDisposalMethod());
+
 
             appyPermit.setWasteSource(SourceOfWaste.HOUSEHOLD);
             environmentRepository.save(appyPermit);
@@ -82,8 +123,12 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .operationalLicenseNumber(environmentRequest.getOperationalLicenseNumber())
                 .contactPerson(environmentRequest.getContactPerson())
                 .facilityAddress(environmentRequest.getFacilityAddress())
+                .authorizationUrl(authorizationUrl)
                 .hasEnvironmentalAudit(environmentRequest.getHasEnvironmentalAudit())
                 .build();
+        } catch (IOException e) {
+            throw new Exception("Payment gateway response parsing error");
+        }
     }
 
     @Override

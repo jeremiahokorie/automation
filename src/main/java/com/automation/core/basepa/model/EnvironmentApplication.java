@@ -30,6 +30,7 @@ public class EnvironmentApplication {
         private String phone;
         private String email;
         private String address;
+        private Boolean isPayed;
 
         // Permit Details
         private PermitType permitType;

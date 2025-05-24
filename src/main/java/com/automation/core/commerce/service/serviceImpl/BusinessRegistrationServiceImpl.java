@@ -58,7 +58,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         // Step 3: Call the payment gateway
         ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
         if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-            throw new CustomException("Unable to initiate payment");
+            throw new Exception("Unable to initiate payment");
         }
 
         // Step 4: Parse the response JSON
@@ -67,7 +67,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             JsonNode root = mapper.readTree(paymentResponse.getBody());
             int status = root.path("status").asInt();
             if (status != 200) {
-                throw new CustomException("Payment failed to initialize");
+                throw new Exception("Payment failed to initialize");
             }
 
             String authorizationUrl = root.path("data").path("authorizationUrl").asText();
@@ -87,7 +87,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
            // businessRegistration.setBusinessType(businessType);
             businessRepository.save(businessRegistration);
         }else {
-            throw new CustomException("Business already exists");
+            throw new Exception("Business already exists");
         }
 
         return BusinessRegistrationResponse.builder()
@@ -104,7 +104,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .isRenewal(true)
                 .build();
         } catch (IOException e) {
-            throw new CustomException("Payment gateway response parsing error");
+            throw new Exception("Payment gateway response parsing error");
         }
     }
 

@@ -19,6 +19,7 @@ public class EnvironmentRequest {
     private String phone;
     private String email;
     private String address;
+    private boolean isPayed;
 
     // Permit Details
     private PermitType permitType;
