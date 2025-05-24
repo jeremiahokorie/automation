@@ -13,9 +13,17 @@ import com.automation.core.commerce.repository.BusinessTypeRepository;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
+import com.automation.core.payment.dto.request.PaymentRequest;
+import com.automation.core.payment.service.PaymentService;
 import com.automation.util.enums.Status;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,15 +33,47 @@ import java.util.stream.Collectors;
 public class BusinessRegistrationServiceImpl implements BusinessRegistrationService {
     private final BusinessRepository businessRepository;
     private final BusinessTypeRepository businessTypeRepository;
+    private final PaymentService paymentService;
 
     @Override
     public BusinessRegistrationResponse register(BusinessRegistrationRequest businessRegistrationRequest) {
         BusinessRegistration businessRegistration = businessRepository.findBybusinessNumber(businessRegistrationRequest.getBusinessNumber());
 
-//        BusinessType businessType = businessTypeRepository.findById(businessRegistrationRequest.getBusinessTypeId())
-//                .orElseThrow(() -> new CustomException("Business Type not found"));
+        if (businessRegistration != null) {
+            throw new Exception("Business already exists");
+        }
 
-        if (businessRegistration == null) {
+        // Step 2: Build payment request
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .amount(15000)
+                .bearer(1)
+                .callbackUrl("https://example.com/")
+                .channels(List.of("card", "bank"))
+                .customerFirstName(businessRegistrationRequest.getOwnerName())
+                .customerLastName(businessRegistrationRequest.getOwnerName())
+                .customerPhoneNumber(businessRegistrationRequest.getPhone())
+                .email(businessRegistrationRequest.getEmail())
+                .build();
+
+        // Step 3: Call the payment gateway
+        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+            throw new CustomException("Unable to initiate payment");
+        }
+
+        // Step 4: Parse the response JSON
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(paymentResponse.getBody());
+            int status = root.path("status").asInt();
+            if (status != 200) {
+                throw new CustomException("Payment failed to initialize");
+            }
+
+            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+
+
+            if (businessRegistration == null) {
             businessRegistration = new BusinessRegistration();
             businessRegistration.setBusinessNumber(businessRegistrationRequest.getBusinessNumber());
             businessRegistration.setBusinessName(businessRegistrationRequest.getBusinessName());
@@ -60,9 +100,12 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .phone(businessRegistrationRequest.getPhone())
                 .address(businessRegistrationRequest.getAddress())
                 .email(businessRegistrationRequest.getEmail())
-               // .businessType(businessRegistration.getBusinessType())
+                .authorizationUrl(authorizationUrl)
                 .isRenewal(true)
                 .build();
+        } catch (IOException e) {
+            throw new CustomException("Payment gateway response parsing error");
+        }
     }
 
     @Override

@@ -9,8 +9,14 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class ReportUtil {
@@ -123,5 +129,57 @@ public class ReportUtil {
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate PDF", e);
         }
+    }
+
+    // EXCEL Report
+    public static byte[] generateExcelReportFromCofO(List<CertificateOfOccupancy> cofoList, ReportType reportType) {
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("CofO Report");
+
+            Row headerRow = sheet.createRow(0);
+            String[] headers = {"S/N", "Applicant Name", "Date Submitted", "Status"};
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+            }
+
+            int rowIdx = 1;
+            int sn = 1;
+            for (CertificateOfOccupancy c : cofoList) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(sn++);
+                row.createCell(1).setCellValue(c.getApplicantName());
+                row.createCell(2).setCellValue(c.getCreatedAt().toString());
+                row.createCell(3).setCellValue(c.getStatus());
+            }
+
+            workbook.write(out);
+            return out.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to generate Excel report", e);
+        }
+    }
+
+    // CSV Report
+    public static byte[] generateCsvReportFromCofO(List<CertificateOfOccupancy> cofoList, ReportType reportType) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("S/N,Applicant Name,Date Submitted,Status\n");
+
+        int sn = 1;
+        for (CertificateOfOccupancy c : cofoList) {
+            sb.append(sn++).append(",");
+            sb.append(escapeCsv(c.getApplicantName())).append(",");
+            sb.append(c.getCreatedAt().toString()).append(",");
+            sb.append(escapeCsv(c.getStatus())).append("\n");
+        }
+
+        return sb.toString().getBytes();
+    }
+
+    private static String escapeCsv(String value) {
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }

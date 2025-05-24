@@ -25,6 +25,7 @@ public class BusinessRegistrationResponse {
     private boolean isRenewal;
     private String comment;
     private String businessNumber;
+    private String authorizationUrl;
 //    private BusinessType businessType;
 
 }
