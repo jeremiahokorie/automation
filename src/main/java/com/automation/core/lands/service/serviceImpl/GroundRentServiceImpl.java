@@ -8,6 +8,7 @@ import com.automation.core.lands.service.service.GroundRentService;
 import com.automation.core.lands.service.service.ReportService;
 import com.automation.util.ReportUtil;
 import com.automation.util.enums.ReportType;
+import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +39,7 @@ public class GroundRentServiceImpl implements GroundRentService, ReportService {
             groundRent.setLandNo(landNo);
             groundRent.setRecord(record);
             groundRent.setRent(rent);
-            groundRent.setStatus("PENDING");
+            groundRent.setStatus(Status.PENDING);
 
             // Check and save file if provided
 

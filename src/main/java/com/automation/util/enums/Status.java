@@ -5,21 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public enum Status {
-    PENDING(0), UNDER_REVIEW(2), APPROVED(1), REJECTED(2), CANCELLED(3);
+    PENDING, UNDER_REVIEW, APPROVED, REJECTED, CANCELLED;
 
-    private final Integer value;
 
-    Status(final Integer newValue) {
-        value = newValue;
-    }
-
-    private static Optional<Status> valueOf(Integer value) {
-        return Arrays.stream(values())
-                .filter(status -> Objects.equals(status.value, value))
-                .findFirst();
-    }
-
-    public Integer getValue() {
-        return value;
-    }
 }

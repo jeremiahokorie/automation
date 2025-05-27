@@ -212,7 +212,6 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .id(registration.getId())
                 .comment(registration.getComment())
                 .build();
-
     }
 
 

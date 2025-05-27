@@ -24,6 +24,7 @@ public class BusinessRegistration {
     private String address;
     private String phone;
     private String email;
+//  @Enumerated(EnumType.STRING)
     private Status status;
     private LocalDate dateRegistered;
     private boolean isRenewal;

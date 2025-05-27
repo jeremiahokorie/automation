@@ -1,6 +1,7 @@
 package com.automation.core.lands.repository;
 
 import com.automation.core.lands.model.GroundRent;
+import com.automation.util.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,6 @@ import java.util.List;
 public interface GroundRentRepository extends JpaRepository<GroundRent, Long> {
 
     List<GroundRent> findByCreatedAtBetween(LocalDateTime localDateTime, LocalDateTime localDateTime1);
+
+    long countByStatus(Status status);
 }

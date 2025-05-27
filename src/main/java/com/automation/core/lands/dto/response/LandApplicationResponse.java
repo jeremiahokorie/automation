@@ -2,6 +2,7 @@ package com.automation.core.lands.dto.response;
 
 import com.automation.util.enums.GlobalStatus;
 import com.automation.util.enums.LandApplicationType;
+import com.automation.util.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class LandApplicationResponse {
     private String applicantName;
     private String email;
     private LandApplicationType applicationType;
-    private GlobalStatus status;
+    private Status status;
     private LocalDateTime applicationDate;
     private LocalDateTime approvalDate;
     private String documents;

@@ -26,7 +26,8 @@ public class CertificateOfOccupancy {
     private String declarationOfAge;
     private String taxClearance;
     private String surveyData;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     private String applicantEmail;
     private String localGovernmentConfirmationLetter;
     private LocalDateTime createdAt = LocalDateTime.now();

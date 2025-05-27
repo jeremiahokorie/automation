@@ -1,5 +1,6 @@
 package com.automation.core.lands.dto.response;
 
+import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.util.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ public class StatutoryAllocationResponse {
     private String declarationOfAge;
     private String administrativeCharges;
     private String processingFees;
-    private String status;
+    private Status status;
     private String applicantEmail;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

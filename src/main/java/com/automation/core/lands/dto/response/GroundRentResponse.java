@@ -18,7 +18,7 @@ public class GroundRentResponse {
     private String landNo;
     private String record;
     private Double rent;
-    private String status;
+    private Status status;
     private String optionalFile;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -2,6 +2,7 @@ package com.automation.core.lands.model;
 
 import com.automation.util.enums.GlobalStatus;
 import com.automation.util.enums.LandApplicationType;
+import com.automation.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,8 @@ public class LandApplication {
     private String applicantName;
     private String email;
     private LandApplicationType applicationType;
-    private GlobalStatus status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     private LocalDateTime applicationDate;
     private LocalDateTime approvalDate;
     private String documents;

@@ -9,6 +9,7 @@ import com.automation.core.lands.service.service.LandApplicationService;
 import com.automation.util.enums.GlobalStatus;
 import com.automation.util.enums.LandApplicationType;
 import com.automation.util.enums.ReportType;
+import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,12 +30,12 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         landApplication.setApplicantName(landApplicationRequest.getApplicantName());
         landApplication.setApplicationType(LandApplicationType.COFO);
         landApplication.setApplicationDate(LocalDateTime.now());
-        landApplication.setStatus(GlobalStatus.PENDING);
+        landApplication.setStatus(Status.PENDING);
         landApplicationRepository.save(landApplication);
         return LandApplicationResponse.builder()
                 .applicationDate(LocalDateTime.now())
                 .applicationType(LandApplicationType.COFO)
-                .status(GlobalStatus.PENDING)
+                .status(Status.PENDING)
                 .applicantName(landApplicationRequest.getApplicantName()).build();
     }
 

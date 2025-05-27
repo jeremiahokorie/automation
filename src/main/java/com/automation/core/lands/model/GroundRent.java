@@ -24,7 +24,8 @@ public class GroundRent {
     private String landNo;
     private String record;
     private Double rent;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     private String optionalFile;
     private LocalDateTime createdAt = LocalDateTime.now();
 }

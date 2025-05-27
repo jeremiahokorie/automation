@@ -71,7 +71,6 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             if (status != 200) {
                 throw new Exception("Payment failed to initialize");
             }
-
             String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 
 

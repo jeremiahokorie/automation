@@ -45,7 +45,7 @@ public class ReportUtil {
                 table.addCell(String.valueOf(i++));
                 table.addCell(c.getApplicantName());
                 table.addCell(c.getCreatedAt().toString());
-                table.addCell(c.getStatus());
+                table.addCell(String.valueOf(c.getStatus()));
             }
 
             document.add(table);
@@ -82,7 +82,7 @@ public class ReportUtil {
                 table.addCell(String.valueOf(i++));
                 table.addCell(c.getApplicantName());
                 table.addCell(c.getCreatedAt().toString());
-                table.addCell(c.getStatus());
+                table.addCell(String.valueOf(c.getStatus()));
             }
 
             document.add(table);
@@ -119,7 +119,7 @@ public class ReportUtil {
                 table.addCell(String.valueOf(i++));
                 table.addCell(c.getBaNo());
                 table.addCell(c.getCreatedAt().toString());
-                table.addCell(c.getStatus());
+                table.addCell(String.valueOf(c.getStatus()));
             }
 
             document.add(table);
@@ -150,7 +150,7 @@ public class ReportUtil {
                 row.createCell(0).setCellValue(sn++);
                 row.createCell(1).setCellValue(c.getApplicantName());
                 row.createCell(2).setCellValue(c.getCreatedAt().toString());
-                row.createCell(3).setCellValue(c.getStatus());
+                row.createCell(3).setCellValue(String.valueOf(c.getStatus()));
             }
 
             workbook.write(out);
@@ -170,7 +170,7 @@ public class ReportUtil {
             sb.append(sn++).append(",");
             sb.append(escapeCsv(c.getApplicantName())).append(",");
             sb.append(c.getCreatedAt().toString()).append(",");
-            sb.append(escapeCsv(c.getStatus())).append("\n");
+            sb.append(escapeCsv(String.valueOf(c.getStatus()))).append("\n");
         }
 
         return sb.toString().getBytes();

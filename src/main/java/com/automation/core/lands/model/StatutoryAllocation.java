@@ -26,6 +26,7 @@ public class StatutoryAllocation {
     private String declarationOfAge;
     private String administrativeCharges;
     private String processingFees;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     private LocalDateTime createdAt = LocalDateTime.now();
 }
