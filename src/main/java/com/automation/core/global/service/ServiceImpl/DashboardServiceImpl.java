@@ -2,6 +2,7 @@ package com.automation.core.global.service.ServiceImpl;
 
 import com.automation.core.basepa.repository.EnvironmentRepository;
 import com.automation.core.commerce.repository.BusinessRepository;
+import com.automation.core.global.dto.response.DashboardResponse;
 import com.automation.core.global.service.UserService.DashboardService;
 import com.automation.core.lands.repository.CertificateOfOccupancyRepository;
 import com.automation.core.lands.repository.GroundRentRepository;
@@ -24,52 +25,18 @@ public class DashboardServiceImpl implements DashboardService {
 
 
     @Override
-    public Integer getTotalApprovedCofO() {
-        return (int) certificateRepository.countByStatus(Status.APPROVED);
-    }
-
-    @Override
-    public Integer getTotalRejectedCofO() {
-        return (int) certificateRepository.countByStatus(Status.REJECTED);
-    }
-
-    @Override
-    public Integer getTotalRegisteredBusiness() {
-        return Math.toIntExact(businessRepository.count());
-    }
-
-    @Override
-    public Integer getTotalMdas() {
-        return Math.toIntExact(mDaRepository.count());
-    }
-
-    @Override
-    public Integer getPendingCofO() {
-        return (int) certificateRepository.countByStatus(Status.PENDING);
-    }
-
-    @Override
-    public Integer getPendingStatutory() {
-        return (int) statutoryAllocationRepository.countByStatus(Status.PENDING);
-    }
-
-    @Override
-    public Integer getApprovedStatutory() {
-        return (int) statutoryAllocationRepository.countByStatus(Status.APPROVED);
-    }
-
-    @Override
-    public Integer getPendingGroundRent() {
-        return (int) groundRentRepository.countByStatus(Status.PENDING);
-    }
-
-    @Override
-    public Integer getApprovedGroundRent() {
-        return (int) groundRentRepository.countByStatus(Status.APPROVED);
-    }
-
-    @Override
-    public Integer getPendingBusinessRegisteration() {
-        return (int) businessRepository.countByStatus(Status.PENDING);
+    public DashboardResponse getDashboardSummary() {
+        DashboardResponse response = new DashboardResponse();
+        response.setTotalApprovedCofO((int) certificateRepository.countByStatus(Status.APPROVED));
+        response.setTotalRejectedCofO((int) certificateRepository.countByStatus(Status.REJECTED));
+        response.setTotalRegisteredBusiness(Math.toIntExact(businessRepository.count()));
+        response.setTotalMdas(Math.toIntExact(mDaRepository.count()));
+        response.setPendingCofO((int) certificateRepository.countByStatus(Status.PENDING));
+        response.setPendingStatutory((int) statutoryAllocationRepository.countByStatus(Status.PENDING));
+        response.setApprovedStatutory((int) statutoryAllocationRepository.countByStatus(Status.APPROVED));
+        response.setPendingGroundRent((int) groundRentRepository.countByStatus(Status.PENDING));
+        response.setApprovedGroundRent((int) groundRentRepository.countByStatus(Status.APPROVED));
+        response.setPendingBusinessRegistration((int) businessRepository.countByStatus(Status.PENDING));
+        return response;
     }
 }
