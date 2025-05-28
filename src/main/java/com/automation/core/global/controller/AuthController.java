@@ -22,17 +22,18 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(
-        origins = {
-                "http://localhost:5174"
-        },
-        methods = {
-                RequestMethod.OPTIONS,
-                RequestMethod.GET,
-                RequestMethod.PUT,
-                RequestMethod.DELETE,
-                RequestMethod.POST
-        })
+@CrossOrigin
+//@CrossOrigin(
+//        origins = {
+//                "http://localhost:5174"
+//        },
+//        methods = {
+//                RequestMethod.OPTIONS,
+//                RequestMethod.GET,
+//                RequestMethod.PUT,
+//                RequestMethod.DELETE,
+//                RequestMethod.POST
+//        })
 public class AuthController {
 
     private final UserService userService;
