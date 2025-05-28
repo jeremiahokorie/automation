@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(
         origins = {
-                "http://localhost:5174"
+                "http://localhost:5174","https://bauchi-mda.netlify.app"
         },
         methods = {
                 RequestMethod.OPTIONS,
