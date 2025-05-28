@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,24 +88,67 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                     .filter(app -> app.getApplicantName().equalsIgnoreCase(applicantName))
                     .toList();
         }
+
+        switch (reportType) {
+            case DAILY:
+                // No grouping needed
+                return applications.stream().map(this::mapToResponse).toList();
+
+            case MONTHLY:
+                return applications.stream()
+                        .collect(Collectors.groupingBy(app -> YearMonth.from(app.getApplicationDate())))
+                        .entrySet().stream()
+                        .flatMap(entry -> entry.getValue().stream().map(this::mapToResponse))
+                        .toList();
+
+            case YEARLY:
+                return applications.stream()
+                        .collect(Collectors.groupingBy(app -> app.getApplicationDate().getYear()))
+                        .entrySet().stream()
+                        .flatMap(entry -> entry.getValue().stream().map(this::mapToResponse))
+                        .toList();
+
+            default:
+                throw new IllegalArgumentException("Unsupported Report Type");
+        }
         // Optionally group by daily/monthly/yearly
-        return applications.stream().map(landApplication -> LandApplicationResponse.builder()
-                .id(landApplication.getId())
-                .applicantEmail(landApplication.getApplicantEmail())
-                .approvalDate(landApplication.getApprovalDate())
-                .administrativeCharges(landApplication.getAdministrativeCharges())
-                .applicationDate(landApplication.getApplicationDate())
-                .certificateUrl(landApplication.getCertificateUrl())
-                .applicationType(landApplication.getApplicationType())
-                .status(landApplication.getStatus())
-                .districtHeadLetter(landApplication.getDistrictHeadLetter())
-                .documents(landApplication.getDocuments())
-                .processingFees(landApplication.getProcessingFees())
-                .declarationOfAge(landApplication.getDeclarationOfAge())
-                .localGovernmentConfirmationLetter(landApplication.getLocalGovernmentConfirmationLetter())
-                .taxClearances(landApplication.getTaxClearances())
-                .certificateUrl(landApplication.getCertificateUrl())
-                .build()).collect(Collectors.toList());
+//        return applications.stream().map(landApplication -> LandApplicationResponse.builder()
+//                .id(landApplication.getId())
+//                .applicantEmail(landApplication.getApplicantEmail())
+//                .approvalDate(landApplication.getApprovalDate())
+//                .administrativeCharges(landApplication.getAdministrativeCharges())
+//                .applicationDate(landApplication.getApplicationDate())
+//                .certificateUrl(landApplication.getCertificateUrl())
+//                .applicationType(landApplication.getApplicationType())
+//                .status(landApplication.getStatus())
+//                .districtHeadLetter(landApplication.getDistrictHeadLetter())
+//                .documents(landApplication.getDocuments())
+//                .processingFees(landApplication.getProcessingFees())
+//                .declarationOfAge(landApplication.getDeclarationOfAge())
+//                .localGovernmentConfirmationLetter(landApplication.getLocalGovernmentConfirmationLetter())
+//                .taxClearances(landApplication.getTaxClearances())
+//                .certificateUrl(landApplication.getCertificateUrl())
+//                .build()).collect(Collectors.toList());
 
     }
+
+    private LandApplicationResponse mapToResponse(LandApplication app) {
+        return LandApplicationResponse.builder()
+                .id(app.getId())
+                .applicantEmail(app.getApplicantEmail())
+                .approvalDate(app.getApprovalDate())
+                .administrativeCharges(app.getAdministrativeCharges())
+                .applicationDate(app.getApplicationDate())
+                .certificateUrl(app.getCertificateUrl())
+                .applicationType(app.getApplicationType())
+                .status(app.getStatus())
+                .districtHeadLetter(app.getDistrictHeadLetter())
+                .documents(app.getDocuments())
+                .processingFees(app.getProcessingFees())
+                .declarationOfAge(app.getDeclarationOfAge())
+                .localGovernmentConfirmationLetter(app.getLocalGovernmentConfirmationLetter())
+                .taxClearances(app.getTaxClearances())
+                .build();
+    }
+
 }

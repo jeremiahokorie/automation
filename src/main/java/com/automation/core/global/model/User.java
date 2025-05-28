@@ -37,7 +37,11 @@ public class User implements UserDetails, Serializable {
     private String phoneNumber;
     @Column(name = "address")
     private String address;
-
+    private String street;
+    private String city;
+    private String state;
+    private String zip;
+    private String nin;
 
     @ManyToOne
     private Roles role;

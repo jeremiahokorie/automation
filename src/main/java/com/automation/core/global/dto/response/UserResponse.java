@@ -16,6 +16,11 @@ public class UserResponse {
     private String email;
     private String phoneNumber;
     private String address;
+    private String street;
+    private String city;
+    private String state;
+    private String zip;
+    private String nin;
 
     public UserResponse(String s) {
     }

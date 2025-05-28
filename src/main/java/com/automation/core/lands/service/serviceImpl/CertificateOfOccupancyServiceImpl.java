@@ -69,11 +69,9 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
                     continue;
                 }
 
-                // Ensure the upload directory exists
                 Path uploadDirPath = Path.of(UPLOAD_DIR);
                 Files.createDirectories(uploadDirPath);
 
-                // Build and save the file path
                 String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Files.copy(file.getInputStream(), Path.of(filePath));
 
@@ -98,14 +96,6 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
         return response;
     }
 
-//    public List<CertificateOfOccupancy> getAllCertificates() {
-//        return repository.findAll();
-//    }
-
-//    @Override
-//    public List<CertificateResponse> getCofOs() {
-//        return List.of();
-//    }
 
      public List<CertificateResponse> getCofOs() {
         List<CertificateOfOccupancy> certificate = repository.findAll();

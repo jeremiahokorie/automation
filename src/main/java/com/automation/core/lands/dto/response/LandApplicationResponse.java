@@ -39,4 +39,6 @@ public class LandApplicationResponse {
     private String taxClearances;
     private String administrativeCharges;
     private String processingFees;
+
+
 }

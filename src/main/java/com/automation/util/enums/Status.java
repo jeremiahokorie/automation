@@ -6,6 +6,4 @@ import java.util.Optional;
 
 public enum Status {
     PENDING, UNDER_REVIEW, APPROVED, REJECTED, CANCELLED;
-
-
 }

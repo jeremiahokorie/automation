@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 @Data
@@ -18,4 +19,7 @@ public class ReportRequest {
     private ReportType reportType; // DAILY, MONTHLY, YEARLY
     private LocalDate startDate;
     private LocalDate endDate;
+//    private List<String> selectedMonths;
+//    private List<Integer> selectedYears;
+
 }

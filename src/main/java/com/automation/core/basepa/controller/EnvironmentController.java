@@ -69,11 +69,6 @@ public class EnvironmentController {
         );
     }
 
-    @DeleteMapping("/")
-    public ResponseEntity<AppResponse<EnvironmentResponse>> delete(@RequestBody EnvironmentRequest environmentRequest) {
-        return null;
-    }
-
 
     @PutMapping("/{id}/approve")
     public ResponseEntity<AppResponse<ApprovalResponse>> approvePermit(
