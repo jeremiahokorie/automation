@@ -13,7 +13,6 @@ public class WebConfig implements WebMvcConfigurer {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("*")
                         .allowedOrigins("https://bauchi-mda.netlify.app")
                         .allowedMethods("*")
                         .allowedHeaders("*")
