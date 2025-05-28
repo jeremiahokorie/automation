@@ -30,7 +30,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(
         origins = {
-                "http://localhost:5174"},
+                "http://localhost:5174"
+        },
         methods = {
                 RequestMethod.OPTIONS,
                 RequestMethod.GET,
