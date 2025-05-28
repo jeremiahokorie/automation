@@ -24,16 +24,5 @@ public class AppConfig {
         return new RestTemplate();
     }
 
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .servers(List.of(
-                        new Server().url("https://137.184.139.170")
-                ))
-                .info(new Info()
-                        .title("My API")
-                        .version("1.0.0")
-                        .description("API Documentation over HTTPS"));
-    }
 
 }
