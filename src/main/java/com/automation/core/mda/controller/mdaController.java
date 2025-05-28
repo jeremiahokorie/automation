@@ -19,17 +19,6 @@ import java.util.List;
 @Slf4j
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(
-        origins = {
-                "https://bauchi-mda.netlify.app"
-        },
-        methods = {
-                RequestMethod.OPTIONS,
-                RequestMethod.GET,
-                RequestMethod.PUT,
-                RequestMethod.DELETE,
-                RequestMethod.POST
-        })
 public class mdaController {
     private final mdaService service;
 

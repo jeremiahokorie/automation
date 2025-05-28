@@ -21,17 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/lands/certificate-of-occupancy")
 @RequiredArgsConstructor
-@CrossOrigin(
-        origins = {
-                "http://localhost:5174","https://bauchi-mda.netlify.app"
-        },
-        methods = {
-                RequestMethod.OPTIONS,
-                RequestMethod.GET,
-                RequestMethod.PUT,
-                RequestMethod.DELETE,
-                RequestMethod.POST
-        })
 public class CertificateOfOccupancyController {
 
     @Autowired

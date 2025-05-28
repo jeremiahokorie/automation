@@ -15,17 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/lands")
 @RequiredArgsConstructor
-@CrossOrigin(
-        origins = {
-                "http://localhost:5174","https://bauchi-mda.netlify.app"
-        },
-        methods = {
-                RequestMethod.OPTIONS,
-                RequestMethod.GET,
-                RequestMethod.PUT,
-                RequestMethod.DELETE,
-                RequestMethod.POST
-        })
 public class LandApplicationController {
     private final LandApplicationService landApplicationService;
 

@@ -23,17 +23,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/lands/statutory-allocation")
 @RequiredArgsConstructor
-@CrossOrigin(
-        origins = {
-                "http://localhost:5174","https://bauchi-mda.netlify.app"
-        },
-        methods = {
-                RequestMethod.OPTIONS,
-                RequestMethod.GET,
-                RequestMethod.PUT,
-                RequestMethod.DELETE,
-                RequestMethod.POST
-        })
 public class StatutoryAllocationController {
     private final StatutoryAllocationService statutoryAllocationService;
 
