@@ -1,6 +1,8 @@
 package com.automation.core.lands.service.service;
 
 
+import com.automation.core.basepa.dto.request.ApprovalRequest;
+import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.util.enums.ReportType;
@@ -16,4 +18,7 @@ public interface StatutoryAllocationService{
 
     List<StatutoryAllocationResponse> getAllAllocations();
 
+    ApprovalResponse approveStatutory(Long id, ApprovalRequest commentRequest);
+
+    ApprovalResponse rejectStatutory(Long id, ApprovalRequest commentRequest);
 }

@@ -1,6 +1,10 @@
 package com.automation.core.lands.service.serviceImpl;
 
+import com.automation.core.basepa.dto.request.ApprovalRequest;
+import com.automation.core.basepa.dto.response.ApprovalResponse;
+import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.lands.dto.response.GroundRentResponse;
+import com.automation.core.lands.model.CertificateOfOccupancy;
 import com.automation.core.lands.model.GroundRent;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.GroundRentRepository;
@@ -82,11 +86,42 @@ public class GroundRentServiceImpl implements GroundRentService, ReportService {
         ).collect(Collectors.toList());
     }
 
+
+
     @Override
     public byte[] generateReport(LocalDate startDate, LocalDate endDate, ReportType reportType) {
         List<GroundRent> records = groundRentRepository.findByCreatedAtBetween(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
 
         // Generate and return report file (PDF, Excel, etc.)
         return ReportUtil.generatePdfReportFromGroundRent(records, reportType); // Utility method
+    }
+
+
+    @Override
+    public ApprovalResponse approveGroundRent(Long id, ApprovalRequest commentRequest) {
+        GroundRent permit = groundRentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
+
+        permit.setStatus(Status.APPROVED);
+        permit.setComment(commentRequest.getComment());
+        permit.setApprovalDate(LocalDate.now());
+        groundRentRepository.save(permit);
+        return ApprovalResponse.builder()
+                .comment(permit.getComment())
+                .build();
+    }
+
+    @Override
+    public ApprovalResponse rejectGrounRent(Long id, ApprovalRequest commentRequest) {
+        GroundRent rejectLandApplication = groundRentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
+        rejectLandApplication.setStatus(Status.REJECTED);
+        rejectLandApplication.setComment(commentRequest.getComment());
+        rejectLandApplication.setRejectionDate(LocalDate.now());
+        groundRentRepository.save(rejectLandApplication);
+        return ApprovalResponse.builder()
+                .comment(rejectLandApplication.getComment())
+                .id(rejectLandApplication.getId())
+                .build();
     }
 }

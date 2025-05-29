@@ -1,7 +1,11 @@
 package com.automation.core.lands.service.serviceImpl;
 
+import com.automation.core.basepa.dto.request.ApprovalRequest;
+import com.automation.core.basepa.dto.response.ApprovalResponse;
+import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.CertificateOfOccupancy;
+import com.automation.core.lands.model.GroundRent;
 import com.automation.core.lands.model.StatutoryAllocation;
 import com.automation.core.lands.repository.StatutoryAllocationRepository;
 import com.automation.core.lands.service.service.ReportService;
@@ -104,4 +108,33 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
         // Generate and return report file (PDF, Excel, etc.)
         return ReportUtil.generatePdfReportFromStatutory(records, reportType); // Utility method
     }
+
+    @Override
+    public ApprovalResponse approveStatutory(Long id, ApprovalRequest commentRequest) {
+        StatutoryAllocation statutoryAllocation = statutoryAllocationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
+
+        statutoryAllocation.setStatus(Status.APPROVED);
+        statutoryAllocation.setComment(commentRequest.getComment());
+        statutoryAllocation.setApprovalDate(LocalDate.now());
+        statutoryAllocationRepository.save(statutoryAllocation);
+        return ApprovalResponse.builder()
+                .comment(statutoryAllocation.getComment())
+                .build();
+    }
+
+    @Override
+    public ApprovalResponse rejectStatutory(Long id, ApprovalRequest commentRequest) {
+        StatutoryAllocation rejectStatutoryApplication = statutoryAllocationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
+        rejectStatutoryApplication.setStatus(Status.REJECTED);
+        rejectStatutoryApplication.setComment(commentRequest.getComment());
+        rejectStatutoryApplication.setRejectionDate(LocalDate.now());
+        statutoryAllocationRepository.save(rejectStatutoryApplication);
+        return ApprovalResponse.builder()
+                .comment(rejectStatutoryApplication.getComment())
+                .id(rejectStatutoryApplication.getId())
+                .build();
+    }
+
 }
