@@ -16,6 +16,8 @@ import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
 import com.automation.core.global.exception.ResourceNotFoundException;
+import com.automation.core.inspection.dto.request.InspectionRequest;
+import com.automation.core.inspection.service.InspectionService.InspectionService;
 import com.automation.core.payment.dto.request.PaymentRequest;
 import com.automation.core.payment.service.PaymentService;
 import com.automation.util.enums.PermitType;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ import java.util.stream.Collectors;
 public class EnvironmentServiceImpl implements EnvironmentService {
     private final EnvironmentRepository environmentRepository;
     private final PaymentService paymentService;
-
+    private final InspectionService inspectionService;
 
     @Override
     public EnvironmentResponse apply(EnvironmentRequest environmentRequest) {
@@ -73,7 +76,6 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             }
             String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 
-
         if (appyPermit == null) {
             appyPermit = new EnvironmentApplication();
             appyPermit.setEmail(environmentRequest.getEmail());
@@ -95,9 +97,15 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setDisposalFrequency(environmentRequest.getDisposalFrequency());
             appyPermit.setDisposalMethod(environmentRequest.getDisposalMethod());
 
-
             appyPermit.setWasteSource(SourceOfWaste.HOUSEHOLD);
             environmentRepository.save(appyPermit);
+
+            InspectionRequest inspectionDto = new InspectionRequest();
+            inspectionDto.setRequestId(UUID.randomUUID());
+            inspectionDto.setSourceService("APPLICATION PERMIT");
+            inspectionDto.setApplicantName(environmentRequest.getApplicantName());
+            inspectionDto.setApplicationType(environmentRequest.getIndustryType());
+            inspectionService.createInspection(inspectionDto);
         }
         else {
             throw new ResourceNotFoundException("Resource Not Found");
