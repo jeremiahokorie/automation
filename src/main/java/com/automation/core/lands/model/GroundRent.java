@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
@@ -28,4 +29,7 @@ public class GroundRent {
     private Status status;
     private String optionalFile;
     private LocalDateTime createdAt = LocalDateTime.now();
+    private String comment;
+    private LocalDate approvalDate;
+    private LocalDate rejectionDate;
 }

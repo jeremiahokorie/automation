@@ -1,11 +1,14 @@
 package com.automation.core.lands.controller;
 
+import com.automation.core.basepa.dto.request.ApprovalRequest;
+import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.global.exception.Exception;
 import com.automation.core.lands.dto.response.CertificateResponse;
 import com.automation.core.lands.model.CertificateOfOccupancy;
 import com.automation.core.lands.service.service.CertificateOfOccupancyService;
 import com.automation.util.constant.AppConstant;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,6 +48,40 @@ public class CertificateOfOccupancyController {
         return ResponseEntity.ok().body(AppResponse.<List<CertificateResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value()).data(applyCofO).error("").build());
+    }
+
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<AppResponse<ApprovalResponse>> approvePermit(
+            @PathVariable Long id,
+            @Valid @RequestBody ApprovalRequest commentRequest) {
+
+        ApprovalResponse approval = certificateOfOccupancyService.approveCofO(id, commentRequest);
+
+        AppResponse<ApprovalResponse> response = AppResponse.<ApprovalResponse>builder()
+                .message(AppConstant.ApiResponseMessage.UPDATE)
+                .status(HttpStatus.OK.value())
+                .data(approval)
+                .error("")
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<AppResponse<ApprovalResponse>> rejectBusiness(
+            @PathVariable Long id,
+            @RequestBody ApprovalRequest commentRequest) {
+
+        ApprovalResponse reject = certificateOfOccupancyService.rejectCofO(id, commentRequest);
+
+        AppResponse<ApprovalResponse> response = AppResponse.<ApprovalResponse>builder()
+                .message(AppConstant.ApiResponseMessage.UPDATE)
+                .status(HttpStatus.OK.value())
+                .data(reject)
+                .error("")
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

@@ -1,6 +1,10 @@
 package com.automation.core.lands.service.serviceImpl;
 
+import com.automation.core.basepa.dto.request.ApprovalRequest;
+import com.automation.core.basepa.dto.response.ApprovalResponse;
+import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.lands.dto.response.CertificateResponse;
 import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
 import com.automation.core.lands.model.CertificateOfOccupancy;
@@ -113,6 +117,36 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
         ).collect(Collectors.toList());
     }
 
+
+
+
+    @Override
+    public ApprovalResponse approveCofO(Long id, ApprovalRequest commentRequest) {
+        CertificateOfOccupancy permit = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
+
+        permit.setStatus(Status.APPROVED);
+        permit.setComment(commentRequest.getComment());
+        permit.setApprovalDate(LocalDate.now());
+        repository.save(permit);
+        return ApprovalResponse.builder()
+                .comment(permit.getComment())
+                .build();
+    }
+
+    @Override
+    public ApprovalResponse rejectCofO(Long id, ApprovalRequest commentRequest) {
+        CertificateOfOccupancy rejectLandApplication = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
+        rejectLandApplication.setStatus(Status.REJECTED);
+        rejectLandApplication.setComment(commentRequest.getComment());
+        rejectLandApplication.setRejectionDate(LocalDate.now());
+        repository.save(rejectLandApplication);
+        return ApprovalResponse.builder()
+                .comment(rejectLandApplication.getComment())
+                .id(rejectLandApplication.getId())
+                .build();
+    }
 
     @Override
     public byte[] generateReport(LocalDate startDate, LocalDate endDate, ReportType reportType) {
