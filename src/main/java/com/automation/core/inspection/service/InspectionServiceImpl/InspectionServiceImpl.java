@@ -1,0 +1,72 @@
+package com.automation.core.inspection.service.InspectionServiceImpl;
+
+import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
+import com.automation.core.commerce.model.BusinessRegistration;
+import com.automation.core.global.exception.Exception;
+import com.automation.core.inspection.dto.request.InspectionRequest;
+import com.automation.core.inspection.dto.request.StatusUpdateDto;
+import com.automation.core.inspection.dto.response.InspectionResponse;
+import com.automation.core.inspection.model.Inspection;
+import com.automation.core.inspection.repository.InspectionRepository;
+import com.automation.core.inspection.service.InspectionService.InspectionService;
+import com.automation.util.enums.Status;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RequiredArgsConstructor
+@Service
+public class InspectionServiceImpl implements InspectionService {
+
+    private final InspectionRepository inspectionRepository;
+
+
+
+
+    @Override
+    public InspectionResponse updateInspectionStatus(Long id, StatusUpdateDto dto) {
+        Inspection inspection = inspectionRepository.findById(id)
+                .orElseThrow(() -> new Exception("Inspection not found"));
+        inspection.setStatus(Status.valueOf(dto.getNewStatus()));
+        inspection.setNotes(dto.getNotes());
+        inspection.setAssignedTo(dto.getUpdatedBy());
+        inspection.setUpdatedAt(LocalDateTime.now());
+        inspectionRepository.save(inspection);
+        return InspectionResponse.builder().id(inspection.getId()).build();
+
+    }
+
+    @Override
+    public List<InspectionResponse> getAllInspectionRequest() {
+        List<Inspection> inspections = inspectionRepository.findAll();
+
+        return inspections.stream().map(inspection -> InspectionResponse.builder()
+                        .id(inspection.getId())
+                        .applicantName(inspection.getApplicantName())
+                        .requestId(inspection.getRequestId())
+                        .status(inspection.getStatus())
+                        .sourceService(inspection.getSourceService())
+                        .createdAt(inspection.getCreatedAt())
+                        .updatedAt(inspection.getUpdatedAt())
+                        .build())
+                        .collect(Collectors.toList());
+    }
+
+    @Override
+    public InspectionResponse createInspection(InspectionRequest inspectionRequest) {
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(inspectionRequest.getRequestId());
+        inspection.setSourceService(inspectionRequest.getSourceService());
+        inspection.setApplicantName(inspectionRequest.getApplicantName());
+        inspection.setApplicationType(inspectionRequest.getApplicationType());
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspectionRepository.save(inspection);
+        return InspectionResponse.builder().id(inspection.getId()).build();
+    }
+}

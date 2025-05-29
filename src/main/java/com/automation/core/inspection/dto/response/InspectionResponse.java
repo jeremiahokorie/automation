@@ -1,0 +1,29 @@
+package com.automation.core.inspection.dto.response;
+
+import com.automation.util.enums.Status;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Builder
+@Data
+@AllArgsConstructor
+public class InspectionResponse {
+    private Long id;
+
+    private UUID requestId;
+    private String sourceService;
+    private String applicantName;
+    private String applicationType;
+    private Status status;
+
+    private String assignedTo;
+    private String notes;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
+}

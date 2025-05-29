@@ -52,7 +52,7 @@ public class StatutoryAllocationServiceImpl implements StatutoryAllocationServic
         allocation.setApplicantName(applicantName);
         allocation.setCreatedAt(LocalDateTime.now());
         allocation.setStatus(Status.PENDING);
-//        allocation.setApplicantEmail(applicantEmail);
+//      allocation.setApplicantEmail(applicantEmail);
 
         Map<String, String> response = new HashMap<>();
         for (String key : REQUIRED_DOCUMENTS.keySet()) {

@@ -13,6 +13,8 @@ import com.automation.core.commerce.repository.BusinessTypeRepository;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
+import com.automation.core.inspection.dto.request.InspectionRequest;
+import com.automation.core.inspection.service.InspectionService.InspectionService;
 import com.automation.core.payment.dto.request.PaymentRequest;
 import com.automation.core.payment.service.PaymentService;
 import com.automation.util.enums.Status;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -34,6 +37,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     private final BusinessRepository businessRepository;
     private final BusinessTypeRepository businessTypeRepository;
     private final PaymentService paymentService;
+    private final InspectionService inspectionService;
 
     @Override
     public BusinessRegistrationResponse register(BusinessRegistrationRequest businessRegistrationRequest) {
@@ -86,6 +90,14 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setDateRegistered(LocalDate.now());
            // businessRegistration.setBusinessType(businessType);
             businessRepository.save(businessRegistration);
+
+                InspectionRequest inspectionDto = new InspectionRequest();
+                inspectionDto.setRequestId(UUID.randomUUID());
+                inspectionDto.setSourceService("BUSINESS REGISTRATION");
+                inspectionDto.setApplicantName(businessRegistrationRequest.getOwnerName());
+                inspectionDto.setApplicationType(businessRegistrationRequest.getBusinessName());
+                inspectionService.createInspection(inspectionDto);
+
         }else {
             throw new Exception("Business already exists");
         }
