@@ -71,16 +71,16 @@ public class UserController {
     }
 
 //    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/delete-users")
-    public ResponseEntity<AppResponse<UserResponse>> deleteUsers(@RequestBody UserRequest userRequest) {
-        UserResponse response = userService.deleteUsers(userRequest);
-        return ResponseEntity.ok().body(AppResponse.<UserResponse>builder()
-                .message(AppConstant.ApiResponseMessage.DELETE)
-                .status(HttpStatus.OK.value()).data(response).build()
-        );
-    }
+//    @DeleteMapping("/delete-users")
+//    public ResponseEntity<AppResponse<UserResponse>> deleteUsers(@RequestBody UserRequest userRequest) {
+//        UserResponse response = userService.deleteUsers(userRequest);
+//        return ResponseEntity.ok().body(AppResponse.<UserResponse>builder()
+//                .message(AppConstant.ApiResponseMessage.DELETE)
+//                .status(HttpStatus.OK.value()).data(response).build()
+//        );
+//    }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+//  @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/{id}/user")
     public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {
         UserResponse userResponse = userService.deleteById(id);

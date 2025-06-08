@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequest {
-    private List<Long> userIds;
+    //private List<Long> userIds;
     private String firstName;
     private String lastName;
     private String email;

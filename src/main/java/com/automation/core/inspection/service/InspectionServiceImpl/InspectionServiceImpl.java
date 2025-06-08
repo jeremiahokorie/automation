@@ -22,11 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class InspectionServiceImpl implements InspectionService {
-
     private final InspectionRepository inspectionRepository;
-
-
-
 
     @Override
     public InspectionResponse updateInspectionStatus(Long id, StatusUpdateDto dto) {
@@ -38,21 +34,22 @@ public class InspectionServiceImpl implements InspectionService {
         inspection.setUpdatedAt(LocalDateTime.now());
         inspectionRepository.save(inspection);
         return InspectionResponse.builder().id(inspection.getId()).build();
-
     }
 
     @Override
     public List<InspectionResponse> getAllInspectionRequest() {
         List<Inspection> inspections = inspectionRepository.findAll();
-
         return inspections.stream().map(inspection -> InspectionResponse.builder()
                         .id(inspection.getId())
                         .applicantName(inspection.getApplicantName())
                         .requestId(inspection.getRequestId())
+                        .applicationType(inspection.getApplicationType())
                         .status(inspection.getStatus())
+                        .notes(inspection.getNotes())
                         .sourceService(inspection.getSourceService())
                         .createdAt(inspection.getCreatedAt())
                         .updatedAt(inspection.getUpdatedAt())
+                        .assignedTo(inspection.getAssignedTo())
                         .build())
                         .collect(Collectors.toList());
     }

@@ -59,6 +59,10 @@ public class UserServiceImpl implements UserService {
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
         createUser.setRole(userRole);
+        createUser.setNin(userRequest.getNin());
+        createUser.setCity(userRequest.getCity());
+        createUser.setState(userRequest.getState());
+        createUser.setZip(userRequest.getZip());
         //createUser.setRole(roles);
         createUser.setCreateDate(LocalDate.now());
         userRepository.save(createUser);
@@ -70,6 +74,10 @@ public class UserServiceImpl implements UserService {
                 .lastName(userRequest.getLastName())
                 .phoneNumber(userRequest.getPhoneNumber())
                 .address(userRequest.getAddress())
+                .nin(userRequest.getNin())
+                .city(userRequest.getCity())
+                .state(userRequest.getState())
+                .zip(userRequest.getZip())
                 .build();
     }
 
@@ -84,16 +92,20 @@ public class UserServiceImpl implements UserService {
                 .lastName(user.getLastName())
                 .firstName(user.getFirstName())
                 .address(user.getAddress())
+                .nin(user.getNin())
+                .city(user.getCity())
+                .state(user.getState())
+                .zip(user.getZip())
                 .build()).collect(Collectors.toList());
     }
 
-    @Override
-    public UserResponse deleteUsers(UserRequest userRequest) {
-        List<Long> idsToDelete = userRequest.getUserIds();
-        List<User> users = userRepository.findAllById(idsToDelete);
-        userRepository.deleteAll(users);
-        return new UserResponse("Deleted users: " + idsToDelete.size());
-    }
+//    @Override
+//    public UserResponse deleteUsers(UserRequest userRequest) {
+//        List<Long> idsToDelete = userRequest.getUserIds();
+//        List<User> users = userRepository.findAllById(idsToDelete);
+//        userRepository.deleteAll(users);
+//        return new UserResponse("Deleted users: " + idsToDelete.size());
+//    }
 
     @Override
     public UserResponse deleteById(Long id) {
