@@ -131,9 +131,11 @@ public class UserServiceImpl implements UserService {
        return user;
     }
 
-//    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
-//        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()));
-//    }
+    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
+        return user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+    }
 
 //     return new org.springframework.security.core.userdetails.User(
 //             user.getEmail(),

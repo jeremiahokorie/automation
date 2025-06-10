@@ -2,6 +2,7 @@ package com.automation.config;
 
 
 import com.automation.core.global.exception.Exception;
+import com.automation.core.global.model.User;
 import com.automation.core.global.service.UserService.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
     private final UserDetailsService userDetailsService;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        UserDetails user = userDetailsService.loadUserByUsername(username);
+        User user = userService.loadUserByUsername(username);
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new Exception("Invalid credentials");
