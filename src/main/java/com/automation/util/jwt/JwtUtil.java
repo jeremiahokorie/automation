@@ -1,5 +1,6 @@
 package com.automation.util.jwt;
 
+import com.automation.core.global.model.Roles;
 import com.automation.core.global.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,8 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -81,21 +84,24 @@ public class JwtUtil {
 
     public String generateToken(User userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("username", userDetails.getUsername());
+        claims.put("username", userDetails.getEmail());
         claims.put("email", userDetails.getEmail());
         claims.put("firstName", userDetails.getFirstName());
         claims.put("lastName", userDetails.getLastName());
-        claims.put("roles", userDetails.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+        List<String> roles = userDetails.getRoles().stream()
+                .map(Roles::getName)
+                .collect(Collectors.toList());
+
+        claims.put("roles", roles);
+//        claims.put("roles", userDetails.getAuthorities().stream()
+//                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
-                .claim("roles", userDetails.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
                 .compact();
     }
 
