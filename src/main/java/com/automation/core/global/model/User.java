@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Builder
 @Data
@@ -43,8 +45,11 @@ public class User implements UserDetails {
     private String zip;
     private String nin;
 
-    @ManyToOne
-    private Roles role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Roles> roles;
+
+//    @ManyToOne
+//    private Roles role;
 
 //    @ManyToMany(fetch = FetchType.EAGER)
 //    @JoinTable(
@@ -56,8 +61,15 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
     }
+
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return List.of();
+//    }
 
     @Override
     public String getUsername() {

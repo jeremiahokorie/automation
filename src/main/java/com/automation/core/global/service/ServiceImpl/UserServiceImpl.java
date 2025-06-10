@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
-        createUser.setRole(userRole);
+        createUser.setRoles(List.of(userRole));
         createUser.setNin(userRequest.getNin());
         createUser.setCity(userRequest.getCity());
         createUser.setState(userRequest.getState());
@@ -131,10 +131,10 @@ public class UserServiceImpl implements UserService {
        return user;
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
-        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()));
-    }
-    
+//    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
+//        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()));
+//    }
+
 //     return new org.springframework.security.core.userdetails.User(
 //             user.getEmail(),
 //             user.getPassword(),
