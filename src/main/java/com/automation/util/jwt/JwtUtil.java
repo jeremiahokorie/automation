@@ -86,8 +86,10 @@ public class JwtUtil {
         claims.put("firstName", userDetails.getFirstName());
         claims.put("lastName", userDetails.getLastName());
         claims.put("roles", userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
+                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+//        claims.put("roles", userDetails.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.toList()));
 
         return Jwts.builder()
                 .setClaims(claims)
