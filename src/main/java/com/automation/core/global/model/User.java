@@ -45,7 +45,7 @@ public class User implements UserDetails, Serializable {
     private String zip;
     private String nin;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Roles> roles;
 
 //    @ManyToOne

@@ -30,6 +30,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
         User user = userService.loadUserByUsername(username);
 
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new Exception("Invalid credentials");
         }

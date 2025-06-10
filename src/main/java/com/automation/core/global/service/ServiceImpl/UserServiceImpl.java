@@ -37,7 +37,12 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByemail(userRequest.getEmail());
         Roles userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new Exception("Default role USER not found"));
+                .orElseGet(() -> {
+                    Roles newUserRole = new Roles();
+                    newUserRole.setName("USER");
+                    return roleRepository.save(newUserRole);
+                });
+
         if (user.isPresent()) {
             throw new Exception("User already exists");
         }
@@ -127,7 +132,7 @@ public class UserServiceImpl implements UserService {
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
         user = userRepository.findByemail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        log.info("User found with email: {}", user.getPassword());
+//        log.info("User found with email: {}", user.getPassword());
        return user;
     }
 

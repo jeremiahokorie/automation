@@ -38,21 +38,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 
-//    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
-//        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()));
-//    }
-
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         return user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
-
-
-//    public Collection<? extends GrantedAuthority> getAuthorities(User user) {
-//        return user.getRoles().stream()
-//                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-//                .collect(Collectors.toList());
-//    }
 
 }
