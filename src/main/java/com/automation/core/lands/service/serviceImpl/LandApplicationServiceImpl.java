@@ -79,10 +79,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     @Override
     public List<LandApplicationResponse> getFilteredReport(LandApplicationType type, String applicantName, ReportType reportType,
                                                            LocalDate startDate, LocalDate endDate) {
-
         List<LandApplication> applications = landApplicationRepository.findByApplicationTypeAndApplicationDateBetween(
                 type, startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
-
         if (applicantName != null && !applicantName.isEmpty()) {
             applications = applications.stream()
                     .filter(app -> app.getApplicantName().equalsIgnoreCase(applicantName))
@@ -107,7 +105,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                         .entrySet().stream()
                         .flatMap(entry -> entry.getValue().stream().map(this::mapToResponse))
                         .toList();
-
             default:
                 throw new IllegalArgumentException("Unsupported Report Type");
         }

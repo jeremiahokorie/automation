@@ -3,6 +3,7 @@ package com.automation.core.global.controller;
 import com.automation.core.global.dto.request.AuthRequest;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.global.dto.response.AuthResponse;
+import com.automation.core.global.model.User;
 import com.automation.core.global.service.UserService.UserService;
 import com.automation.util.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,8 @@ public class AuthController {
     public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
         log.info("UserDetailsccc: {}", request.getEmail());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        User userDetails = userService.loadUserByUsername(request.getEmail());
         String token = jwtUtil.generateToken(userDetails);
         return ResponseEntity.ok()
                 .body(AppResponse.of(HttpStatus.OK.value(),new AuthResponse(token)));

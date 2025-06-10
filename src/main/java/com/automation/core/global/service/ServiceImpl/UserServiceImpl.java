@@ -11,15 +11,16 @@ import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private User user;
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
@@ -115,4 +117,28 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
         return new UserResponse("Deleted user with ID: " + id);
     }
+
+//    @Override
+//    public User loadUserByUsername(String email) {
+//        return null;
+//    }
+
+    @Override
+    public User loadUserByUsername(String email) throws UsernameNotFoundException {
+        user = userRepository.findByemail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        log.info("User found with email: {}", user.getPassword());
+       return user;
+    }
+
+    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
+        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getName()));
+    }
+    
+//     return new org.springframework.security.core.userdetails.User(
+//             user.getEmail(),
+//             user.getPassword(),
+//    getAuthorities(user)
+//        );
+
 }

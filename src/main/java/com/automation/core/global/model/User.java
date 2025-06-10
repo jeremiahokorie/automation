@@ -18,7 +18,7 @@ import java.util.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "user")
-public class User implements UserDetails, Serializable {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
