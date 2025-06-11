@@ -26,7 +26,7 @@ public class AccessControlController {
     private final AccessControlService accessControlService;
 
     @PostMapping("/roles")
-    public ResponseEntity<AppResponse<RolesResponse>> createRole(@RequestParam RolesRequest request) {
+    public ResponseEntity<AppResponse<RolesResponse>> createRole(@RequestBody RolesRequest request) {
         RolesResponse rolesResponse = accessControlService.createRole(request);
         AppResponse<RolesResponse> response = AppResponse.<RolesResponse>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
@@ -35,7 +35,7 @@ public class AccessControlController {
     }
 
     @PostMapping("/permissions")
-    public ResponseEntity<AppResponse<PermissionResponse>> createPermission(@RequestParam PermissionRequest request) {
+    public ResponseEntity<AppResponse<PermissionResponse>> createPermission(@RequestBody PermissionRequest request) {
         PermissionResponse permissionResponse =  accessControlService.createPermission(request);
         AppResponse<PermissionResponse> response = AppResponse.<PermissionResponse>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
