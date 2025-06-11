@@ -41,6 +41,7 @@ public class UserController {
     private UserDetailsService userDetailsService;
     @Autowired private AuthenticationManager authManager;
 
+
 //    @PostMapping("/login")
 //    public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
 //        log.info("UserDetailsccc: {}", request.getEmail());

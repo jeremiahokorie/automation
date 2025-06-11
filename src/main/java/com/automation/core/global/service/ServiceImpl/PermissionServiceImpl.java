@@ -2,13 +2,11 @@ package com.automation.core.global.service.ServiceImpl;
 
 import com.automation.core.global.dto.request.PermissionRequest;
 import com.automation.core.global.dto.response.PermissionResponse;
-import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.Permission;
 import com.automation.core.global.repository.PermissionRepository;
 import com.automation.core.global.service.UserService.PermissionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

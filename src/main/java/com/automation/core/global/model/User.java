@@ -45,19 +45,19 @@ public class User implements UserDetails, Serializable {
     private String zip;
     private String nin;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Roles> roles;
+//    @OneToMany(fetch = FetchType.EAGER)
+//    private List<Roles> roles;
 
 //    @ManyToOne
 //    private Roles role;
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(
-//            name = "user_roles", // join table
-//            joinColumns = @JoinColumn(name = "user_id"), // this side
-//            inverseJoinColumns = @JoinColumn(name = "role_id") // other side
-//    )
-//    private Set<Roles> roles = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Roles> roles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -66,10 +66,6 @@ public class User implements UserDetails, Serializable {
                 .collect(Collectors.toList());
     }
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of();
-//    }
 
     @Override
     public String getUsername() {

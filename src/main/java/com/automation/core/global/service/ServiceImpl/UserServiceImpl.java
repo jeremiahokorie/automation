@@ -37,26 +37,11 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByemail(userRequest.getEmail());
         Roles userRole = roleRepository.findByName("USER")
-                .orElseGet(() -> {
-                    Roles newUserRole = new Roles();
-                    newUserRole.setName("USER");
-                    return roleRepository.save(newUserRole);
-                });
+                .orElseThrow(() -> new Exception("Default role USER not found"));
 
         if (user.isPresent()) {
             throw new Exception("User already exists");
         }
-
-//        Set<Roles> roles = new HashSet<>();
-//        for(String rolename : user.getPermissions()){
-//            Optional<Roles> role = roleRepository.findByName(rolename);
-//            if(role.isPresent()){
-//                roles.add(role.get());
-//            }else {
-//                throw new CustomException("Role not found" + rolename);
-//            }
-//
-//        }
 
         User createUser = new User();
         createUser.setEmail(userRequest.getEmail());
@@ -65,11 +50,12 @@ public class UserServiceImpl implements UserService {
         createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
-        createUser.setRoles(List.of(userRole));
+        createUser.setRoles(Set.of(userRole));
         createUser.setNin(userRequest.getNin());
         createUser.setCity(userRequest.getCity());
         createUser.setState(userRequest.getState());
         createUser.setZip(userRequest.getZip());
+        createUser.setStreet(userRequest.getStreet());
         //createUser.setRole(roles);
         createUser.setCreateDate(LocalDate.now());
         userRepository.save(createUser);
@@ -84,6 +70,7 @@ public class UserServiceImpl implements UserService {
                 .nin(userRequest.getNin())
                 .city(userRequest.getCity())
                 .state(userRequest.getState())
+                .street(userRequest.getStreet())
                 .zip(userRequest.getZip())
                 .build();
     }
@@ -106,18 +93,10 @@ public class UserServiceImpl implements UserService {
                 .build()).collect(Collectors.toList());
     }
 
-//    @Override
-//    public UserResponse deleteUsers(UserRequest userRequest) {
-//        List<Long> idsToDelete = userRequest.getUserIds();
-//        List<User> users = userRepository.findAllById(idsToDelete);
-//        userRepository.deleteAll(users);
-//        return new UserResponse("Deleted users: " + idsToDelete.size());
-//    }
-
     @Override
     public UserResponse deleteById(Long id) {
-//        User user = userRepository.findById(id).orElseThrow(() -> new Exception("User with Id not found"));
-//        userRepository.delete(user);
+//      User user = userRepository.findById(id).orElseThrow(() -> new Exception("User with Id not found"));
+//      userRepository.delete(user);
         roleRepository.deleteById(id);
         userRepository.deleteById(id);
         return new UserResponse("Deleted user with ID: " + id);
