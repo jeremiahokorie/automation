@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
-        createUser.setRoles(Set.of(userRole));
+       // createUser.setRoles(Set.of(userRole));
         createUser.setNin(userRequest.getNin());
         createUser.setCity(userRequest.getCity());
         createUser.setState(userRequest.getState());
