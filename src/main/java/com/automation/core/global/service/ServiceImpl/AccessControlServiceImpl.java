@@ -17,6 +17,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -56,5 +59,26 @@ public class AccessControlServiceImpl implements AccessControlService {
         Roles role = roleRepo.findById(roleId).orElseThrow();
         user.getRoles().add(role);
         return userRepo.save(user);
+    }
+
+    @Override
+    public List<PermissionResponse> getPermissions() {
+        List<Permission> permissions = permissionRepo.findAll();
+        return permissions.stream().map(permissions1 ->
+                PermissionResponse.builder()
+                        .name(permissions1.getName())
+                        .build())
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<RolesResponse> getRoles() {
+        List<Roles> roleResp = roleRepo.findAll();
+        return roleResp.stream().map(roles1 ->
+                RolesResponse.builder()
+                .name(roles1.getName())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

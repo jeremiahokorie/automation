@@ -85,11 +85,11 @@ public class CustomaryAllocationApplication {
     private LocalDate declarationDate;
 
     // Attachments
-    private String passportPhotoPath;
-    private String taxClearancePath;
-    private String affidavitPath;
-    private String communityConsentLetterPath;
-    private String developmentSketchPath;
+    private String passportPhoto;
+    private String taxClearance;
+    private String affidavit;
+    private String communityConsentLetter;
+    private String developmentSketch;
 
     // GPS (if collected)
     private Double latitude;

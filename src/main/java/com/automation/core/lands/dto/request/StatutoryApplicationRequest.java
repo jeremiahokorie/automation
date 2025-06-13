@@ -1,25 +1,20 @@
-package com.automation.core.lands.model;
+package com.automation.core.lands.dto.request;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.persistence.Lob;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "statutory_allocation_applications")
-public class StatutoryAllocationApplication {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class StatutoryApplicationRequest {
     private Long id;
 
     private LocalDate applicationDate;
@@ -127,14 +122,12 @@ public class StatutoryAllocationApplication {
     private Boolean illiterateJuratAttached;
 
     // Attachments (these should be saved separately or as paths/filenames)
-    private String passportPhotos;
-    private String taxClearances;
-    private String declarationOfAge;
-    private String administrativeCharges;
-    private String feeReceipt;
-    private String naturalizationDoc;
-    private String oathDeclaration;
-
+    private String passportPhotoPath;
+    private String taxClearancePath;
+    private String feeReceiptPath;
+    private String ageDeclarationPath;
+    private String naturalizationDocPath;
+    private String oathDeclarationPath;
 
     // Corporate section (optional)
     private String incorporationCertificatePath;
@@ -158,9 +151,4 @@ public class StatutoryAllocationApplication {
     private Double longitude;
     private Double altitude;
     private Double gpsAccuracy;
-
-    // Getters & Setters (Can use Lombok to reduce boilerplate)
-
-    // Constructors, toString(), equals(), hashCode() as needed
 }
-

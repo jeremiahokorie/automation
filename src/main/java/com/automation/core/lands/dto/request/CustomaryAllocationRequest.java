@@ -50,9 +50,9 @@ public class CustomaryAllocationRequest {
         public Double altitude;
         public Double gpsAccuracy;
 
-        public String passportPhotoPath;
-        public String taxClearancePath;
-        public String affidavitPath;
-        public String communityConsentLetterPath;
-        public String developmentSketchPath;
+        public String passportPhoto;
+        public String taxClearance;
+        public String affidavit;
+        public String communityConsentLetter;
+        public String developmentSketch;
     }

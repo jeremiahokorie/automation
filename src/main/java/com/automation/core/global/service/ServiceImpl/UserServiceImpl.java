@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByemail(userRequest.getEmail());
-        Roles userRole = roleRepository.findByName("USER")
+        Roles userRole = roleRepository.findByname("USER")
                 .orElseThrow(() -> new Exception("Default role USER not found"));
 
         if (user.isPresent()) {
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
-       // createUser.setRoles(Set.of(userRole));
+        createUser.setRoles(Set.of(userRole));
         createUser.setNin(userRequest.getNin());
         createUser.setCity(userRequest.getCity());
         createUser.setState(userRequest.getState());

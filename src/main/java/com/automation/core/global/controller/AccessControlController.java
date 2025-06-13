@@ -18,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @RequestMapping("api/auth/access")
@@ -52,4 +54,20 @@ public class AccessControlController {
     public User assignRoleToUser(@PathVariable Long userId, @PathVariable Long roleId) {
         return accessControlService.assignRoleToUser(userId, roleId);
     }
-}
+
+    @GetMapping("/permissions")
+    public ResponseEntity<AppResponse<List<PermissionResponse>>>Permissions(){
+        List<PermissionResponse> permission = accessControlService.getPermissions();
+        return ResponseEntity.ok().body(AppResponse.<List<PermissionResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value()).data(permission).build());
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<AppResponse<List<RolesResponse>>>Roles(){
+        List<RolesResponse> roless = accessControlService.getRoles();
+        return ResponseEntity.ok().body(AppResponse.<List<RolesResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value()).data(roless).build());
+    }
+    }
