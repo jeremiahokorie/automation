@@ -26,11 +26,11 @@ public class Roles {
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    private List<User> users;
 
     @ManyToMany(fetch = FetchType.EAGER)
 //    @JoinTable(name = "role_permissions",
 //            joinColumns = @JoinColumn(name = "role_id"),
 //            inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private Set<Permission> permissions = new HashSet<>();
+    private List<Permission> permissions;
 }
