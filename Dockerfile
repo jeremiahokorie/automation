@@ -1,15 +1,12 @@
-FROM ubuntu:latest AS build
+# Stage 1: Build the application
+FROM maven:3.9.4-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
-COPY . .
-
-RUN ./gradlew bootJar --no-daemon
-
-FROM openjdk:17-jdk-slim
-
-EXPOSE 8080
-
-COPY --from=build /build/libs/demo-1.jar app.jar
-
+# Stage 2: Run the application
+FROM openjdk:17
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
