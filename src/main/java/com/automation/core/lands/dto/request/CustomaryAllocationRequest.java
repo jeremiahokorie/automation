@@ -45,10 +45,10 @@ public class CustomaryAllocationRequest {
         public String communityLeaderTitle;
         public String signatureOrMark;
         public LocalDate declarationDate;
-        public Double latitude;
-        public Double longitude;
-        public Double altitude;
-        public Double gpsAccuracy;
+//        public Double latitude;
+//        public Double longitude;
+//        public Double altitude;
+//        public Double gpsAccuracy;
 
         public String passportPhoto;
         public String taxClearance;
