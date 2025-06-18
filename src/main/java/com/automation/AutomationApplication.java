@@ -11,15 +11,16 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
+@EnableMethodSecurity
 @SpringBootApplication
 public class AutomationApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AutomationApplication.class, args);
 	}
-
 }

@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,13 +26,21 @@ public class Roles {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String value;
+    private String description;
 
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
 
     @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(name = "role_permissions",
-//            joinColumns = @JoinColumn(name = "role_id"),
-//            inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private List<Permission> permissions;
+
+    public List<String>getAuthorities(){
+        List<String> authorities = new ArrayList<>();
+        authorities.add("ROLE_" + value);
+        for (Permission permission : permissions) {
+            authorities.add(permission.getValue());
+        }
+        return authorities;
+    }
 }

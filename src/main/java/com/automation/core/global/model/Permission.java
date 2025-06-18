@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -23,9 +24,11 @@ public class Permission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String value;
+    private String description;
 
     @ManyToMany(mappedBy = "permissions")
     @JsonIgnore
-    private Set<Roles> roles = new HashSet<>();
+    private List<Roles> roles;
 }
 

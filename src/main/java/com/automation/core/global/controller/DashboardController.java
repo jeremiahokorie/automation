@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
     public class DashboardController {
     private final DashboardService dashboardService;
 
+    @Secured({"REPORT_READ","REPORT_WRITE"})
     @GetMapping("/summary")
     public ResponseEntity<DashboardResponse> getDashboardSummary() {
         DashboardResponse summary = dashboardService.getDashboardSummary();

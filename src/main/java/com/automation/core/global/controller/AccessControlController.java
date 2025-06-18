@@ -70,4 +70,5 @@ public class AccessControlController {
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value()).data(roless).build());
     }
-    }
+
+}

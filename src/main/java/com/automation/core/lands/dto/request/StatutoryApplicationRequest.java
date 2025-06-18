@@ -15,8 +15,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatutoryApplicationRequest {
-    private Long id;
-
     private LocalDate applicationDate;
 
     private String applicationNo;
@@ -122,29 +120,29 @@ public class StatutoryApplicationRequest {
     private Boolean illiterateJuratAttached;
 
     // Attachments (these should be saved separately or as paths/filenames)
-    private String passportPhotoPath;
-    private String taxClearancePath;
-    private String feeReceiptPath;
-    private String ageDeclarationPath;
-    private String naturalizationDocPath;
-    private String oathDeclarationPath;
+    private String passportPhoto;
+    private String taxClearance;
+    private String feeReceipt;
+    private String ageDeclaration;
+    private String naturalizationDoc;
+    private String oathDeclaration;
 
-    // Corporate section (optional)
-    private String incorporationCertificatePath;
-    private String memorandumArticlesPath;
-    private String directorPhotoPath;
-    private String corpTaxClearance1Path;
-    private String corpTaxClearance2Path;
-    private String corpTaxClearance3Path;
-
-    // Incorporated Trustees (optional)
-    private String regDoc1Path;
-    private String regDoc2Path;
-    private String regDoc3Path;
-    private String otherDoc1Path;
-    private String otherDoc2Path;
-    private String otherDoc3Path;
-    private String otherDoc4Path;
+//    // Corporate section (optional)
+//    private String incorporationCertificatePath;
+//    private String memorandumArticlesPath;
+//    private String directorPhotoPath;
+//    private String corpTaxClearance1Path;
+//    private String corpTaxClearance2Path;
+//    private String corpTaxClearance3Path;
+//
+//    // Incorporated Trustees (optional)
+//    private String regDoc1Path;
+//    private String regDoc2Path;
+//    private String regDoc3Path;
+//    private String otherDoc1Path;
+//    private String otherDoc2Path;
+//    private String otherDoc3Path;
+//    private String otherDoc4Path;
 
     // GPS info
 //    private Double latitude;

@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CustomaryAllocationRequest {
-        public Long id;
         public LocalDate applicationDate;
         public String applicantName;
         public String applicantTitle;
@@ -55,4 +54,7 @@ public class CustomaryAllocationRequest {
         public String affidavit;
         public String communityConsentLetter;
         public String developmentSketch;
+
+
+
     }
