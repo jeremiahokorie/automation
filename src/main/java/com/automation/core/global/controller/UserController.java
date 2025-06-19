@@ -43,6 +43,7 @@ public class UserController {
 
 
 
+
     @PostMapping("/register")
     public ResponseEntity<AppResponse<UserResponse>> createUser(@RequestBody UserRequest userRequest) {
         UserResponse userResponse = userService.createUser(userRequest);
@@ -62,6 +63,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @DeleteMapping("/admin/{id}/user")
     public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {
         UserResponse userResponse = userService.deleteById(id);

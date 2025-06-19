@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("bcrypt password: {}", email);
          user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        log.info("bcrypt password: {}", user.getEmail());
+       // log.info("bcrypt password: {}", user.getEmail());
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
                 user.getPassword(),
