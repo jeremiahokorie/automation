@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
@@ -26,50 +27,15 @@ import java.util.List;
 public class WebSecurityConfig{
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationProvider customUserDetailService;
-    private final CorsConfig corsConfigurationSource;
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                        .authorizeHttpRequests(auth -> auth
-//                                .requestMatchers(
-//                                        "/api/auth/**",
-//                                        "/v2/api-docs",
-//                                        "/v3/api-docs",
-//                                        "/v3/api-docs/**",
-//                                        "/swagger-resources",
-//                                        "/swagger-resources/**",
-//                                        "/swagger-resources/configuration/ui",
-//                                        "/configuration/ui",
-//                                        "/configuration/security",
-//                                        "/swagger-ui/**",
-//                                        "/swagger-ui.html",
-//                                        "/v3/api-docs/**"
-//
-//                                ).permitAll()
-//                                .requestMatchers("/admin/**").hasRole("ADMIN")
-//                                .requestMatchers("/commissioner/**").hasRole("COMMISSIONER")
-//                                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "OFFICER")
-//                        .anyRequest().permitAll()
-//                )
-//                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authenticationProvider(customUserDetailService)
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//        return http.build();
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource.corsConfigurationSource())) // Add this line
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/api/reports/public",
+                                "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-resources",
@@ -80,8 +46,8 @@ public class WebSecurityConfig{
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
-                        ).permitAll()
 
+                        ).permitAll()
                         // User management
                         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("SUPERADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("SUPERADMIN")
@@ -106,32 +72,82 @@ public class WebSecurityConfig{
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(customUserDetailService)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-//                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authenticationProvider(customUserDetailService)
-//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .cors(Customizer.withDefaults())
+//                .authorizeHttpRequests(auth -> auth
+//                        // Public endpoints
+//                        .requestMatchers(
+//                                "/api/auth/**",
+//                                "/v3/api-docs/**",
+//                                "/swagger-ui/**",
+//                                "/api/reports/public",
+//                                "/v3/api-docs",
+//                                "/v3/api-docs/**",
+//                                "/swagger-resources",
+//                                "/swagger-resources/**",
+//                                "/swagger-resources/configuration/ui",
+//                                "/configuration/ui",
+//                                "/configuration/security",
+//                                "/swagger-ui/**",
+//                                "/swagger-ui.html",
+//                                "/v3/api-docs/**"
+//                        ).permitAll()
+//
+//                        // User management
+//                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("SUPERADMIN")
+//                        .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("SUPERADMIN")
+//
+//                        // Environment registration
+//                        .requestMatchers(HttpMethod.POST, "/api/environment/apply").authenticated()
+//                        .requestMatchers(HttpMethod.PUT, "/api/environment/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
+//
+//
+//                        // Business registration
+//                        .requestMatchers(HttpMethod.POST, "/api/business/register").authenticated()
+//                        .requestMatchers(HttpMethod.PUT, "/api/business/approve/**").hasAnyRole("SUPERADMIN", "ADMIN", "USER","SUPER_USER")
+//
+//                        // Certificate of occupancy
+//                        .requestMatchers(HttpMethod.POST, "/api/certificates/occupancy").authenticated()
+//                        .requestMatchers(HttpMethod.PUT, "/api/certificates/occupancy/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
+//
+//                        // System configuration
+//                        .requestMatchers("/api/system/**").hasRole("SUPERADMIN")
+//
+//                        // All other authenticated requests
+//                        .anyRequest().authenticated()
+//                )
+//                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//
+////                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+////                .authenticationProvider(customUserDetailService)
+////                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-
-
-
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("https://bauchi-mda.netlify.app"));
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(List.of("*"));
-//        configuration.setAllowCredentials(true);
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("https://bauchi-mda.netlify.app"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
 }
