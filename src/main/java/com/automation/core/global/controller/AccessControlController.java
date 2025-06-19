@@ -35,9 +35,7 @@ public class AccessControlController {
 //        return ResponseEntity.status(HttpStatus.CREATED).body(createdRole);
 //    }
 
-
-
-    @PreAuthorize("hasRole('SUPERADMIN')")
+  //  @PreAuthorize("hasRole('SUPERADMIN')")
     @PostMapping("/roles")
     public ResponseEntity<AppResponse<RolesResponse>> createRole(@RequestBody RolesRequest request) {
         RolesResponse rolesResponse = accessControlService.createRole(request);
@@ -78,7 +76,7 @@ public class AccessControlController {
                 .status(HttpStatus.OK.value()).data(permission).build());
     }
 
-    @PreAuthorize("hasRole('SUPERADMIN')")
+   // @PreAuthorize("hasRole('SUPERADMIN')")
     @GetMapping("/roles")
     public ResponseEntity<AppResponse<List<RolesResponse>>>Roles(){
         List<RolesResponse> roless = accessControlService.getRoles();

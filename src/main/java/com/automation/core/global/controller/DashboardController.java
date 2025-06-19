@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 //  @Secured({"REPORT_READ","REPORT_WRITE"})
     @GetMapping("/summary")
-    @PreAuthorize("hasRole('SUPERADMIN')")
+   // @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<DashboardResponse> getDashboardSummary() {
         DashboardResponse summary = dashboardService.getDashboardSummary();
         return ResponseEntity.ok(summary);

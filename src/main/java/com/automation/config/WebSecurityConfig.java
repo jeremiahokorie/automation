@@ -49,7 +49,9 @@ public class WebSecurityConfig{
 
                         ).permitAll()
                         // User management
-                        .requestMatchers(HttpMethod.GET, "/api/admin/summary").hasRole("SUPERADMIN")
+//                        .requestMatchers(HttpMethod.GET, "/api/admin/access/roles").hasRole("SUPERADMIN")
+//                        .requestMatchers(HttpMethod.POST, "/api/admin/access/roles").hasRole("SUPERADMIN")
+                        //.requestMatchers(HttpMethod.GET, "/api/admin/summary").hasRole("SUPERADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/auth/users").hasAnyRole("SUPERADMIN","SUPER_USER")
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("SUPERADMIN")
 

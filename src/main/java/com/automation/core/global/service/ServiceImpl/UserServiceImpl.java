@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
                 .lastName(user.getLastName())
                 .firstName(user.getFirstName())
                 .address(user.getAddress())
+                .street(user.getStreet())
                 .nin(user.getNin())
                 .city(user.getCity())
                 .state(user.getState())
