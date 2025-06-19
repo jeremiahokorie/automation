@@ -53,7 +53,7 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
+   // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @GetMapping("/users")
     public ResponseEntity<AppResponse<List<UserResponse>>> getUsers() {
         List<UserResponse> users = userService.getUsers();

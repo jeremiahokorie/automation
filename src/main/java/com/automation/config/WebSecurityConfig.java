@@ -49,15 +49,18 @@ public class WebSecurityConfig{
 
                         ).permitAll()
                         // User management
-                        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("SUPERADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/summary").hasRole("SUPERADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/auth/users").hasAnyRole("SUPERADMIN","SUPER_USER")
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("SUPERADMIN")
 
                         // Environment registration
                         .requestMatchers(HttpMethod.POST, "/api/environment/apply").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/environment/apply").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/environment/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
 
                         // Business registration
                         .requestMatchers(HttpMethod.POST, "/api/business/register").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/business/businesses").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/business/approve/**").hasAnyRole("SUPERADMIN", "ADMIN", "USER","SUPER_USER")
 
                         // Certificate of occupancy

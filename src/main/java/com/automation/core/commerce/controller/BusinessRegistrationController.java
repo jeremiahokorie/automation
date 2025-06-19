@@ -30,7 +30,7 @@ public class BusinessRegistrationController {
     private final BusinessRegistrationService businessRegistrationService;
     private final BusinessTypeService businessTypeService;
 
-    @PreAuthorize("isAuthenticated()")
+  // @PreAuthorize("isAuthenticated()")
     @PostMapping("/register")
     public ResponseEntity<AppResponse<BusinessRegistrationResponse>> registerBusiness(@RequestBody BusinessRegistrationRequest businessRegistrationRequest) {
         BusinessRegistrationResponse businessRegistrationResponse = businessRegistrationService.register(businessRegistrationRequest);
@@ -42,7 +42,7 @@ public class BusinessRegistrationController {
 
 
     @GetMapping("/businesses")
-    @PreAuthorize("isAuthenticated()")
+   // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AppResponse<List<BusinessRegistrationResponse>>> getBusinessRegistration() {
         List<BusinessRegistrationResponse> response = businessRegistrationService.getRegisteredBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessRegistrationResponse>>builder()

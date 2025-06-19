@@ -26,7 +26,7 @@ import java.util.List;
 public class EnvironmentController {
     private final EnvironmentService environmentService;
 
-    @PreAuthorize("isAuthenticated()")
+   // @PreAuthorize("isAuthenticated()")
     @PostMapping("/apply")
     public ResponseEntity<AppResponse<EnvironmentResponse>> applyPermit(@RequestBody EnvironmentRequest environmentRequest) {
         EnvironmentResponse response = environmentService.apply(environmentRequest);
@@ -36,7 +36,7 @@ public class EnvironmentController {
         return new ResponseEntity<>(appResponse, HttpStatus.OK);
     }
 
-    @PreAuthorize("isAuthenticated()")
+   // @PreAuthorize("isAuthenticated()")
     @PutMapping("/renew")
     public ResponseEntity<AppResponse<EnvironmentResponse>>renewal(@RequestBody PermitRenewRequest permitRenewRequest) {
         EnvironmentResponse businessRenewalResponse = environmentService.renewPermit(permitRenewRequest);
@@ -46,7 +46,7 @@ public class EnvironmentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PreAuthorize("isAuthenticated()")
+  //  @PreAuthorize("isAuthenticated()")
     @GetMapping("/getPermits")
     public ResponseEntity<AppResponse<List<EnvironmentResponse>>> getPermits() {
         List<EnvironmentResponse> response = environmentService.getAll();
