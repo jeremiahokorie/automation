@@ -56,7 +56,6 @@ public class WebSecurityConfig{
                         .requestMatchers(HttpMethod.POST, "/api/environment/apply").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/environment/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
 
-
                         // Business registration
                         .requestMatchers(HttpMethod.POST, "/api/business/register").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/business/approve/**").hasAnyRole("SUPERADMIN", "ADMIN", "USER","SUPER_USER")

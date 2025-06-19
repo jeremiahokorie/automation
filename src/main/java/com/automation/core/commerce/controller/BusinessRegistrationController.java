@@ -42,7 +42,7 @@ public class BusinessRegistrationController {
 
 
     @GetMapping("/businesses")
-    @PreAuthorize("@businessSecurity.canAccessRegistration(authentication, #registrationId)")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AppResponse<List<BusinessRegistrationResponse>>> getBusinessRegistration() {
         List<BusinessRegistrationResponse> response = businessRegistrationService.getRegisteredBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessRegistrationResponse>>builder()

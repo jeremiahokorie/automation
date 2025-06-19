@@ -66,13 +66,13 @@ public class JwtUtil {
         claims.put("email", userDetails.getEmail());
         claims.put("firstName", userDetails.getFirstName());
         claims.put("lastName", userDetails.getLastName());
-//        List<String> roles = userDetails.getRoles().stream()
-//                .map(Roles::getValue)
-//                .collect(Collectors.toList());
-
         List<String> roles = userDetails.getRoles().stream()
-                .map(role -> "ROLE_" + role.getValue()) // Add this prefix
+                .map(Roles::getValue)
                 .collect(Collectors.toList());
+
+//        List<String> roles = userDetails.getRoles().stream()
+//                .map(role -> "ROLE_" + role.getValue())
+//                .collect(Collectors.toList());
         claims.put("roles", roles);
 
         return Jwts.builder()
