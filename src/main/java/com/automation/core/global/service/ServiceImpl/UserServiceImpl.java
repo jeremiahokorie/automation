@@ -35,9 +35,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
-        Optional<User> user = userRepository.findByemail(userRequest.getEmail());
-        Roles userRole = roleRepository.findByname("USER")
-                .orElseThrow(() -> new Exception("Default role USER not found"));
+        Optional<User> user = userRepository.findByEmail(userRequest.getEmail());
+        Roles userRole = roleRepository.findByValue("SUPERADMIN")
+                .orElseThrow(() -> new Exception("Default role not found"));
 
         if (user.isPresent()) {
             throw new Exception("User already exists");
@@ -102,14 +102,9 @@ public class UserServiceImpl implements UserService {
         return new UserResponse("Deleted user with ID: " + id);
     }
 
-//    @Override
-//    public User loadUserByUsername(String email) {
-//        return null;
-//    }
-
     @Override
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
-        user = userRepository.findByemail(email)
+        user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 //        log.info("User found with email: {}", user.getPassword());
        return user;
@@ -120,11 +115,5 @@ public class UserServiceImpl implements UserService {
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
-
-//     return new org.springframework.security.core.userdetails.User(
-//             user.getEmail(),
-//             user.getPassword(),
-//    getAuthorities(user)
-//        );
 
 }

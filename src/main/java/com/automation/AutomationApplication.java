@@ -16,7 +16,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-@EnableMethodSecurity
+@EnableMethodSecurity(
+		securedEnabled = true,
+		jsr250Enabled = true,
+		prePostEnabled = true
+)
 @SpringBootApplication
 public class AutomationApplication {
 

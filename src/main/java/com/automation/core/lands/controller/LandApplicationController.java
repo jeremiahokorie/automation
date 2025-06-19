@@ -13,6 +13,7 @@ import com.automation.util.constant.AppConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,17 +23,19 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/lands")
+@RequestMapping("/api/land")
 @RequiredArgsConstructor
 public class LandApplicationController {
     private final LandApplicationService landApplicationService;
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/customary")
     public ResponseEntity<Map<String, String>> customLandApplication(@RequestBody CustomaryAllocationRequest customaryAllocationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
         Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/statutory")
     public ResponseEntity<Map<String, String>> statutoryLandApplication(@RequestBody StatutoryApplicationRequest statutoryApplicationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
         Map<String, String> response = landApplicationService.statutoryallocation(statutoryApplicationRequest, documents);

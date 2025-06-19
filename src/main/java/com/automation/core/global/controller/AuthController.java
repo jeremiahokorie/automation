@@ -4,6 +4,7 @@ import com.automation.core.global.dto.request.AuthRequest;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.global.dto.response.AuthResponse;
 import com.automation.core.global.model.User;
+import com.automation.core.global.service.ServiceImpl.AuthenticationService;
 import com.automation.core.global.service.UserService.UserService;
 import com.automation.util.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -34,18 +37,54 @@ public class AuthController {
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired private AuthenticationManager authManager;
+    private AuthenticationService authenticationService;
+
+//    @PostMapping("/login")
+//    public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
+//        try {
+//            // Authenticate user
+//            User authenticatedUser = authenticationService.authenticate(request.getEmail(), request.getPassword());
+//
+//            // Generate token
+//            String token = jwtUtil.generateToken(authenticatedUser);
+//
+//            return ResponseEntity.ok()
+//                    .body(AppResponse.of(HttpStatus.OK.value(), new AuthResponse(token)));
+//
+//        } catch (UsernameNotFoundException | BadCredentialsException e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(AppResponse.of(HttpStatus.UNAUTHORIZED.value(), e.getMessage()));
+//        }
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
         log.info("UserDetailsccc: {}", request.getEmail());
+        try{
+       // authenticationService.authenticate(request.getEmail(), request.getPassword());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+//      UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+            log.info("UserDetail: {}", request.getEmail());
         User userDetails = userService.loadUserByUsername(request.getEmail());
         String token = jwtUtil.generateToken(userDetails);
 
         return ResponseEntity.ok()
                 .body(AppResponse.of(HttpStatus.OK.value(),new AuthResponse(token)));
+    } catch (UsernameNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(AppResponse.error(HttpStatus.UNAUTHORIZED.value(), "Invalid email address"));
+
+    } catch (BadCredentialsException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(AppResponse.error(HttpStatus.UNAUTHORIZED.value(), "Invalid password"));
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(AppResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Authentication failed"));
     }
+    }
+
+
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {

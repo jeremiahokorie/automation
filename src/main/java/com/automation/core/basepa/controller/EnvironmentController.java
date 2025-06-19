@@ -6,11 +6,6 @@ import com.automation.core.basepa.dto.request.PermitRenewRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
 import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
-import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
-import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
-import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
-import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
-import com.automation.core.commerce.service.serviceImpl.BusinessRegistrationServiceImpl;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.util.constant.AppConstant;
 import io.swagger.models.Response;
@@ -31,8 +26,8 @@ import java.util.List;
 public class EnvironmentController {
     private final EnvironmentService environmentService;
 
-//    @PreAuthorize("hasAnyRole('USER','ADMIN', 'OFFICER')")
-    @PostMapping("/apply-permit")
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/apply")
     public ResponseEntity<AppResponse<EnvironmentResponse>> applyPermit(@RequestBody EnvironmentRequest environmentRequest) {
         EnvironmentResponse response = environmentService.apply(environmentRequest);
         AppResponse<EnvironmentResponse> appResponse = AppResponse.<EnvironmentResponse>builder()
@@ -41,7 +36,8 @@ public class EnvironmentController {
         return new ResponseEntity<>(appResponse, HttpStatus.OK);
     }
 
-    @PutMapping("/renew-permit")
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/renew")
     public ResponseEntity<AppResponse<EnvironmentResponse>>renewal(@RequestBody PermitRenewRequest permitRenewRequest) {
         EnvironmentResponse businessRenewalResponse = environmentService.renewPermit(permitRenewRequest);
         AppResponse<EnvironmentResponse> response = AppResponse.<EnvironmentResponse>builder()
@@ -50,6 +46,7 @@ public class EnvironmentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/getPermits")
     public ResponseEntity<AppResponse<List<EnvironmentResponse>>> getPermits() {
         List<EnvironmentResponse> response = environmentService.getAll();
@@ -59,7 +56,7 @@ public class EnvironmentController {
         );
     }
 
-
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/approve")
     public ResponseEntity<AppResponse<ApprovalResponse>> approvePermit(
             @PathVariable Long id,
@@ -76,6 +73,7 @@ public class EnvironmentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/reject")
     public ResponseEntity<AppResponse<ApprovalResponse>> rejectBusiness(
             @PathVariable Long id,

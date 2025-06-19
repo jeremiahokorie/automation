@@ -42,18 +42,8 @@ public class UserController {
     @Autowired private AuthenticationManager authManager;
 
 
-//    @PostMapping("/login")
-//    public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
-//        log.info("UserDetailsccc: {}", request.getEmail());
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-//        String token = jwtUtil.generateToken(userDetails);
-//        return ResponseEntity.ok()
-//                .body(AppResponse.of(HttpStatus.OK.value(),new AuthResponse(token)));
-//    }
 
-
-    @PostMapping("/user/register")
+    @PostMapping("/register")
     public ResponseEntity<AppResponse<UserResponse>> createUser(@RequestBody UserRequest userRequest) {
         UserResponse userResponse = userService.createUser(userRequest);
         AppResponse<UserResponse> response = AppResponse.<UserResponse>builder()
@@ -62,7 +52,7 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @GetMapping("/users")
     public ResponseEntity<AppResponse<List<UserResponse>>> getUsers() {
         List<UserResponse> users = userService.getUsers();
@@ -71,17 +61,7 @@ public class UserController {
                 .status(HttpStatus.OK.value()).data(users).build());
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @DeleteMapping("/delete-users")
-//    public ResponseEntity<AppResponse<UserResponse>> deleteUsers(@RequestBody UserRequest userRequest) {
-//        UserResponse response = userService.deleteUsers(userRequest);
-//        return ResponseEntity.ok().body(AppResponse.<UserResponse>builder()
-//                .message(AppConstant.ApiResponseMessage.DELETE)
-//                .status(HttpStatus.OK.value()).data(response).build()
-//        );
-//    }
 
-//  @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/admin/{id}/user")
     public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {
         UserResponse userResponse = userService.deleteById(id);
@@ -92,4 +72,16 @@ public class UserController {
     }
 
 
+//    @PutMapping("/{userId}")
+//    public ResponseEntity<UserRequest> updateUser(
+//            @PathVariable Long userId,
+//            @RequestBody UserRequest request) {
+//        return ResponseEntity.ok(userService.updateUser(userId, request));
+//    }
+//
+//    @DeleteMapping("/{userId}")
+//    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+//        userService.deleteUser(userId);
+//        return ResponseEntity.noContent().build();
+//    }
 }

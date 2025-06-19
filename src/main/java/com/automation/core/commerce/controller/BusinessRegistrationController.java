@@ -17,19 +17,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/commerce/")
+@RequestMapping("/api/business")
 @RequiredArgsConstructor
 public class BusinessRegistrationController {
     private final BusinessRegistrationService businessRegistrationService;
     private final BusinessTypeService businessTypeService;
 
-    @PostMapping("registration")
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/register")
     public ResponseEntity<AppResponse<BusinessRegistrationResponse>> registerBusiness(@RequestBody BusinessRegistrationRequest businessRegistrationRequest) {
         BusinessRegistrationResponse businessRegistrationResponse = businessRegistrationService.register(businessRegistrationRequest);
         AppResponse<BusinessRegistrationResponse> response = AppResponse.<BusinessRegistrationResponse>builder()
@@ -38,7 +40,9 @@ public class BusinessRegistrationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
     @GetMapping("/businesses")
+    @PreAuthorize("@businessSecurity.canAccessRegistration(authentication, #registrationId)")
     public ResponseEntity<AppResponse<List<BusinessRegistrationResponse>>> getBusinessRegistration() {
         List<BusinessRegistrationResponse> response = businessRegistrationService.getRegisteredBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessRegistrationResponse>>builder()
@@ -46,7 +50,8 @@ public class BusinessRegistrationController {
                 .status(HttpStatus.OK.value()).data(response).error("").build());
     }
 
-    @GetMapping("/{businessNumber}/verify")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'COMMISSIONER')")
+    @PutMapping("/{businessNumber}/verify")
     public ResponseEntity<AppResponse<BusinessRegistrationResponse>> verifyBusiness(@PathVariable String businessNumber) {
         BusinessRegistrationResponse response = businessRegistrationService.verifyBusiness(businessNumber);
         AppResponse<BusinessRegistrationResponse>verify = AppResponse.<BusinessRegistrationResponse>builder()

@@ -37,8 +37,26 @@ public class AppResponse<T> {
     public AppResponse(boolean b, String message) {
     }
 
-    public static <T> AppResponse<T> of(int status, T data) {
-        return new AppResponse<>(status, data);
+//    public static <T> AppResponse<T> of(int status, T data) {
+//        return new AppResponse<>(status, data);
+//    }
+
+
+    // Add this new factory method for errors
+    public static <T> AppResponse<T> error(int status, String message) {
+        AppResponse<T> response = new AppResponse<>();
+        response.setStatus(status);
+        response.setMessage(message);
+        return response;
     }
+
+    // Existing of() method
+    public static <T> AppResponse<T> of(int status, T data) {
+        AppResponse<T> response = new AppResponse<>();
+        response.setStatus(status);
+        response.setData(data);
+        return response;
+    }
+
 }
 
