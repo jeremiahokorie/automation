@@ -23,4 +23,6 @@ public interface AccessControlService {
     List<PermissionResponse> getPermissions();
 
     List<RolesResponse> getRoles();
+
+    RolesResponse updateRole(Long id, RolesRequest request);
 }

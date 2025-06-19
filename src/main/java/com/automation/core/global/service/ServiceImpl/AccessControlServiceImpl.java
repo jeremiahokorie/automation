@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,11 @@ public class AccessControlServiceImpl implements AccessControlService {
     public RolesResponse createRole(RolesRequest request) {
         Roles role = new Roles();
         role.setName(request.getName());
+        role.setValue(request.getValue());
+        role.setDescription(request.getDescription());
         roleRepo.save(role);
+        List<Permission> permissions = permissionRepo.findAllById(request.getPermissionIds());
+        role.setPermissions(permissions);
         return RolesResponse.builder().name(request.getName()).build();
     }
 
@@ -80,5 +85,21 @@ public class AccessControlServiceImpl implements AccessControlService {
                 .name(roles1.getName())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public RolesResponse updateRole(Long id, RolesRequest request) {
+        Roles role = roleRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        role.setName(request.getName());
+        role.setValue(request.getValue());
+        role.setDescription(request.getDescription());
+
+        List<Permission> permissions  = permissionRepo.findAllById(request.getPermissionIds());
+        role.setPermissions(permissions);
+
+        roleRepo.save(role);
+        return RolesResponse.builder().name(request.getName()).build();
+
     }
 }

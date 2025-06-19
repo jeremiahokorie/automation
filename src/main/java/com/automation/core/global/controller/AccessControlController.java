@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,16 @@ import java.util.List;
 public class AccessControlController {
     private final AccessControlService accessControlService;
 
+//    @PostMapping
+//    @PreAuthorize("hasRole('SUPER_ADMIN')")
+//    public ResponseEntity<Role> createRole(@RequestBody RoleRequest request) {
+//        Role createdRole = roleService.createRole(request);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdRole);
+//    }
+
+
+
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @PostMapping("/roles")
     public ResponseEntity<AppResponse<RolesResponse>> createRole(@RequestBody RolesRequest request) {
         RolesResponse rolesResponse = accessControlService.createRole(request);
@@ -36,6 +47,7 @@ public class AccessControlController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @PostMapping("/permissions")
     public ResponseEntity<AppResponse<PermissionResponse>> createPermission(@RequestBody PermissionRequest request) {
         PermissionResponse permissionResponse =  accessControlService.createPermission(request);
@@ -45,16 +57,19 @@ public class AccessControlController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @PostMapping("/roles/{roleId}/permissions/{permissionId}")
     public Roles assignPermissionToRole(@PathVariable Long roleId, @PathVariable Long permissionId) {
         return accessControlService.assignPermissionToRole(roleId, permissionId);
     }
 
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @PostMapping("/users/{userId}/roles/{roleId}")
     public User assignRoleToUser(@PathVariable Long userId, @PathVariable Long roleId) {
         return accessControlService.assignRoleToUser(userId, roleId);
     }
 
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @GetMapping("/permissions")
     public ResponseEntity<AppResponse<List<PermissionResponse>>>Permissions(){
         List<PermissionResponse> permission = accessControlService.getPermissions();
@@ -63,12 +78,23 @@ public class AccessControlController {
                 .status(HttpStatus.OK.value()).data(permission).build());
     }
 
+    @PreAuthorize("hasRole('SUPERADMIN')")
     @GetMapping("/roles")
     public ResponseEntity<AppResponse<List<RolesResponse>>>Roles(){
         List<RolesResponse> roless = accessControlService.getRoles();
         return ResponseEntity.ok().body(AppResponse.<List<RolesResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value()).data(roless).build());
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('SUPERADMIN')")
+    public ResponseEntity<AppResponse<RolesResponse>> updateRole(@PathVariable Long id, @RequestBody RolesRequest request) {
+        RolesResponse updatedRole = accessControlService.updateRole(id, request);
+        return ResponseEntity.ok().body(AppResponse.<RolesResponse>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value()).data(updatedRole).build());
+
     }
 
 }

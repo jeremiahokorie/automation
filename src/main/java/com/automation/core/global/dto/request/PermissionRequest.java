@@ -11,5 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PermissionRequest {
     private String name;
+    private String value;
+    private String description;
 
 }
