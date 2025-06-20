@@ -1,14 +1,17 @@
 package com.automation.core.global.service.ServiceImpl;
 
+import com.automation.core.global.dto.request.ChangePasswordRequest;
 import com.automation.core.global.dto.request.UserRequest;
 import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.Roles;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,6 +41,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = userRepository.findByEmail(userRequest.getEmail());
         Roles userRole = roleRepository.findByValue("SUPERADMIN")
                 .orElseThrow(() -> new Exception("Default role not found"));
+
+        Roles role = roleRepository.findById(userRequest.getRoleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+
 
         if (user.isPresent()) {
             throw new Exception("User already exists");
@@ -111,10 +118,58 @@ public class UserServiceImpl implements UserService {
        return user;
     }
 
+    @Override
+    public UserResponse updateUser(Long userId, UserRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setAddress(request.getAddress());
+        user.setNin(request.getNin());
+        user.setCity(request.getCity());
+        user.setState(request.getState());
+        user.setZip(request.getZip());
+        user.setStreet(request.getStreet());
+        user.setZip(request.getZip());
+
+        User updatedUser = userRepository.save(user);
+        return UserResponse.builder()
+                .id(updatedUser.getId())
+                .email(updatedUser.getEmail())
+                .firstName(updatedUser.getFirstName())
+                .lastName(updatedUser.getLastName())
+                .phoneNumber(updatedUser.getPhoneNumber())
+                .address(updatedUser.getAddress())
+                .nin(updatedUser.getNin())
+                .city(updatedUser.getCity())
+                .state(updatedUser.getState())
+                .street(updatedUser.getStreet())
+                .zip(updatedUser.getZip())
+                .build();
+    }
+
+
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new Exception("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+    }
+
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         return user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
+
+
 
 }

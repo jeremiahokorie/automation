@@ -2,6 +2,7 @@ package com.automation.core.global.controller;
 
 
 import com.automation.core.global.dto.request.AuthRequest;
+import com.automation.core.global.dto.request.ChangePasswordRequest;
 import com.automation.core.global.dto.request.UserRequest;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.global.dto.response.AuthResponse;
@@ -9,6 +10,7 @@ import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.service.UserService.UserService;
 import com.automation.util.constant.AppConstant;
 import com.automation.util.jwt.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -74,16 +77,29 @@ public class UserController {
     }
 
 
-//    @PutMapping("/{userId}")
-//    public ResponseEntity<UserRequest> updateUser(
-//            @PathVariable Long userId,
-//            @RequestBody UserRequest request) {
-//        return ResponseEntity.ok(userService.updateUser(userId, request));
+    @PutMapping("/users/{userId}")
+    // @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
+    public ResponseEntity<AppResponse<UserResponse>> updateUser(@PathVariable Long userId,@Valid @RequestBody UserRequest request) {
+        UserResponse userResponse = userService.updateUser(userId, request);
+        return ResponseEntity.ok().body(AppResponse.<UserResponse>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value()).data(userResponse).build());
+    }
+
+//    @PostMapping("/auth/reset-password")
+//    public ResponseEntity<Void> resetPassword(
+//            @RequestBody ResetPasswordRequest request) {
+//        userService.resetPassword(request.token(), request.newPassword());
+//        return ResponseEntity.ok().build();
 //    }
-//
-//    @DeleteMapping("/{userId}")
-//    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-//        userService.deleteUser(userId);
-//        return ResponseEntity.noContent().build();
-//    }
+
+
+    @PostMapping("/users/change-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> changePassword(
+            @RequestBody ChangePasswordRequest request,
+            Principal principal) {
+        userService.changePassword(principal.getName(), request);
+        return ResponseEntity.ok().build();
+    }
 }

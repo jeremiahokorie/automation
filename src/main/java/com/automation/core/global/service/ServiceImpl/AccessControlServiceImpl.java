@@ -72,6 +72,8 @@ public class AccessControlServiceImpl implements AccessControlService {
         return permissions.stream().map(permissions1 ->
                 PermissionResponse.builder()
                         .name(permissions1.getName())
+                        .description(permissions1.getDescription())
+                        .value(permissions1.getValue())
                         .build())
                 .collect(Collectors.toList());
 
@@ -82,7 +84,9 @@ public class AccessControlServiceImpl implements AccessControlService {
         List<Roles> roleResp = roleRepo.findAll();
         return roleResp.stream().map(roles1 ->
                 RolesResponse.builder()
-                .name(roles1.getName())
+                        .name(roles1.getName())
+                        .value(roles1.getValue())
+                        .description(roles1.getDescription())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -99,7 +103,10 @@ public class AccessControlServiceImpl implements AccessControlService {
         role.setPermissions(permissions);
 
         roleRepo.save(role);
-        return RolesResponse.builder().name(request.getName()).build();
+        return RolesResponse.builder().name(request.getName())
+                .value(role.getValue())
+                .description(role.getDescription())
+                .build();
 
     }
 }

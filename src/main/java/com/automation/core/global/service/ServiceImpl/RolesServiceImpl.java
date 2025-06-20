@@ -22,6 +22,8 @@ public class RolesServiceImpl implements RolesService {
         roleRepository.save(role);
         return RolesResponse.builder()
                 .name(roles.getName())
+                .value(role.getValue())
+                .description(role.getDescription())
                 .build();
     }
 }

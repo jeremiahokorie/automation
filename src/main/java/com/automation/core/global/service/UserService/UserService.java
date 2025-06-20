@@ -1,5 +1,6 @@
 package com.automation.core.global.service.UserService;
 
+import com.automation.core.global.dto.request.ChangePasswordRequest;
 import com.automation.core.global.dto.request.UserRequest;
 import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.model.User;
@@ -14,6 +15,10 @@ public interface UserService {
     UserResponse deleteById(Long id);
 
     User loadUserByUsername(String email) throws UsernameNotFoundException;;
+
+    UserResponse updateUser(Long userId, UserRequest request);
+
+    void changePassword(String name, ChangePasswordRequest request);
 
     // UserResponse deleteUsers(UserRequest userRequest);
 }
