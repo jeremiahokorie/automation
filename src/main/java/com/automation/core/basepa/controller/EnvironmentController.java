@@ -5,7 +5,9 @@ import com.automation.core.basepa.dto.request.EnvironmentRequest;
 import com.automation.core.basepa.dto.request.PermitRenewRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
+import com.automation.core.basepa.dto.response.EnvironmentSummaryResponse;
 import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
+import com.automation.core.commerce.dto.response.BusinessSummaryResponse;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.util.constant.AppConstant;
 import io.swagger.models.Response;
@@ -88,6 +90,12 @@ public class EnvironmentController {
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/environment-summary")
+    public ResponseEntity<EnvironmentSummaryResponse>summary(){
+        EnvironmentSummaryResponse businessRegistrationResponse = environmentService.getEnvironmentSummary();
+        return ResponseEntity.ok().body(businessRegistrationResponse);
     }
 
 }

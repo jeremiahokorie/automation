@@ -5,6 +5,7 @@ import com.automation.core.basepa.dto.request.EnvironmentRequest;
 import com.automation.core.basepa.dto.request.PermitRenewRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
+import com.automation.core.basepa.dto.response.EnvironmentSummaryResponse;
 import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.basepa.repository.EnvironmentRepository;
 import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
@@ -12,6 +13,7 @@ import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
 import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
 import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
 import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
+import com.automation.core.commerce.dto.response.BusinessSummaryResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
@@ -26,6 +28,7 @@ import com.automation.util.enums.Status;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     private final EnvironmentRepository environmentRepository;
     private final PaymentService paymentService;
     private final InspectionService inspectionService;
+    private final Environment environment;
 
     @Override
     public EnvironmentResponse apply(EnvironmentRequest environmentRequest) {
@@ -251,5 +255,16 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             throw new Exception("Payment gateway response parsing error");
         }
 
+    }
+
+    @Override
+    public EnvironmentSummaryResponse getEnvironmentSummary() {
+        EnvironmentSummaryResponse environment = new EnvironmentSummaryResponse();
+        environment.setTotalApproved((int) environmentRepository.countByStatus(Status.APPROVED));
+        environment.setTotalRejected((int) environmentRepository.countByStatus(Status.REJECTED));
+        environment.setTotalPending((int) environmentRepository.countByStatus(Status.PENDING));
+        environment.setTotalReviewed((int) environmentRepository.countByStatus(Status.REVIEWED));
+        environment.setTotalRegisteredEnvironment(Math.toIntExact(environmentRepository.count()));
+        return environment;
     }
 }

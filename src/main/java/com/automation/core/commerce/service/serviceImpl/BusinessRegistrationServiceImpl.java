@@ -6,6 +6,7 @@ import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
 import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
+import com.automation.core.commerce.dto.response.BusinessSummaryResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.commerce.model.BusinessType;
 import com.automation.core.commerce.repository.BusinessRepository;
@@ -243,6 +244,17 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .id(registration.getId())
                 .comment(registration.getComment())
                 .build();
+    }
+
+    @Override
+    public BusinessSummaryResponse getBusinessSummary() {
+        BusinessSummaryResponse businessRegistrationResponse = new BusinessSummaryResponse();
+        businessRegistrationResponse.setTotalApproved((int) businessRepository.countByStatus(Status.APPROVED));
+        businessRegistrationResponse.setTotalRejected((int) businessRepository.countByStatus(Status.REJECTED));
+        businessRegistrationResponse.setTotalPending((int) businessRepository.countByStatus(Status.PENDING));
+        businessRegistrationResponse.setTotalReviewed((int) businessRepository.countByStatus(Status.REVIEWED));
+        businessRegistrationResponse.setTotalRegisteredBusiness(Math.toIntExact(businessRepository.count()));
+        return businessRegistrationResponse;
     }
 
 

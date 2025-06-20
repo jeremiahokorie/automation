@@ -4,10 +4,7 @@ import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
 import com.automation.core.commerce.dto.request.BusinessRegistrationRequest;
 import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
 import com.automation.core.commerce.dto.request.BusinessTypeRequest;
-import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
-import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
-import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
-import com.automation.core.commerce.dto.response.BusinessTypeResponse;
+import com.automation.core.commerce.dto.response.*;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.commerce.service.service.BusinessTypeService;
 import com.automation.core.global.dto.response.AppResponse;
@@ -119,6 +116,12 @@ public class BusinessRegistrationController {
         return ResponseEntity.ok().body(AppResponse.<List<BusinessTypeResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value()).data(businesses).error("").build());
+    }
+
+    @GetMapping("/business-summary")
+    public ResponseEntity<BusinessSummaryResponse>summary(){
+        BusinessSummaryResponse businessRegistrationResponse = businessRegistrationService.getBusinessSummary();
+        return ResponseEntity.ok().body(businessRegistrationResponse);
     }
 
 
