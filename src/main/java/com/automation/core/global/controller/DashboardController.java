@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/admin")
+@RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
     public class DashboardController {
     private final DashboardService dashboardService;

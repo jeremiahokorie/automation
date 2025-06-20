@@ -51,11 +51,11 @@ public class WebSecurityConfig{
                         // User management
 //                        .requestMatchers(HttpMethod.GET, "/api/admin/access/roles").hasRole("SUPERADMIN")
 //                        .requestMatchers(HttpMethod.POST, "/api/admin/access/roles").hasRole("SUPERADMIN")
-                        //.requestMatchers(HttpMethod.GET, "/api/admin/summary").hasRole("SUPERADMIN")
+                        //.requestMatchers(HttpMethod.GET, "/api/dashboard/summary").hasRole("SUPERADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/auth/users").hasAnyRole("SUPERADMIN","SUPER_USER")
                         .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("SUPERADMIN")
 
-                        // Environment registration
+                        // Environment registration api/environment/apply-permit
                         .requestMatchers(HttpMethod.POST, "/api/environment/apply").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/environment/apply").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/environment/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
