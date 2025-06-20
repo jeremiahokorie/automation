@@ -56,7 +56,7 @@ public class EnvironmentController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
+    //@PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/approve")
     public ResponseEntity<AppResponse<ApprovalResponse>> approvePermit(
             @PathVariable Long id,
@@ -72,8 +72,7 @@ public class EnvironmentController {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
+    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/reject")
     public ResponseEntity<AppResponse<ApprovalResponse>> rejectBusiness(
             @PathVariable Long id,
