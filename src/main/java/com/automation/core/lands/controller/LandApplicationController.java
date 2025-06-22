@@ -1,5 +1,7 @@
 package com.automation.core.lands.controller;
 
+import com.automation.core.basepa.dto.response.EnvironmentSummaryResponse;
+import com.automation.core.commerce.dto.response.LandApplicationSummaryResponse;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.lands.dto.request.CustomaryAllocationRequest;
 import com.automation.core.lands.dto.request.LandApplicationRequest;
@@ -56,6 +58,19 @@ public class LandApplicationController {
         return ResponseEntity.ok().body(AppResponse.<List<StatutoryApplicationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value()).data(allocations).error("").build());
+    }
+
+
+    @GetMapping("/statutory-summary")
+    public ResponseEntity<LandApplicationSummaryResponse>getAllsummary(){
+        LandApplicationSummaryResponse landApp = landApplicationService.getAllStatutorySummary();
+        return ResponseEntity.ok().body(landApp);
+    }
+
+    @GetMapping("/customary-summary")
+    public ResponseEntity<LandApplicationSummaryResponse>summary(){
+        LandApplicationSummaryResponse landApp = landApplicationService.getAllCustomarySummary();
+        return ResponseEntity.ok().body(landApp);
     }
 
 //    @PostMapping("/land")

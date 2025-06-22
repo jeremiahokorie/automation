@@ -1,5 +1,6 @@
 package com.automation.core.lands.model;
 
+import com.automation.util.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -46,7 +47,7 @@ public class StatutoryAllocationApplication {
     private LocalDate dateOfBirth;
 
     private String gender;
-
+    private Status status;
     private String maritalStatus;
 
     private String occupation;

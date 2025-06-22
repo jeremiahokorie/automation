@@ -1,6 +1,8 @@
 package com.automation.core.lands.service.serviceImpl;
 
 
+import com.automation.core.basepa.dto.response.EnvironmentSummaryResponse;
+import com.automation.core.commerce.dto.response.LandApplicationSummaryResponse;
 import com.automation.core.lands.dto.request.CustomaryAllocationRequest;
 import com.automation.core.lands.dto.request.LandApplicationRequest;
 import com.automation.core.lands.dto.request.StatutoryApplicationRequest;
@@ -64,6 +66,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         put("community_consent_letters", "Community Consent Letters");
         put("development_sketches", "Development Sketches");
     }};
+    private final StatutoryAllocationRepository statutoryAllocationRepository;
 
     public void StatutoryAllocationApplication() throws IOException {
         Files.createDirectories(Paths.get(UPLOAD_DIR));
@@ -235,7 +238,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         allocationApplication.setApplicationDate(LocalDate.now());
         allocationApplication.setApplicationFeeAmount(statutoryApplicationRequest.getApplicationFeeAmount());
         allocationApplication.setApplicationNo(statutoryApplicationRequest.getApplicationNo());
-       allocationApplication.setApplicationFeeType(statutoryApplicationRequest.getApplicationFeeType());
+        allocationApplication.setApplicationFeeType(statutoryApplicationRequest.getApplicationFeeType());
         allocationApplication.setAssignedDate(statutoryApplicationRequest.getAssignedDate());
         allocationApplication.setGender(statutoryApplicationRequest.getGender());
         allocationApplication.setHomeAddress(statutoryApplicationRequest.getHomeAddress());
@@ -246,6 +249,13 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         allocationApplication.setPhoneNumber(statutoryApplicationRequest.getPhoneNumber());
         allocationApplication.setStateOfOrigin(statutoryApplicationRequest.getStateOfOrigin());
         allocationApplication.setTownOrArea(statutoryApplicationRequest.getTownOrArea());
+        allocationApplication.setExistingLandLocation(statutoryApplicationRequest.getExistingLandLocation());
+        allocationApplication.setAcquiringAuthority(statutoryApplicationRequest.getAcquiringAuthority());
+        allocationApplication.setOwnsStateLand(statutoryApplicationRequest.getOwnsStateLand());
+        allocationApplication.setOathDeclaration(statutoryApplicationRequest.getOathDeclaration());
+        allocationApplication.setIsLandDeveloped(statutoryApplicationRequest.getIsLandDeveloped());
+        allocationApplication.setOtherFeesBreakdown(statutoryApplicationRequest.getOtherFeesBreakdown());
+        allocationApplication.setIsAssignorOrAssignee(statutoryApplicationRequest.getIsAssignorOrAssignee());
 
         Map<String, String> response = new HashMap<>();
         for (String key : REQUIRED_DOCUMENTS.keySet()) {
@@ -326,6 +336,29 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .nationality(customaryAllocation.getNationality()).build()
         ).collect(Collectors.toList());
     }
+
+    @Override
+    public LandApplicationSummaryResponse getAllStatutorySummary() {
+        LandApplicationSummaryResponse environment = new LandApplicationSummaryResponse();
+        environment.setTotalApproved((int) statutoryAllocationRepository.countByStatus(Status.APPROVED));
+        environment.setTotalRejected((int) statutoryAllocationRepository.countByStatus(Status.REJECTED));
+        environment.setTotalPending((int) statutoryAllocationRepository.countByStatus(Status.PENDING));
+        environment.setTotalReviewed((int) statutoryAllocationRepository.countByStatus(Status.REVIEWED));
+        environment.setTotalAppliedRequest(Math.toIntExact(statutoryAllocationRepository.count()));
+        return environment;
+    }
+
+    @Override
+    public LandApplicationSummaryResponse getAllCustomarySummary() {
+        LandApplicationSummaryResponse customaryAllocationApplication = new LandApplicationSummaryResponse();
+        customaryAllocationApplication.setTotalApproved((int) customaryAllocationRepository.countByStatus(Status.APPROVED));
+        customaryAllocationApplication.setTotalRejected((int) customaryAllocationRepository.countByStatus(Status.REJECTED));
+        customaryAllocationApplication.setTotalPending((int) customaryAllocationRepository.countByStatus(Status.PENDING));
+        customaryAllocationApplication.setTotalReviewed((int) customaryAllocationRepository.countByStatus(Status.REVIEWED));
+        customaryAllocationApplication.setTotalAppliedRequest(Math.toIntExact(customaryAllocationRepository.count()));
+        return null;
+    }
+
 
     private LandApplicationResponse mapToResponse(LandApplication app) {
         return LandApplicationResponse.builder()

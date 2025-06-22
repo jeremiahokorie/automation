@@ -1,11 +1,14 @@
 package com.automation.core.lands.dto.request;
 
+import com.automation.util.enums.Status;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -126,6 +129,23 @@ public class StatutoryApplicationRequest {
     private String ageDeclaration;
     private String naturalizationDoc;
     private String oathDeclaration;
+    private Status status;
+
+    private LocalDate dateOfApplication;
+    private MultipartFile passportOfOwner;
+
+    private String applicantTitle;
+    private String nameOfApplicant;
+    private String otherNationality; // if "Others" is selected
+    private String telephoneNumber;
+    private String assigneeOrAssignorNameAndAddress;
+    private String plotActivityDetail; // For Commercial or Educational plot types
+    private String applicationFeeCategory;
+    private String developmentFinanceSource;
+    private boolean propertyPreviouslyAcquiredByGovernment;
+    private String acquisitionDetails;
+    private String location;
+    private LocalDate dateOfAcquisition;
 
 //    // Corporate section (optional)
 //    private String incorporationCertificatePath;

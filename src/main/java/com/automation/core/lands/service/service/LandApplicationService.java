@@ -1,5 +1,6 @@
 package com.automation.core.lands.service.service;
 
+import com.automation.core.commerce.dto.response.LandApplicationSummaryResponse;
 import com.automation.core.lands.dto.request.CustomaryAllocationRequest;
 import com.automation.core.lands.dto.request.LandApplicationRequest;
 import com.automation.core.lands.dto.request.StatutoryApplicationRequest;
@@ -32,4 +33,8 @@ public interface LandApplicationService {
     List<StatutoryApplicationResponse> getAllStatutoryAllocations();
 
     List<CustomaryAllocationResponse> getAllCustomaryAllocations();
+
+    LandApplicationSummaryResponse getAllStatutorySummary();
+
+    LandApplicationSummaryResponse getAllCustomarySummary();
 }
