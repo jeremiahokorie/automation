@@ -26,6 +26,7 @@ public class AppConfig {
         return new RestTemplate();
     }
 
+
 //    @Bean
 //    public OpenAPI customOpenAPI() {
 //        return new OpenAPI()

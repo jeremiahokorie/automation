@@ -11,9 +11,12 @@ import com.automation.core.global.model.User;
 import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
+import com.automation.events.EmailNotificationEvent;
+import com.google.common.collect.ImmutableMap;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher publisher;
     private User user;
 
     @Override
@@ -42,8 +46,8 @@ public class UserServiceImpl implements UserService {
         Roles userRole = roleRepository.findByValue("SUPERADMIN")
                 .orElseThrow(() -> new Exception("Default role not found"));
 
-        Roles role = roleRepository.findById(userRequest.getRoleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+//        Roles role = roleRepository.findById(userRequest.getRoleId())
+//                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
 
         if (user.isPresent()) {
@@ -66,6 +70,7 @@ public class UserServiceImpl implements UserService {
         //createUser.setRole(roles);
         createUser.setCreateDate(LocalDate.now());
         userRepository.save(createUser);
+        publisher.publishEvent(new EmailNotificationEvent(this, "welcome", ImmutableMap.of("recipient", createUser.getEmail(), "name", createUser.getFirstName() + createUser.getLastName())));
 
         return UserResponse.builder()
                 .id(createUser.getId())
