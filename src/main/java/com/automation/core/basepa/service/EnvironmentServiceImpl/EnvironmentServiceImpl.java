@@ -28,6 +28,7 @@ import com.automation.util.enums.Status;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class EnvironmentServiceImpl implements EnvironmentService {
     private final EnvironmentRepository environmentRepository;
     private final PaymentService paymentService;
@@ -56,7 +58,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .amount(15000)
                 .bearer(1)
-                .callbackUrl("https://example.com/")
+                .callbackUrl("https://bauchi-mda.netlify.app/")
                 .channels(List.of("card", "bank"))
                 .customerFirstName(environmentRequest.getApplicantName())
                 .customerLastName(environmentRequest.getApplicantName())
@@ -79,6 +81,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 throw new Exception("Payment failed to initialize");
             }
             String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+            log.info("Authorization URL: {}", authorizationUrl);
 
         if (appyPermit == null) {
             appyPermit = new EnvironmentApplication();
@@ -93,6 +96,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setPermitType(environmentRequest.getPermitType());
             appyPermit.setWasteDescription(environmentRequest.getWasteDescription());
             appyPermit.setPhone(environmentRequest.getPhone());
+            appyPermit.setAuthorizationUrl(authorizationUrl);
             appyPermit.setIndustryType(environmentRequest.getIndustryType());
             appyPermit.setWasteQuantity(environmentRequest.getWasteQuantity());
             appyPermit.setOperationalLicenseNumber(environmentRequest.getOperationalLicenseNumber());
