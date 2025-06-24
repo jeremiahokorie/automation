@@ -86,12 +86,6 @@ public class UserController {
                 .status(HttpStatus.OK.value()).data(userResponse).build());
     }
 
-//    @PostMapping("/auth/reset-password")
-//    public ResponseEntity<Void> resetPassword(
-//            @RequestBody ResetPasswordRequest request) {
-//        userService.resetPassword(request.token(), request.newPassword());
-//        return ResponseEntity.ok().build();
-//    }
 
 
     @PostMapping("/users/change-password")
@@ -101,5 +95,11 @@ public class UserController {
             Principal principal) {
         userService.changePassword(principal.getName(), request);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/generate-password-reset-token")
+    public ResponseEntity<String> generatePasswordResetToken(@RequestParam String email) {
+        userService.generatePasswordResetToken(email);
+        return ResponseEntity.ok("Password reset token generated and sent to the user's email.");
     }
 }

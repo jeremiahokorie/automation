@@ -173,4 +173,18 @@ public class JwtUtil {
         }
     }
 
+    public String generatePasswordResetToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        claims.put("email", user.getEmail());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject("resetToken")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
 }

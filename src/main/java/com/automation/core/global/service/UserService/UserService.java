@@ -20,5 +20,8 @@ public interface UserService {
 
     void changePassword(String name, ChangePasswordRequest request);
 
+    void generatePasswordResetToken(String email);
+
+
     // UserResponse deleteUsers(UserRequest userRequest);
 }

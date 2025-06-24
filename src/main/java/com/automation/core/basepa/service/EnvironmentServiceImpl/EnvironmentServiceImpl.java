@@ -157,6 +157,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .applicantName(permit.getApplicantName())
                 .contactPerson(permit.getContactPerson())
                 .address(permit.getAddress())
+                .authorizationUrl(permit.getAuthorizationUrl())
                 .permitType(permit.getPermitType())
                 .wasteQuantity(permit.getWasteQuantity())
                 .disposalFrequency(permit.getDisposalFrequency())

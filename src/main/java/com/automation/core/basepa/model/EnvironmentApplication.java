@@ -57,6 +57,7 @@ public class EnvironmentApplication {
         private String comment;
         private LocalDate approvalDate;
         private LocalDate rejectionDate;
+        private String AuthorizationUrl;
 
         // File references (could be URLs or file names in a storage system)
 //        private String businessRegistrationDoc;

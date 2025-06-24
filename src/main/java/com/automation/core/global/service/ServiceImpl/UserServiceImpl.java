@@ -12,6 +12,7 @@ import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
 import com.automation.events.EmailNotificationEvent;
+import com.automation.util.jwt.JwtUtil;
 import com.google.common.collect.ImmutableMap;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,9 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher publisher;
+    private final JwtUtil jwtUtil;
     private User user;
+    private UserService userService;
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
@@ -167,6 +170,26 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+    }
+
+    @Override
+    public void generatePasswordResetToken(String email) {
+        User user = userRepository.findByemail(email);
+        if (user != null) {
+            String resetToken = jwtUtil.generatePasswordResetToken(user);
+            user.setResetToken(resetToken);
+            user.setResetTokenExpiryDateTime(LocalDateTime.now().plusHours(1)); // Token valid for 1 hour
+            userRepository.save(user);
+            String resetLink = "https://bauchi-mda.netlify.app/reset-password?token=" + resetToken;
+            log.info("Reset link {}", resetLink);
+            // publishResetLinkEvent(user.getEmail(), resetLink);
+
+            publisher.publishEvent(new EmailNotificationEvent(this, "password", ImmutableMap.of("recipient", user.getEmail(), "name", user.getFirstName() + " " + user.getLastName(), "url", resetLink)));
+
+        }else {
+            throw new Exception("User not found");
+        }
+
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {

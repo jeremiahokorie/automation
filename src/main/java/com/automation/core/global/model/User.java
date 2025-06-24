@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,27 @@ public class User implements Serializable {
     private String state;
     private String zip;
     private String nin;
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "reset_token_expiry_datetime")
+    private LocalDateTime resetTokenExpiryDateTime;
+
+
+    @Column(name = "last_login_date")
+    private Date lastLoginDate;
+
+    @Column(name = "last_login_ip")
+    private String lastLoginIp;
+
+    @Column(name = "user_lock")
+    private Integer userLock;
+
+    @Column(name = "user_lock_date")
+    private Date userLockDate;
+
+    @Column(name = "last_password_reset_date")
+    private Date lastPasswordResetDate;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
