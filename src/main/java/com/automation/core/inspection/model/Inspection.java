@@ -50,12 +50,12 @@ public class Inspection {
 //    private User user;
 
     // Direct relationship with BusinessRegistration
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "business_registration_id")
     private BusinessRegistration businessRegistration;
 
     // Direct relationship with Environment
-    @ManyToOne
+    @OneToOne()
     @JoinColumn(name = "environment_application_id")
     private EnvironmentApplication environment;
 

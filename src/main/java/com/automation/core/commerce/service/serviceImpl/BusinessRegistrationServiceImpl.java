@@ -15,6 +15,8 @@ import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
 import com.automation.core.inspection.dto.request.InspectionRequest;
+import com.automation.core.inspection.model.Inspection;
+import com.automation.core.inspection.repository.InspectionRepository;
 import com.automation.core.inspection.service.InspectionService.InspectionService;
 import com.automation.core.payment.dto.request.PaymentRequest;
 import com.automation.core.payment.service.PaymentService;
@@ -38,7 +40,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     private final BusinessRepository businessRepository;
     private final BusinessTypeRepository businessTypeRepository;
     private final PaymentService paymentService;
-    private final InspectionService inspectionService;
+    private final InspectionRepository inspectionRepository;
 
     @Override
     public BusinessRegistrationResponse register(BusinessRegistrationRequest businessRegistrationRequest) {
@@ -93,12 +95,13 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
            // businessRegistration.setBusinessType(businessType);
             businessRepository.save(businessRegistration);
 
-                InspectionRequest inspectionDto = new InspectionRequest();
-                inspectionDto.setRequestId(UUID.randomUUID());
-                inspectionDto.setSourceService("BUSINESS REGISTRATION");
-                inspectionDto.setApplicantName(businessRegistrationRequest.getOwnerName());
-                inspectionDto.setApplicationType(businessRegistrationRequest.getBusinessName());
-                inspectionService.createInspection(inspectionDto);
+                Inspection inspection = new Inspection();
+                inspection.setRequestId(UUID.randomUUID());
+                inspection.setSourceService("BUSINESS REGISTRATION");
+                inspection.setApplicantName(businessRegistrationRequest.getOwnerName());
+                inspection.setApplicationType(businessRegistrationRequest.getBusinessName());
+                inspection.setBusinessRegistration(businessRegistration);
+                inspectionRepository.save(inspection);
 
         }else {
             throw new Exception("Business already exists");

@@ -36,7 +36,6 @@ public class InspectionServiceImpl implements InspectionService {
     @Override
     @Transactional
     public InspectionResponse updateInspectionStatus(Long id, StatusUpdateDto dto) {
-        // 1. Update Inspection
         Inspection inspection = inspectionRepository.findById(id)
                 .orElseThrow(() -> new Exception("Inspection not found"));
 
@@ -59,9 +58,6 @@ public class InspectionServiceImpl implements InspectionService {
         }
 
         inspectionRepository.save(inspection);
-
-
-        inspectionRepository.save(inspection);  // Saves inspection + cascades if configured
 
         return InspectionResponse.builder().id(inspection.getId()).build();
     }

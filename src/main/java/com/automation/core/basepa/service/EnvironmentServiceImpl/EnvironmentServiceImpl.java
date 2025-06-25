@@ -19,6 +19,8 @@ import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
 import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.inspection.dto.request.InspectionRequest;
+import com.automation.core.inspection.model.Inspection;
+import com.automation.core.inspection.repository.InspectionRepository;
 import com.automation.core.inspection.service.InspectionService.InspectionService;
 import com.automation.core.payment.dto.request.PaymentRequest;
 import com.automation.core.payment.service.PaymentService;
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
 public class EnvironmentServiceImpl implements EnvironmentService {
     private final EnvironmentRepository environmentRepository;
     private final PaymentService paymentService;
-    private final InspectionService inspectionService;
+    private final InspectionRepository inspectionRepository;
     private final Environment environment;
 
     @Override
@@ -108,12 +110,12 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setWasteSource(SourceOfWaste.HOUSEHOLD);
             environmentRepository.save(appyPermit);
 
-            InspectionRequest inspectionDto = new InspectionRequest();
-            inspectionDto.setRequestId(UUID.randomUUID());
-            inspectionDto.setSourceService("APPLICATION PERMIT");
-            inspectionDto.setApplicantName(environmentRequest.getApplicantName());
-            inspectionDto.setApplicationType(environmentRequest.getIndustryType());
-            inspectionService.createInspection(inspectionDto);
+            Inspection inspection = new Inspection();
+            inspection.setRequestId(UUID.randomUUID());
+            inspection.setSourceService("APPLICATION PERMIT");
+            inspection.setApplicantName(environmentRequest.getApplicantName());
+            inspection.setApplicationType(environmentRequest.getIndustryType());
+            inspectionRepository.save(inspection);
         }
         else {
             throw new ResourceNotFoundException("Resource Not Found");
