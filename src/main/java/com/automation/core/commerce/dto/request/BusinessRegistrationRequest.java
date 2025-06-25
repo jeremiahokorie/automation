@@ -23,6 +23,7 @@ public class BusinessRegistrationRequest {
     private boolean isRenewal;
     private String comment;
     private String businessNumber;
+    private String paymentStatus;
 //    private Long businessTypeId;
 
 }

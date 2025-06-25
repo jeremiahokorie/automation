@@ -36,6 +36,7 @@ public class EnvironmentRequest {
     private String industryType;
     private String operationalLicenseNumber;
     private Boolean hasEnvironmentalAudit;
+    private String paymentStatus;
 
     // Metadata
       private LocalDate applicationDate;

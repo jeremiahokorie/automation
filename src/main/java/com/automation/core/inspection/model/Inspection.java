@@ -56,7 +56,7 @@ public class Inspection {
 
     // Direct relationship with Environment
     @OneToOne()
-    @JoinColumn(name = "environment_application_id")
+    @JoinColumn(name = "environment_id")
     private EnvironmentApplication environment;
 
 
