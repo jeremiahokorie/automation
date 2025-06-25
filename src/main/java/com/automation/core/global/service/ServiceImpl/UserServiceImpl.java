@@ -6,6 +6,7 @@ import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
 import com.automation.core.global.exception.ResourceNotFoundException;
+import com.automation.core.global.model.Permission;
 import com.automation.core.global.model.Roles;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.RoleRepository;
@@ -44,10 +45,22 @@ public class UserServiceImpl implements UserService {
     private UserService userService;
 
     @Override
-    public UserResponse createUser(UserRequest userRequest) {
+    public UserResponse createUser(UserRequest userRequest, boolean isAdminCreation) {
         Optional<User> user = userRepository.findByEmail(userRequest.getEmail());
-        Roles userRole = roleRepository.findByValue("SUPERADMIN")
-                .orElseThrow(() -> new Exception("Default role not found"));
+
+//        Roles userRole = roleRepository.findByValue("SUPERADMIN")
+//                .orElseThrow(() -> new Exception("Default role not found"));
+
+        Roles role;
+        if (isAdminCreation) {
+            // For admin-created users, use the role from request
+            role = roleRepository.findById(userRequest.getRoleId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+        } else {
+            // For self-registration, use default USER role
+            role = roleRepository.findByValue("SUPERADMIN")
+                    .orElseThrow(() -> new Exception("Default role not found"));
+        }
 
 //        Roles role = roleRepository.findById(userRequest.getRoleId())
 //                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
@@ -64,7 +77,7 @@ public class UserServiceImpl implements UserService {
         createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
-        createUser.setRoles(List.of(userRole));
+        createUser.setRoles(List.of(role));
         createUser.setNin(userRequest.getNin());
         createUser.setCity(userRequest.getCity());
         createUser.setState(userRequest.getState());
@@ -73,26 +86,30 @@ public class UserServiceImpl implements UserService {
         //createUser.setRole(roles);
         createUser.setCreateDate(LocalDate.now());
         userRepository.save(createUser);
-        publisher.publishEvent(new EmailNotificationEvent(this, "welcome", ImmutableMap.of("recipient", createUser.getEmail(), "name", createUser.getFirstName() + createUser.getLastName())));
+        publisher.publishEvent(new EmailNotificationEvent(this, "welcome", ImmutableMap.of("recipient", createUser.getEmail(), "name", createUser.getFirstName() + "  " + createUser.getLastName())));
 
-        return UserResponse.builder()
-                .id(createUser.getId())
-                .email(userRequest.getEmail())
-                .firstName(userRequest.getFirstName())
-                .lastName(userRequest.getLastName())
-                .phoneNumber(userRequest.getPhoneNumber())
-                .address(userRequest.getAddress())
-                .nin(userRequest.getNin())
-                .city(userRequest.getCity())
-                .state(userRequest.getState())
-                .street(userRequest.getStreet())
-                .zip(userRequest.getZip())
-                .build();
+        return buildUserResponseWithPermissions(createUser, role);
+
+//                UserResponse.builder()
+//                .id(createUser.getId())
+//                .email(userRequest.getEmail())
+//                .firstName(userRequest.getFirstName())
+//                .lastName(userRequest.getLastName())
+//                .phoneNumber(userRequest.getPhoneNumber())
+//                .address(userRequest.getAddress())
+//                .nin(userRequest.getNin())
+//                .city(userRequest.getCity())
+//                .state(userRequest.getState())
+//                .street(userRequest.getStreet())
+//                .zip(userRequest.getZip())
+//                .build();
+
     }
+
 
     @Override
     public List<UserResponse> getUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAllByOrderByCreatedAtDesc();
         return users.stream().map(user -> UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -184,7 +201,7 @@ public class UserServiceImpl implements UserService {
             log.info("Reset link {}", resetLink);
             // publishResetLinkEvent(user.getEmail(), resetLink);
 
-            publisher.publishEvent(new EmailNotificationEvent(this, "password", ImmutableMap.of("recipient", user.getEmail(), "name", user.getFirstName() + " " + user.getLastName(), "url", resetLink)));
+            publisher.publishEvent(new EmailNotificationEvent(this, "password", ImmutableMap.of("recipient", user.getEmail(), "name", user.getFirstName(), "url", resetLink)));
 
         }else {
             throw new Exception("User not found");
@@ -198,6 +215,27 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    private UserResponse buildUserResponseWithPermissions(User user, Roles role) {
+        // Extract permission names from the role
+        List<String> permissions = role.getPermissions().stream()
+                .map(Permission::getName)
+                .collect(Collectors.toList());
 
+        return UserResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .address(user.getAddress())
+                .nin(user.getNin())
+                .city(user.getCity())
+                .state(user.getState())
+                .street(user.getStreet())
+                .zip(user.getZip())
+                .roleName(role.getName())
+                .permissions(permissions)
+                .build();
+    }
 
 }

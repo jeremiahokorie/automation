@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -32,6 +33,13 @@ public class BusinessRegistration {
     private String businessNumber;
     private String comment;
     private LocalDate renewalDate;
+    private LocalDateTime createdAt;
+    private String AuthorizationUrl;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
 
 //    @ManyToOne
 //    private BusinessType businessType;

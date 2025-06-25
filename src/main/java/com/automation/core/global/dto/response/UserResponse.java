@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -21,6 +23,8 @@ public class UserResponse {
     private String state;
     private String zip;
     private String nin;
+    private String roleName;
+    private List<String> permissions;
 
     public UserResponse(String s) {
     }

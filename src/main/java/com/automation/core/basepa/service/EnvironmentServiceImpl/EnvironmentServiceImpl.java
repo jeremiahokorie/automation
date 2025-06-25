@@ -148,7 +148,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
     @Override
     public List<EnvironmentResponse> getAll() {
-        List<EnvironmentApplication> appyPermit = environmentRepository.findAll();
+        List<EnvironmentApplication> appyPermit = environmentRepository.findAllByOrderByCreatedAtDesc();
         return appyPermit.stream().map(permit -> EnvironmentResponse.builder()
                 .id(permit.getId())
                 .phone(permit.getPhone())

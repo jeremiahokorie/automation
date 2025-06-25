@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -58,6 +59,12 @@ public class EnvironmentApplication {
         private LocalDate approvalDate;
         private LocalDate rejectionDate;
         private String AuthorizationUrl;
+        private LocalDateTime createdAt;
+
+        @PrePersist
+        public void prePersist() {
+                createdAt = LocalDateTime.now();
+        }
 
         // File references (could be URLs or file names in a storage system)
 //        private String businessRegistrationDoc;

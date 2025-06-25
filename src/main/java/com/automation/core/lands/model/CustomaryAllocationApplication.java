@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -93,11 +94,20 @@ public class CustomaryAllocationApplication {
     private String communityConsentLetter;
     private String developmentSketch;
 
+
+
     // GPS (if collected)
     private Double latitude;
     private Double longitude;
     private Double altitude;
     private Double gpsAccuracy;
+    private LocalDateTime createdAt;
+
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
 
     // Getters and Setters (or use Lombok)
 }

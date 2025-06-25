@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @Data
@@ -118,6 +119,8 @@ public class StatutoryAllocationApplication {
 
     private String compensationPartPayment;
 
+    private LocalDateTime createdAt;
+
     @Lob
     private String swornDeclaration;
 
@@ -159,6 +162,11 @@ public class StatutoryAllocationApplication {
     private Double longitude;
     private Double altitude;
     private Double gpsAccuracy;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
 
     // Getters & Setters (Can use Lombok to reduce boilerplate)
 

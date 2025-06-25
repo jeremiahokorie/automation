@@ -38,9 +38,9 @@ public class NotificationService {
         Map<String, String> mailInfo = event.getMessage();
         MailModel model = new MailModel();
         model.setFrom(emailFrom);
-        model.setSubject("Welcome to Hi'Bees");
+        model.setSubject("Welcome to Bauchi Mda Portal");
         model.setUseTemplate(true);
-        model.setTemplateName("welcomePage.ftl");
+        model.setTemplateName("SignUpWelcomePage.ftl");
         model.setTo(new String[]{mailInfo.get("recipient")});
         Map<String, String> mailMap = new HashMap<>();
         mailMap.put("name", StringUtils.capitalize(mailInfo.get("name")));
@@ -56,7 +56,7 @@ public class NotificationService {
         Map<String, String> mailInfo = event.getMessage();
         MailModel model = new MailModel();
         model.setFrom(emailFrom);
-        model.setSubject("Welcome to Hi'Bees");
+        model.setSubject("Welcome to Bauchi Mda Portal");
         model.setUseTemplate(true);
         model.setTemplateName("welcomePage.ftl");
         model.setTo(new String[]{mailInfo.get("recipient")});

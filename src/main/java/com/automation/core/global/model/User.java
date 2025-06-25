@@ -67,13 +67,20 @@ public class User implements Serializable {
     @Column(name = "last_password_reset_date")
     private Date lastPasswordResetDate;
 
+    private LocalDateTime createdAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Roles> roles;
 
+
     public List<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().flatMap(r -> r.getAuthorities().stream())
                 .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
     }
 //
 //

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.List;
 
 public interface UserService {
-    UserResponse createUser(UserRequest userRequest);
+    UserResponse createUser(UserRequest userRequest, boolean isAdminCreation);
     List<UserResponse> getUsers();
 
     UserResponse deleteById(Long id);

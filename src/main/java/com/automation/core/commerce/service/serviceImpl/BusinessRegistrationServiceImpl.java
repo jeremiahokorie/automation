@@ -52,7 +52,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .amount(15000)
                 .bearer(1)
-                .callbackUrl("https://example.com/")
+                .callbackUrl("https://bauchi-mda.netlify.app/")
                 .channels(List.of("card", "bank"))
                 .customerFirstName(businessRegistrationRequest.getOwnerName())
                 .customerLastName(businessRegistrationRequest.getOwnerName())
@@ -89,6 +89,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setComment(businessRegistrationRequest.getComment());
             businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
             businessRegistration.setDateRegistered(LocalDate.now());
+            businessRegistration.setAuthorizationUrl(authorizationUrl);
            // businessRegistration.setBusinessType(businessType);
             businessRepository.save(businessRegistration);
 
@@ -113,6 +114,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .phone(businessRegistrationRequest.getPhone())
                 .address(businessRegistrationRequest.getAddress())
                 .email(businessRegistrationRequest.getEmail())
+                .authorizationUrl(businessRegistration.getAuthorizationUrl())
                 .authorizationUrl(authorizationUrl)
                 .isRenewal(true)
                 .build();
@@ -123,7 +125,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
 
     @Override
     public List<BusinessRegistrationResponse> getRegisteredBusiness() {
-        List<BusinessRegistration> businessRegistrations = businessRepository.findAll();
+        List<BusinessRegistration> businessRegistrations = businessRepository.findAllByOrderByCreatedAtDesc();
         return businessRegistrations.stream().map(businessRegistration -> BusinessRegistrationResponse.builder()
                 .id(businessRegistration.getId())
                 .email(businessRegistration.getEmail())
@@ -135,6 +137,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .comment(businessRegistration.getComment())
                 .status(businessRegistration.getStatus())
                 .phone(businessRegistration.getPhone())
+                .authorizationUrl(businessRegistration.getAuthorizationUrl())
                 .dateRegistered(businessRegistration.getDateRegistered()).build()
         ).collect(Collectors.toList());
     }
@@ -178,13 +181,11 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .email(registration.getEmail())
                 .build();
 
-        // Step 3: Call the payment gateway
         ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
         if (paymentResponse.getStatusCode() != HttpStatus.OK) {
             throw new Exception("Unable to initiate payment");
         }
 
-        // Step 4: Parse the response JSON
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(paymentResponse.getBody());

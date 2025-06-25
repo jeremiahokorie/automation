@@ -44,16 +44,29 @@ public class UserController {
     private UserDetailsService userDetailsService;
     @Autowired private AuthenticationManager authManager;
 
-
-
-
     @PostMapping("/register")
     public ResponseEntity<AppResponse<UserResponse>> createUser(@RequestBody UserRequest userRequest) {
-        UserResponse userResponse = userService.createUser(userRequest);
+        UserResponse userResponse = userService.createUser(userRequest,false);
         AppResponse<UserResponse> response = AppResponse.<UserResponse>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
                 .status(HttpStatus.OK.value()).data(userResponse).error("").build();
             return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+//    @PostMapping("/register")
+//    public ResponseEntity<UserResponse> registerUser(@RequestBody UserRequest userRequest) {
+//        UserResponse response = userService.createUser(userRequest, false);
+//        return ResponseEntity.ok(response);
+//    }
+
+    @PostMapping("/admin/users")
+   // @PreAuthorize("hasRole('SUPERADMIN')")
+    public ResponseEntity<AppResponse<UserResponse>> createUserAsAdmin(@RequestBody UserRequest userRequest) {
+        UserResponse userResponse = userService.createUser(userRequest, true);
+        AppResponse<UserResponse> response = AppResponse.<UserResponse>builder()
+                .message(AppConstant.ApiResponseMessage.CREATED)
+                .status(HttpStatus.OK.value()).data(userResponse).error("").build();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
