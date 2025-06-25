@@ -38,7 +38,7 @@ public class InspectionServiceImpl implements InspectionService {
 
     @Override
     public List<InspectionResponse> getAllInspectionRequest() {
-        List<Inspection> inspections = inspectionRepository.findAll();
+        List<Inspection> inspections = inspectionRepository.findAllByOrderByCreatedAtDesc();
         return inspections.stream().map(inspection -> InspectionResponse.builder()
                         .id(inspection.getId())
                         .applicantName(inspection.getApplicantName())
