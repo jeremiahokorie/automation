@@ -51,7 +51,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             throw new Exception("Business already exists");
         }
 
-        // Step 2: Build payment request
+        // Build payment request
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .amount(15000)
                 .bearer(1)
@@ -63,13 +63,13 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .email(businessRegistrationRequest.getEmail())
                 .build();
 
-        // Step 3: Call the payment gateway
+        // Call the payment gateway
         ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
         if (paymentResponse.getStatusCode() != HttpStatus.OK) {
             throw new Exception("Unable to initiate payment");
         }
 
-        // Step 4: Parse the response JSON
+        // Parse the response JSON
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(paymentResponse.getBody());
@@ -77,9 +77,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             if (status != 200) {
                 throw new Exception("Payment failed to initialize");
             }
-
             String authorizationUrl = root.path("data").path("authorizationUrl").asText();
-
 
             if (businessRegistration == null) {
             businessRegistration = new BusinessRegistration();
@@ -175,11 +173,11 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             throw new Exception("Business not found or not yet due for renewal.");
         }
 
-        // Step 2: Build payment request
+        //payment request
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .amount(250000)
                 .bearer(1)
-                .callbackUrl("https://example.com/")
+                .callbackUrl("https://bauchi-mda.netlify.app/")
                 .channels(List.of("card", "bank"))
                 .customerFirstName(registration.getOwnerName())
                 .customerLastName(registration.getOwnerName())
@@ -204,6 +202,17 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
 
         registration.setStatus(Status.PENDING);
         businessRepository.save(registration);
+
+            Inspection inspection = new Inspection();
+            inspection.setRequestId(UUID.randomUUID());
+            inspection.setSourceService("RENEW BUSINESS REGISTRATION");
+            inspection.setApplicantName(registration.getOwnerName());
+            inspection.setApplicationType(registration.getBusinessName());
+            inspection.setBusinessRegistration(registration);
+            inspection.setStatus(Status.PENDING);
+            inspection.setCreatedAt(LocalDateTime.now());
+            inspectionRepository.save(inspection);
+
         return BusinessRenewalResponse.builder()
                 .id(registration.getId())
                 .businessNumber(registration.getBusinessNumber())
@@ -215,8 +224,6 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             throw new Exception("Payment gateway response parsing error");
         }
     }
-
-
 
     @Override
     public ApprovalandRejectResponse approveRequest(String businessNumber, ApprovalandRejectRequest comment) {

@@ -51,7 +51,6 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     private final EnvironmentRepository environmentRepository;
     private final PaymentService paymentService;
     private final InspectionRepository inspectionRepository;
-    private final Environment environment;
 
     @Override
     public EnvironmentResponse apply(EnvironmentRequest environmentRequest) {
@@ -248,6 +247,15 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 
         environmentRepository.save(renew);
+
+            Inspection inspection = new Inspection();
+            inspection.setRequestId(UUID.randomUUID());
+            inspection.setSourceService("RENEW APPLICATION PERMIT");
+            inspection.setStatus(Status.PENDING);
+            inspection.setCreatedAt(LocalDateTime.now());
+            inspection.setApplicantName(renew.getApplicantName());
+            inspection.setApplicationType(renew.getIndustryType());
+            inspectionRepository.save(inspection);
 
 
         return EnvironmentResponse.builder()
