@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -113,9 +114,13 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             Inspection inspection = new Inspection();
             inspection.setRequestId(UUID.randomUUID());
             inspection.setSourceService("APPLICATION PERMIT");
+            inspection.setStatus(Status.PENDING);
+            inspection.setCreatedAt(LocalDateTime.now());
             inspection.setApplicantName(environmentRequest.getApplicantName());
             inspection.setApplicationType(environmentRequest.getIndustryType());
             inspectionRepository.save(inspection);
+
+
         }
         else {
             throw new ResourceNotFoundException("Resource Not Found");

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -101,6 +102,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 inspection.setApplicantName(businessRegistrationRequest.getOwnerName());
                 inspection.setApplicationType(businessRegistrationRequest.getBusinessName());
                 inspection.setBusinessRegistration(businessRegistration);
+                inspection.setStatus(Status.PENDING);
+                inspection.setCreatedAt(LocalDateTime.now());
                 inspectionRepository.save(inspection);
 
         }else {
