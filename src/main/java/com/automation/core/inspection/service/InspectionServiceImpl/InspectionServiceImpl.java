@@ -1,8 +1,11 @@
 package com.automation.core.inspection.service.InspectionServiceImpl;
 
+import com.automation.core.basepa.repository.EnvironmentRepository;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
+import com.automation.core.commerce.repository.BusinessRepository;
 import com.automation.core.global.exception.Exception;
+import com.automation.core.global.repository.UserRepository;
 import com.automation.core.inspection.dto.request.InspectionRequest;
 import com.automation.core.inspection.dto.request.StatusUpdateDto;
 import com.automation.core.inspection.dto.response.InspectionResponse;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,18 +27,51 @@ import java.util.stream.Collectors;
 @Service
 public class InspectionServiceImpl implements InspectionService {
     private final InspectionRepository inspectionRepository;
+    private final UserRepository userRepository;
+    private final BusinessRepository businessRepository;
+    private final EnvironmentRepository environmentRepository;
+
 
     @Override
+    @Transactional
     public InspectionResponse updateInspectionStatus(Long id, StatusUpdateDto dto) {
+        // 1. Update Inspection
         Inspection inspection = inspectionRepository.findById(id)
                 .orElseThrow(() -> new Exception("Inspection not found"));
-        inspection.setStatus(Status.valueOf(dto.getNewStatus()));
+
+        Status newStatus = Status.valueOf(dto.getNewStatus());
+        inspection.setStatus(newStatus);
         inspection.setNotes(dto.getNotes());
         inspection.setAssignedTo(dto.getUpdatedBy());
         inspection.setUpdatedAt(LocalDateTime.now());
-        inspectionRepository.save(inspection);
+
+        // 2. Cascade status to all related entities
+//        if (inspection.getUser() != null) {
+//            inspection.getUser().setStatus(newStatus);
+//        }
+        if (inspection.getBusinessRegistration() != null) {
+            inspection.getBusinessRegistration().setStatus(newStatus);
+        }
+        if (inspection.getEnvironment() != null) {
+            inspection.getEnvironment().setStatus(newStatus);
+        }
+
+        inspectionRepository.save(inspection);  // Saves inspection + cascades if configured
+
         return InspectionResponse.builder().id(inspection.getId()).build();
     }
+
+//    @Override
+//    public InspectionResponse updateInspectionStatus(Long id, StatusUpdateDto dto) {
+//        Inspection inspection = inspectionRepository.findById(id)
+//                .orElseThrow(() -> new Exception("Inspection not found"));
+//        inspection.setStatus(Status.valueOf(dto.getNewStatus()));
+//        inspection.setNotes(dto.getNotes());
+//        inspection.setAssignedTo(dto.getUpdatedBy());
+//        inspection.setUpdatedAt(LocalDateTime.now());
+//        inspectionRepository.save(inspection);
+//        return InspectionResponse.builder().id(inspection.getId()).build();
+//    }
 
     @Override
     public List<InspectionResponse> getAllInspectionRequest() {

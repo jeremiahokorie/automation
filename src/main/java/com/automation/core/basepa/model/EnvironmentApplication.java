@@ -51,9 +51,6 @@ public class EnvironmentApplication {
 
         // Metadata
         private LocalDate applicationDate;
-//        private Integer durationInMonths;
-//        private LocalDate preferredInspectionDate;
-//        @Enumerated(EnumType.STRING)
         private Status status;
         private String comment;
         private LocalDate approvalDate;

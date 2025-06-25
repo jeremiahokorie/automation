@@ -1,6 +1,9 @@
 package com.automation.core.inspection.model;
 
 
+import com.automation.core.basepa.model.EnvironmentApplication;
+import com.automation.core.commerce.model.BusinessRegistration;
+import com.automation.core.global.model.User;
 import com.automation.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,6 +42,21 @@ public class Inspection {
     public void prePersist() {
         createdAt = LocalDateTime.now();
     }
+
+//    // Direct relationship with User
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")  // Foreign key column in the Inspection table
+//    private User user;
+
+    // Direct relationship with BusinessRegistration
+    @ManyToOne
+    @JoinColumn(name = "business_registration_id")
+    private BusinessRegistration businessRegistration;
+
+    // Direct relationship with Environment
+    @ManyToOne
+    @JoinColumn(name = "environment_application_id")
+    private EnvironmentApplication environment;
 
 
 }

@@ -45,6 +45,7 @@ public class User implements Serializable {
     private String state;
     private String zip;
     private String nin;
+    private String status;
     @Column(name = "reset_token")
     private String resetToken;
 

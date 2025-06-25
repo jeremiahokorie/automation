@@ -427,7 +427,7 @@
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
                                             <td valign="top" align="center" class="pc-font-alt" style="mso-line-height: exactly;line-height: 1.5;font-family: 'Fira Sans', Helvetica, Arial, sans-serif;font-size: 12px;font-weight: normal;color: #FFFFFF;text-align: center;">
-                                                <p style="margin: 0 0 10px 0;">© 2023 Bauchi State Government. All rights reserved.</p>
+                                                <p style="margin: 0 0 10px 0;">© 2025 Bauchi State Government. All rights reserved.</p>
                                                 <p style="margin: 0;">
                                                     <a href="#" style="color: #FFFFFF; text-decoration: underline; margin: 0 10px;">Privacy Policy</a>
                                                     <a href="#" style="color: #FFFFFF; text-decoration: underline; margin: 0 10px;">Terms of Service</a>
