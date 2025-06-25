@@ -119,6 +119,7 @@ public class StatutoryAllocationApplication {
 
     private String compensationPartPayment;
 
+    private String paymentStatus;
     private LocalDateTime createdAt;
 
     @Lob

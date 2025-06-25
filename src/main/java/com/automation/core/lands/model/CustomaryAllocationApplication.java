@@ -102,6 +102,7 @@ public class CustomaryAllocationApplication {
     private Double altitude;
     private Double gpsAccuracy;
     private LocalDateTime createdAt;
+    private String paymentStatus;
 
 
     @PrePersist

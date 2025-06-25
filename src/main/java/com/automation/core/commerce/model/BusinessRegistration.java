@@ -35,6 +35,7 @@ public class BusinessRegistration {
     private LocalDate renewalDate;
     private LocalDateTime createdAt;
     private String AuthorizationUrl;
+    private String paymentStatus;
 
     @PrePersist
     public void prePersist() {

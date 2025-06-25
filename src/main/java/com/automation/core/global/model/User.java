@@ -67,6 +67,7 @@ public class User implements Serializable {
 
     @Column(name = "last_password_reset_date")
     private Date lastPasswordResetDate;
+    private String paymentStatus;
 
     private LocalDateTime createdAt;
 

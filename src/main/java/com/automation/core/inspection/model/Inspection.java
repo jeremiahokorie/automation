@@ -37,6 +37,7 @@ public class Inspection {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String paymentStatus;
 
     @PrePersist
     public void prePersist() {

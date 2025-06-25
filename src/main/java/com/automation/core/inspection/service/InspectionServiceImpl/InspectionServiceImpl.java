@@ -1,5 +1,6 @@
 package com.automation.core.inspection.service.InspectionServiceImpl;
 
+import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.basepa.repository.EnvironmentRepository;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
@@ -45,16 +46,20 @@ public class InspectionServiceImpl implements InspectionService {
         inspection.setAssignedTo(dto.getUpdatedBy());
         inspection.setUpdatedAt(LocalDateTime.now());
 
-        // 2. Cascade status to all related entities
-//        if (inspection.getUser() != null) {
-//            inspection.getUser().setStatus(newStatus);
-//        }
         if (inspection.getBusinessRegistration() != null) {
-            inspection.getBusinessRegistration().setStatus(newStatus);
+            BusinessRegistration business = inspection.getBusinessRegistration();
+            business.setStatus(newStatus);
+            businessRepository.save(business);
         }
+
         if (inspection.getEnvironment() != null) {
-            inspection.getEnvironment().setStatus(newStatus);
+            EnvironmentApplication environment = inspection.getEnvironment();
+            environment.setStatus(newStatus);
+            environmentRepository.save(environment);
         }
+
+        inspectionRepository.save(inspection);
+
 
         inspectionRepository.save(inspection);  // Saves inspection + cascades if configured
 
