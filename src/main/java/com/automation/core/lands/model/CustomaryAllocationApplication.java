@@ -84,8 +84,9 @@ public class CustomaryAllocationApplication {
     private String communityLeaderTitle;
 
     private String signatureOrMark;
-
     private LocalDate declarationDate;
+    private LocalDateTime createdAt;
+    private String paymentStatus;
 
     // Attachments
     private String passportPhoto;
@@ -101,8 +102,6 @@ public class CustomaryAllocationApplication {
     private Double longitude;
     private Double altitude;
     private Double gpsAccuracy;
-    private LocalDateTime createdAt;
-    private String paymentStatus;
 
 
     @PrePersist

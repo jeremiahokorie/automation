@@ -14,6 +14,7 @@ import com.automation.core.lands.service.service.LandApplicationService;
 import com.automation.util.constant.AppConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +31,38 @@ import java.util.Map;
 public class LandApplicationController {
     private final LandApplicationService landApplicationService;
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/customary")
-    public ResponseEntity<Map<String, String>> customLandApplication(@RequestBody CustomaryAllocationRequest customaryAllocationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
-        Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
-        return ResponseEntity.ok(response);
+//    @PreAuthorize("isAuthenticated()")
+//    @PostMapping("/customary")
+//    public ResponseEntity<Map<String, String>> customLandApplication(@RequestBody CustomaryAllocationRequest customaryAllocationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
+//        Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
+//        return ResponseEntity.ok(response);
+//    }
+
+    @PostMapping(value = "/customary", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, String>> uploadDocuments(
+            @RequestPart CustomaryAllocationRequest customaryAllocationRequest,
+            @RequestPart Map<String, MultipartFile> documents
+    ) {
+        try {
+            Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to upload documents");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
+
+//    @PostMapping("/customary")
+//    public ResponseEntity<Map<String, String>> customLandApplication(
+//            @RequestPart("applicationData") CustomaryAllocationRequest customaryAllocationRequest,
+//            @RequestPart Map<String, MultipartFile> documents
+//    ) throws IOException {
+//        Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
+//        return ResponseEntity.ok(response);
+//    }
+
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/statutory")
