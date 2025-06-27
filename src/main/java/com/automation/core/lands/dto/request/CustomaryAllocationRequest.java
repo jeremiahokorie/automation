@@ -72,7 +72,7 @@ public class CustomaryAllocationRequest {
         private String sheetNo;
         private String areaOfficeNo;
         private String areaSize;
-        private String paymentStatus;
+        private Boolean isPayed;
 
 //        public Double latitude;
 //        public Double longitude;

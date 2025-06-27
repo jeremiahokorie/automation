@@ -57,7 +57,6 @@ public class EnvironmentApplication {
         private LocalDate rejectionDate;
         private String AuthorizationUrl;
         private LocalDateTime createdAt;
-        private String paymentStatus;
 
         @PrePersist
         public void prePersist() {

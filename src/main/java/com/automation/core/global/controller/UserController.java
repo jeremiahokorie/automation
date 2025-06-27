@@ -3,7 +3,9 @@ package com.automation.core.global.controller;
 
 import com.automation.core.global.dto.request.AuthRequest;
 import com.automation.core.global.dto.request.ChangePasswordRequest;
+import com.automation.core.global.dto.request.UserAdminRequest;
 import com.automation.core.global.dto.request.UserRequest;
+import com.automation.core.global.dto.response.AdminUserResponse;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.global.dto.response.AuthResponse;
 import com.automation.core.global.dto.response.UserResponse;
@@ -46,28 +48,32 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<AppResponse<UserResponse>> createUser(@RequestBody UserRequest userRequest) {
-        UserResponse userResponse = userService.createUser(userRequest,false);
+        UserResponse userResponse = userService.createUser(userRequest);
         AppResponse<UserResponse> response = AppResponse.<UserResponse>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
                 .status(HttpStatus.OK.value()).data(userResponse).error("").build();
             return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @PostMapping("/register")
-//    public ResponseEntity<UserResponse> registerUser(@RequestBody UserRequest userRequest) {
-//        UserResponse response = userService.createUser(userRequest, false);
-//        return ResponseEntity.ok(response);
-//    }
 
-    @PostMapping("/admin/users")
-   // @PreAuthorize("hasRole('SUPERADMIN')")
-    public ResponseEntity<AppResponse<UserResponse>> createUserAsAdmin(@RequestBody UserRequest userRequest) {
-        UserResponse userResponse = userService.createUser(userRequest, true);
-        AppResponse<UserResponse> response = AppResponse.<UserResponse>builder()
+    @PostMapping("/register/admin")
+    public ResponseEntity<AppResponse<AdminUserResponse>> createAdminUser(@RequestBody UserAdminRequest request) {
+        AdminUserResponse adminResponse = userService.createAdminUser(request);
+        AppResponse<AdminUserResponse> response = AppResponse.<AdminUserResponse>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
-                .status(HttpStatus.OK.value()).data(userResponse).error("").build();
+                .status(HttpStatus.OK.value()).data(adminResponse).error("").build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+//    @PostMapping("/admin/users")
+//   // @PreAuthorize("hasRole('SUPERADMIN')")
+//    public ResponseEntity<AppResponse<UserResponse>> createUserAsAdmin(@RequestBody UserRequest userRequest) {
+//        UserResponse userResponse = userService.createUser(userRequest);
+//        AppResponse<UserResponse> response = AppResponse.<UserResponse>builder()
+//                .message(AppConstant.ApiResponseMessage.CREATED)
+//                .status(HttpStatus.OK.value()).data(userResponse).error("").build();
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @GetMapping("/users")

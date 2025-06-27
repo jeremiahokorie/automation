@@ -25,6 +25,7 @@ public class UserResponse {
     private String nin;
     private String roleName;
     private List<String> permissions;
+    private Boolean isPayed;
 
     public UserResponse(String s) {
     }

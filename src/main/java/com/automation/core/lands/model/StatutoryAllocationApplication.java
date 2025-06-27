@@ -119,7 +119,7 @@ public class StatutoryAllocationApplication {
 
     private String compensationPartPayment;
 
-    private String paymentStatus;
+    private Boolean isPayed;
     private LocalDateTime createdAt;
 
     @Lob

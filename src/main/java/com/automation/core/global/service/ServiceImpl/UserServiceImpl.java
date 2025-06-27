@@ -1,7 +1,9 @@
 package com.automation.core.global.service.ServiceImpl;
 
 import com.automation.core.global.dto.request.ChangePasswordRequest;
+import com.automation.core.global.dto.request.UserAdminRequest;
 import com.automation.core.global.dto.request.UserRequest;
+import com.automation.core.global.dto.response.AdminUserResponse;
 import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
@@ -9,6 +11,7 @@ import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.Permission;
 import com.automation.core.global.model.Roles;
 import com.automation.core.global.model.User;
+import com.automation.core.global.repository.PermissionRepository;
 import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
@@ -40,27 +43,28 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher publisher;
+    private final PermissionRepository permissionRepository;
     private final JwtUtil jwtUtil;
     private User user;
     private UserService userService;
 
     @Override
-    public UserResponse createUser(UserRequest userRequest, boolean isAdminCreation) {
+    public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByEmail(userRequest.getEmail());
 
-//        Roles userRole = roleRepository.findByValue("SUPERADMIN")
-//                .orElseThrow(() -> new Exception("Default role not found"));
+        Roles userRole = roleRepository.findByValue("SUPERADMIN")
+                .orElseThrow(() -> new Exception("Default role not found"));
 
-        Roles role;
-        if (isAdminCreation) {
-            // For admin-created users, use the role from request
-            role = roleRepository.findById(userRequest.getRoleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-        } else {
-            // For self-registration, use default USER role
-            role = roleRepository.findByValue("SUPERADMIN")
-                    .orElseThrow(() -> new Exception("Default role not found"));
-        }
+//        Roles role;
+//        if (isAdminCreation) {
+//            // For admin-created users, use the role from request
+//            role = roleRepository.findById(userRequest.getRoleId())
+//                    .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+//        } else {
+//            // For self-registration, use default USER role
+//            role = roleRepository.findByValue("SUPERADMIN")
+//                    .orElseThrow(() -> new Exception("Default role not found"));
+//        }
 
 //        Roles role = roleRepository.findById(userRequest.getRoleId())
 //                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
@@ -77,7 +81,7 @@ public class UserServiceImpl implements UserService {
         createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         createUser.setPhoneNumber(userRequest.getPhoneNumber());
         createUser.setAddress(userRequest.getAddress());
-        createUser.setRoles(List.of(role));
+        createUser.setRoles(List.of(userRole));
         createUser.setNin(userRequest.getNin());
         createUser.setCity(userRequest.getCity());
         createUser.setState(userRequest.getState());
@@ -88,23 +92,83 @@ public class UserServiceImpl implements UserService {
         userRepository.save(createUser);
         publisher.publishEvent(new EmailNotificationEvent(this, "welcome", ImmutableMap.of("recipient", createUser.getEmail(), "name", createUser.getFirstName() + "  " + createUser.getLastName())));
 
-        return buildUserResponseWithPermissions(createUser, role);
-
-//                UserResponse.builder()
-//                .id(createUser.getId())
-//                .email(userRequest.getEmail())
-//                .firstName(userRequest.getFirstName())
-//                .lastName(userRequest.getLastName())
-//                .phoneNumber(userRequest.getPhoneNumber())
-//                .address(userRequest.getAddress())
-//                .nin(userRequest.getNin())
-//                .city(userRequest.getCity())
-//                .state(userRequest.getState())
-//                .street(userRequest.getStreet())
-//                .zip(userRequest.getZip())
-//                .build();
+        return UserResponse.builder()
+                .id(createUser.getId())
+                .email(userRequest.getEmail())
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .phoneNumber(userRequest.getPhoneNumber())
+                .address(userRequest.getAddress())
+                .nin(userRequest.getNin())
+                .city(userRequest.getCity())
+                .state(userRequest.getState())
+                .street(userRequest.getStreet())
+                .zip(userRequest.getZip())
+                .build();
 
     }
+
+//    @Override
+//    public UserResponse createUser(UserRequest userRequest, boolean isAdminCreation) {
+//        Optional<User> user = userRepository.findByEmail(userRequest.getEmail());
+//
+////        Roles userRole = roleRepository.findByValue("SUPERADMIN")
+////                .orElseThrow(() -> new Exception("Default role not found"));
+//
+//        Roles role;
+//        if (isAdminCreation) {
+//            // For admin-created users, use the role from request
+//            role = roleRepository.findById(userRequest.getRoleId())
+//                    .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+//        } else {
+//            // For self-registration, use default USER role
+//            role = roleRepository.findByValue("SUPERADMIN")
+//                    .orElseThrow(() -> new Exception("Default role not found"));
+//        }
+//
+////        Roles role = roleRepository.findById(userRequest.getRoleId())
+////                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+//
+//
+//        if (user.isPresent()) {
+//            throw new Exception("User already exists");
+//        }
+//
+//        User createUser = new User();
+//        createUser.setEmail(userRequest.getEmail());
+//        createUser.setFirstName(userRequest.getFirstName());
+//        createUser.setLastName(userRequest.getLastName());
+//        createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+//        createUser.setPhoneNumber(userRequest.getPhoneNumber());
+//        createUser.setAddress(userRequest.getAddress());
+//        createUser.setRoles(List.of(role));
+//        createUser.setNin(userRequest.getNin());
+//        createUser.setCity(userRequest.getCity());
+//        createUser.setState(userRequest.getState());
+//        createUser.setZip(userRequest.getZip());
+//        createUser.setStreet(userRequest.getStreet());
+//        //createUser.setRole(roles);
+//        createUser.setCreateDate(LocalDate.now());
+//        userRepository.save(createUser);
+//        publisher.publishEvent(new EmailNotificationEvent(this, "welcome", ImmutableMap.of("recipient", createUser.getEmail(), "name", createUser.getFirstName() + "  " + createUser.getLastName())));
+//
+//        return buildUserResponseWithPermissions(createUser, role);
+//
+////                UserResponse.builder()
+////                .id(createUser.getId())
+////                .email(userRequest.getEmail())
+////                .firstName(userRequest.getFirstName())
+////                .lastName(userRequest.getLastName())
+////                .phoneNumber(userRequest.getPhoneNumber())
+////                .address(userRequest.getAddress())
+////                .nin(userRequest.getNin())
+////                .city(userRequest.getCity())
+////                .state(userRequest.getState())
+////                .street(userRequest.getStreet())
+////                .zip(userRequest.getZip())
+////                .build();
+//
+//    }
 
 
     @Override
@@ -208,6 +272,33 @@ public class UserServiceImpl implements UserService {
         }
 
     }
+
+    @Override
+    public AdminUserResponse createAdminUser(UserAdminRequest request) {
+        Roles role = roleRepository.findById(request.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        Set<Permission> permissions = new HashSet<>(permissionRepository.findAllById(request.getPermissionIds()));
+
+        User user = new User();
+        user.setFirstName(request.getName());
+        user.setCreatedAt(LocalDateTime.now());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(role);
+        user.setPermissions(permissions);
+
+        User saved = userRepository.save(user);
+
+        return new AdminUserResponse(
+                saved.getId(),
+                saved.getFirstName(),
+                saved.getEmail(),
+                saved.getRole().getName(),
+                saved.getPermissions().stream().map(Permission::getName).collect(Collectors.toList())
+        );
+    }
+
 
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         return user.getRoles().stream()

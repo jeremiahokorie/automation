@@ -86,7 +86,7 @@ public class CustomaryAllocationApplication {
     private String signatureOrMark;
     private LocalDate declarationDate;
     private LocalDateTime createdAt;
-    private String paymentStatus;
+    private Boolean isPayed;
 
     // Attachments
     private String passportPhoto;

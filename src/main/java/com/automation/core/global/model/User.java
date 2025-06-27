@@ -67,12 +67,18 @@ public class User implements Serializable {
 
     @Column(name = "last_password_reset_date")
     private Date lastPasswordResetDate;
-    private String paymentStatus;
+    private Boolean isPayed = false;
 
     private LocalDateTime createdAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Roles> roles;
+
+    @ManyToOne
+    private Roles role;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Permission> permissions;
 
 
     public List<? extends GrantedAuthority> getAuthorities() {

@@ -18,9 +18,9 @@ public class UserRequest {
     private String email;
     private String password;
     private String phoneNumber;
-//    private String role;
+//  private String role;
     private String address;
-//    private Long roleId;
+//  private Long roleId;
     private String street;
     private String city;
     private String state;
@@ -29,4 +29,5 @@ public class UserRequest {
     private Long roleId;
     private String roleName;
     private List<String> permissions;
+    private Boolean isPayed;
 }

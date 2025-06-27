@@ -26,6 +26,7 @@ public class BusinessRegistrationResponse {
     private String comment;
     private String businessNumber;
     private String authorizationUrl;
+    private Boolean isPayed;
 //    private BusinessType businessType;
 
 }

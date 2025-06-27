@@ -119,6 +119,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             inspection.setApplicationType(environmentRequest.getIndustryType());
             inspection.setEnvironment(appyPermit);
             inspectionRepository.save(inspection);
+
         }
         else {
             throw new ResourceNotFoundException("Resource Not Found");

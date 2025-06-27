@@ -121,7 +121,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .authorizationUrl(businessRegistration.getAuthorizationUrl())
                 .authorizationUrl(authorizationUrl)
                 .isRenewal(true)
-                .build();
+                .isPayed(true).build();
         } catch (IOException e) {
             throw new Exception("Payment gateway response parsing error");
         }

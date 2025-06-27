@@ -1,7 +1,9 @@
 package com.automation.core.global.service.UserService;
 
 import com.automation.core.global.dto.request.ChangePasswordRequest;
+import com.automation.core.global.dto.request.UserAdminRequest;
 import com.automation.core.global.dto.request.UserRequest;
+import com.automation.core.global.dto.response.AdminUserResponse;
 import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.model.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.List;
 
 public interface UserService {
-    UserResponse createUser(UserRequest userRequest, boolean isAdminCreation);
+    UserResponse createUser(UserRequest userRequest);
     List<UserResponse> getUsers();
 
     UserResponse deleteById(Long id);
@@ -21,6 +23,8 @@ public interface UserService {
     void changePassword(String name, ChangePasswordRequest request);
 
     void generatePasswordResetToken(String email);
+
+    AdminUserResponse createAdminUser(UserAdminRequest request);
 
 
     // UserResponse deleteUsers(UserRequest userRequest);

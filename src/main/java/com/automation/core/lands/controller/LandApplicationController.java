@@ -31,17 +31,10 @@ import java.util.Map;
 public class LandApplicationController {
     private final LandApplicationService landApplicationService;
 
-//    @PreAuthorize("isAuthenticated()")
-//    @PostMapping("/customary")
-//    public ResponseEntity<Map<String, String>> customLandApplication(@RequestBody CustomaryAllocationRequest customaryAllocationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
-//        Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
-//        return ResponseEntity.ok(response);
-//    }
-
-    @PostMapping(value = "/customary", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/customary")
     public ResponseEntity<Map<String, String>> uploadDocuments(
-            @RequestPart CustomaryAllocationRequest customaryAllocationRequest,
-            @RequestPart Map<String, MultipartFile> documents
+            @RequestBody CustomaryAllocationRequest customaryAllocationRequest,
+            @RequestParam Map<String, MultipartFile> documents
     ) {
         try {
             Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
@@ -64,7 +57,7 @@ public class LandApplicationController {
 //    }
 
 
-    @PreAuthorize("isAuthenticated()")
+   // @PreAuthorize("isAuthenticated()")
     @PostMapping("/statutory")
     public ResponseEntity<Map<String, String>> statutoryLandApplication(@RequestBody StatutoryApplicationRequest statutoryApplicationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
         Map<String, String> response = landApplicationService.statutoryallocation(statutoryApplicationRequest, documents);
@@ -99,24 +92,4 @@ public class LandApplicationController {
         LandApplicationSummaryResponse landApp = landApplicationService.getAllCustomarySummary();
         return ResponseEntity.ok().body(landApp);
     }
-
-//    @PostMapping("/land")
-//    public ResponseEntity<AppResponse<LandApplicationResponse>>applyForLand(@RequestBody LandApplicationRequest landApplicationRequest) {
-//        LandApplicationResponse landApplicationResponse = landApplicationService.applyForLand(landApplicationRequest);
-//        AppResponse<LandApplicationResponse> lands = AppResponse.<LandApplicationResponse>builder()
-//                .message(AppConstant.ApiResponseMessage.CREATED)
-//                .status(HttpStatus.OK.value()).data(landApplicationResponse).build();
-//        return new ResponseEntity<>(lands, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/lands")
-//    public ResponseEntity<AppResponse<List<LandApplicationResponse>>> getAllLands() {
-//        List<LandApplicationResponse> landApplicationResponse = landApplicationService.getAllApplication();
-//        return ResponseEntity.ok().body(AppResponse.<List<LandApplicationResponse>>builder()
-//                .message(AppConstant.ApiResponseMessage.CREATED)
-//                .status(HttpStatus.OK.value()).data(landApplicationResponse).error("").build());
-//    }
-
-
-
 }

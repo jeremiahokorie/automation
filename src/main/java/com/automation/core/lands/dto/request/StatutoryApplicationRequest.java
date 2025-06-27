@@ -27,7 +27,7 @@ public class StatutoryApplicationRequest {
     private String title; // Mr, Mrs, Alhaji, etc.
 
     private String titleOther;
-    private String paymentStatus;
+    private Boolean isPayed;
 
     @NotBlank
     private String applicantName;
