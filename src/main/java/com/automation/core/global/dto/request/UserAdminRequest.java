@@ -16,5 +16,4 @@ public class UserAdminRequest {private String name;
     private String email;
     private String password;
     private Long roleId;
-    private List<Long> permissionIds;
 }

@@ -278,15 +278,15 @@ public class UserServiceImpl implements UserService {
         Roles role = roleRepository.findById(request.getRoleId())
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
-        Set<Permission> permissions = new HashSet<>(permissionRepository.findAllById(request.getPermissionIds()));
-
         User user = new User();
         user.setFirstName(request.getName());
         user.setCreatedAt(LocalDateTime.now());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
-        user.setPermissions(permissions);
+
+        // Automatically pull permissions from the role
+        user.setPermissions(role.getPermissions());
 
         User saved = userRepository.save(user);
 
@@ -295,9 +295,12 @@ public class UserServiceImpl implements UserService {
                 saved.getFirstName(),
                 saved.getEmail(),
                 saved.getRole().getName(),
-                saved.getPermissions().stream().map(Permission::getName).collect(Collectors.toList())
+                saved.getPermissions().stream()
+                        .map(Permission::getName)
+                        .collect(Collectors.toList())
         );
     }
+
 
 
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {

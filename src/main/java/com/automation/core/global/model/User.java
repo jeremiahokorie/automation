@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -78,7 +77,7 @@ public class User implements Serializable {
     private Roles role;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Permission> permissions;
+    private List<Permission> permissions;
 
 
     public List<? extends GrantedAuthority> getAuthorities() {

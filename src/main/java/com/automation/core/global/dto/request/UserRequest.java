@@ -26,5 +26,5 @@ public class UserRequest {
     private String state;
     private String zip;
     private String nin;
-    private Long roleId;
+    //private Long roleId;
 }
