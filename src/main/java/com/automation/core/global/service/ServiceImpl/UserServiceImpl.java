@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
         //createUser.setRole(roles);
         createUser.setCreateDate(LocalDate.now());
         userRepository.save(createUser);
-        publisher.publishEvent(new EmailNotificationEvent(this, "welcome", ImmutableMap.of("recipient", createUser.getEmail(), "name", createUser.getFirstName() + "  " + createUser.getLastName())));
+       // publisher.publishEvent(new EmailNotificationEvent(this, "welcome", ImmutableMap.of("recipient", createUser.getEmail(), "name", createUser.getFirstName() + "  " + createUser.getLastName())));
 
         return UserResponse.builder()
                 .id(createUser.getId())
@@ -324,8 +324,6 @@ public class UserServiceImpl implements UserService {
                 .state(user.getState())
                 .street(user.getStreet())
                 .zip(user.getZip())
-                .roleName(role.getName())
-                .permissions(permissions)
                 .build();
     }
 

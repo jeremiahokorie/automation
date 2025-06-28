@@ -27,7 +27,4 @@ public class UserRequest {
     private String zip;
     private String nin;
     private Long roleId;
-    private String roleName;
-    private List<String> permissions;
-    private Boolean isPayed;
 }
