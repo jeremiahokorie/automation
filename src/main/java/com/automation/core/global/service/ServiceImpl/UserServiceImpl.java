@@ -285,8 +285,8 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
 
-        // Automatically pull permissions from the role
-        user.setPermissions(role.getPermissions());
+//      // Automatically pull permissions from the role
+        user.setPermissions(new ArrayList<>(role.getPermissions()));
 
         User saved = userRepository.save(user);
 
