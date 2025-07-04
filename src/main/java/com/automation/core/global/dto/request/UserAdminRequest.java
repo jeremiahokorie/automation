@@ -12,8 +12,17 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAdminRequest {private String name;
+public class UserAdminRequest {
+    private String firstName;
+    private String lastName;
     private String email;
     private String password;
     private Long roleId;
+    private String phoneNumber;
+    private String address;
+    private String street;
+    private String city;
+    private String state;
+    private String zip;
+    private String nin;
 }

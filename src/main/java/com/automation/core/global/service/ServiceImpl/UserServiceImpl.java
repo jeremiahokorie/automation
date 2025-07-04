@@ -279,10 +279,16 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         User user = new User();
-        user.setFirstName(request.getName());
         user.setCreatedAt(LocalDateTime.now());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setAddress(request.getAddress());
+        user.setNin(request.getNin());
+        user.setCity(request.getCity());
+        user.setState(request.getState());
+        user.setZip(request.getZip());
         user.setRole(role);
 
 //      // Automatically pull permissions from the role
@@ -292,13 +298,20 @@ public class UserServiceImpl implements UserService {
 
         return new AdminUserResponse(
                 saved.getId(),
-                saved.getFirstName(),
                 saved.getEmail(),
                 saved.getRole().getName(),
                 saved.getPermissions().stream()
                         .map(Permission::getName)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()),
+                saved.getFirstName(),
+                saved.getLastName(),
+                saved.getPhoneNumber(),
+                saved.getAddress(),
+                saved.getStreet(),
+                saved.getCity(),
+                saved.getState(),
+                saved.getZip(),
+                saved.getNin());
     }
 
 
