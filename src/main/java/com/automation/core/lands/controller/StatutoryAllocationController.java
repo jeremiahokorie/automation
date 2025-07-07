@@ -56,9 +56,7 @@ public class StatutoryAllocationController {
     public ResponseEntity<AppResponse<ApprovalResponse>> approvePermit(
             @PathVariable Long id,
             @Valid @RequestBody ApprovalRequest commentRequest) {
-
         ApprovalResponse approval = statutoryAllocationService.approveStatutory(id, commentRequest);
-
         AppResponse<ApprovalResponse> response = AppResponse.<ApprovalResponse>builder()
                 .message(AppConstant.ApiResponseMessage.UPDATE)
                 .status(HttpStatus.OK.value())

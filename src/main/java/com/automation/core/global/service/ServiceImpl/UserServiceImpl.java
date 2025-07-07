@@ -289,6 +289,7 @@ public class UserServiceImpl implements UserService {
         user.setCity(request.getCity());
         user.setState(request.getState());
         user.setZip(request.getZip());
+        user.setPhoneNumber(request.getPhoneNumber());
         user.setRole(role);
 
 //      // Automatically pull permissions from the role
