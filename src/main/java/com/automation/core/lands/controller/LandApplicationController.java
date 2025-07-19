@@ -31,6 +31,27 @@ import java.util.Map;
 public class LandApplicationController {
     private final LandApplicationService landApplicationService;
 
+
+    @PostMapping("/submit-customary-form")
+    public ResponseEntity<?> submitForm(@RequestBody CustomaryAllocationRequest formRequest) {
+        Long formId = landApplicationService.saveFormRequest(formRequest);
+        return ResponseEntity.ok(Map.of("formId", formId));
+    }
+
+
+    @PostMapping(value = "/upload-customary-files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFiles(
+            @RequestParam("formId") Long formId,
+            @RequestPart(value = "passportPhoto", required = false) MultipartFile passportPhoto,
+            @RequestPart(value = "taxClearance", required = false) MultipartFile taxClearance,
+            @RequestPart(value = "affidavit", required = false) MultipartFile affidavit,
+            @RequestPart(value = "communityConsentLetter", required = false) MultipartFile communityConsentLetter,
+            @RequestPart(value = "developmentSketch", required = false) MultipartFile developmentSketch
+    ) throws IOException {
+        landApplicationService.uploadFilesCustomary(formId, passportPhoto, taxClearance, affidavit, communityConsentLetter, developmentSketch);
+        return ResponseEntity.ok("Files uploaded successfully");
+    }
+
     @PostMapping(value = "/customary")
     public ResponseEntity<Map<String, String>> uploadDocuments(
             @RequestBody CustomaryAllocationRequest customaryAllocationRequest,
@@ -47,15 +68,6 @@ public class LandApplicationController {
         }
     }
 
-//    @PostMapping("/customary")
-//    public ResponseEntity<Map<String, String>> customLandApplication(
-//            @RequestPart("applicationData") CustomaryAllocationRequest customaryAllocationRequest,
-//            @RequestPart Map<String, MultipartFile> documents
-//    ) throws IOException {
-//        Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
-//        return ResponseEntity.ok(response);
-//    }
-
 
    // @PreAuthorize("isAuthenticated()")
     @PostMapping("/statutory")
@@ -71,6 +83,8 @@ public class LandApplicationController {
         }
 
        // return ResponseEntity.ok(response);
+
+
     }
 
     @GetMapping("/all-statutory-allocations")

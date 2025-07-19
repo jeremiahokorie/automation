@@ -55,7 +55,7 @@ public class CustomaryAllocationRequest {
         private String companyPhoneNumber;
         private String phone;
         private String cacRegistrationNo;
-        private LocalDate registrationDate; // date-month-year
+        private LocalDate registrationDate;
         private String sourceOfCapital;
         private String managerName;
         private String ceoName;
@@ -67,22 +67,18 @@ public class CustomaryAllocationRequest {
         private Status status;
 
         private String plotLocation;
-        private String landAcquisitionMode; // e.g. purchase, LGA allocation, inheritance, others
+        private String landAcquisitionMode;
         private String landUsePurpose;
         private String sheetNo;
         private String areaOfficeNo;
         private String areaSize;
         private Boolean isPayed;
 
-//        public Double latitude;
-//        public Double longitude;
-//        public Double altitude;
-//        public Double gpsAccuracy;
 
-        private String passportPhoto;
-        private String taxClearance;
-        private String affidavit;
-        private String communityConsentLetter;
-        private String developmentSketch;
+//        private String passportPhoto;
+//        private String taxClearance;
+//        private String affidavit;
+//        private String communityConsentLetter;
+//        private String developmentSketch;
 
     }

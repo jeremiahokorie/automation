@@ -97,6 +97,7 @@ public class CustomaryAllocationApplication {
 
 
 
+
     // GPS (if collected)
     private Double latitude;
     private Double longitude;

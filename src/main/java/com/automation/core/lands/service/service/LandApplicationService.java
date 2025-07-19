@@ -37,4 +37,8 @@ public interface LandApplicationService {
     LandApplicationSummaryResponse getAllStatutorySummary();
 
     LandApplicationSummaryResponse getAllCustomarySummary();
+
+    Long saveFormRequest(CustomaryAllocationRequest formRequest);
+
+    void uploadFilesCustomary(Long formId, MultipartFile passportPhoto, MultipartFile taxClearance, MultipartFile affidavit, MultipartFile communityConsentLetter, MultipartFile developmentSketch) throws IOException;
 }

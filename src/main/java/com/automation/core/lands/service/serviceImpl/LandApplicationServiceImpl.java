@@ -33,10 +33,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -45,6 +42,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
 
     private final LandApplicationRepository landApplicationRepository;
     private final StatutoryApplicationRepository statutoryApplicationRepository;
+    private final LocalStorageService localStorageService;
     private final CustomaryAllocationRepository customaryAllocationRepository;
 
     private static final String UPLOAD_DIR_ = "/opt/uploads/customary-allocation/";
@@ -71,34 +69,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     public void StatutoryAllocationApplication() throws IOException {
         Files.createDirectories(Paths.get(UPLOAD_DIR));
     }
-
-
-//    @Override
-//    public LandApplicationResponse applyForLand(LandApplicationRequest landApplicationRequest) {
-//        LandApplication landApplication = new LandApplication();
-//        landApplication.setApplicantName(landApplicationRequest.getApplicantName());
-//        landApplication.setApplicationType(LandApplicationType.COFO);
-//        landApplication.setApplicationDate(LocalDateTime.now());
-//        landApplication.setStatus(Status.PENDING);
-//        landApplicationRepository.save(landApplication);
-//        return LandApplicationResponse.builder()
-//                .applicationDate(LocalDateTime.now())
-//                .applicationType(LandApplicationType.COFO)
-//                .status(Status.PENDING)
-//                .applicantName(landApplicationRequest.getApplicantName()).build();
-//    }
-//
-//    @Override
-//    public List<LandApplicationResponse> getAllApplication() {
-//        List<LandApplication> landApplications = landApplicationRepository.findAll();
-//        return landApplications.stream().map(landApplication -> LandApplicationResponse.builder()
-//                .email(landApplication.getEmail())
-//                .applicationType(landApplication.getApplicationType())
-//                .applicationDate(landApplication.getApplicationDate())
-//                .status(landApplication.getStatus())
-//                .build()
-//        ).collect(Collectors.toList());
-//    }
 
 
     @Override
@@ -156,26 +126,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
             default:
                 throw new IllegalArgumentException("Unsupported Report Type");
         }
-
-        // Optionally group by daily/monthly/yearly
-//        return applications.stream().map(landApplication -> LandApplicationResponse.builder()
-//                .id(landApplication.getId())
-//                .applicantEmail(landApplication.getApplicantEmail())
-//                .approvalDate(landApplication.getApprovalDate())
-//                .administrativeCharges(landApplication.getAdministrativeCharges())
-//                .applicationDate(landApplication.getApplicationDate())
-//                .certificateUrl(landApplication.getCertificateUrl())
-//                .applicationType(landApplication.getApplicationType())
-//                .status(landApplication.getStatus())
-//                .districtHeadLetter(landApplication.getDistrictHeadLetter())
-//                .documents(landApplication.getDocuments())
-//                .processingFees(landApplication.getProcessingFees())
-//                .declarationOfAge(landApplication.getDeclarationOfAge())
-//                .localGovernmentConfirmationLetter(landApplication.getLocalGovernmentConfirmationLetter())
-//                .taxClearances(landApplication.getTaxClearances())
-//                .certificateUrl(landApplication.getCertificateUrl())
-//                .build()).collect(Collectors.toList());
-
     }
 
     @Override
@@ -360,6 +310,60 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     }
 
 
+    @Override
+    public void uploadFilesCustomary(Long id,
+                            MultipartFile passportPhoto,
+                            MultipartFile taxClearance,
+                            MultipartFile affidavit,
+                            MultipartFile communityConsentLetter,
+                            MultipartFile developmentSketch
+    ) throws IOException {
+        CustomaryAllocationApplication entity = customaryAllocationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Form id not found"));
+
+        if (passportPhoto != null && !passportPhoto.isEmpty()) {
+            String path = store(passportPhoto, id, "passportPhoto");
+            entity.setPassportPhoto(path);
+        }
+        if (taxClearance != null && !taxClearance.isEmpty()) {
+            entity.setTaxClearance(store(taxClearance, id, "taxClearance"));
+        }
+        if (affidavit != null && !affidavit.isEmpty()) {
+            entity.setAffidavit(store(affidavit, id, "affidavit"));
+        }
+        if (communityConsentLetter != null && !communityConsentLetter.isEmpty()) {
+            entity.setCommunityConsentLetter(store(communityConsentLetter, id, "communityConsentLetter"));
+        }
+        if (developmentSketch != null && !developmentSketch.isEmpty()) {
+            entity.setDevelopmentSketch(store(developmentSketch, id, "developmentSketch"));
+        }
+
+        customaryAllocationRepository.save(entity);
+    }
+
+    @Override
+    public Long saveFormRequest(CustomaryAllocationRequest formRequest) {
+        CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
+        entity.setApplicationDate(LocalDate.now());
+        entity.setPurposeDetail(formRequest.getPurposeDetail());
+        entity.setLga(formRequest.getLga());
+        entity.setNationality(formRequest.getNationality());
+        entity.setApplicantTitle(formRequest.getApplicantTitle());
+        entity.setStateOfOrigin(formRequest.getStateOfOrigin());
+        entity.setEmail(formRequest.getEmail());
+        entity.setMaritalStatus(formRequest.getMaritalStatus());
+        entity.setNationality(formRequest.getNationality());
+        entity.setApplicantTitle(formRequest.getApplicantTitle());
+        entity.setStateOfOrigin(formRequest.getStateOfOrigin());
+        entity.setEmail(formRequest.getEmail());
+        entity.setApplicantName(formRequest.getApplicantName());
+        entity.setIsPayed(formRequest.getIsPayed());
+        entity.setGender(formRequest.getGender());
+
+        entity = customaryAllocationRepository.save(entity);
+        return entity.getId();
+    }
+
     private LandApplicationResponse mapToResponse(LandApplication app) {
         return LandApplicationResponse.builder()
                 .id(app.getId())
@@ -377,5 +381,13 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .localGovernmentConfirmationLetter(app.getLocalGovernmentConfirmationLetter())
                 .taxClearances(app.getTaxClearances())
                 .build();
+    }
+
+    private String store(MultipartFile file, Long id, String fieldName) throws IOException {
+       if (localStorageService != null) {
+            return localStorageService.store(file, id, fieldName);
+        } else {
+            throw new IllegalStateException("No storage service configured");
+        }
     }
 }
