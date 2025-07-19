@@ -55,21 +55,6 @@ public class UserServiceImpl implements UserService {
         Roles userRole = roleRepository.findByValue("SUPERADMIN")
                 .orElseThrow(() -> new Exception("Default role not found"));
 
-//        Roles role;
-//        if (isAdminCreation) {
-//            // For admin-created users, use the role from request
-//            role = roleRepository.findById(userRequest.getRoleId())
-//                    .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-//        } else {
-//            // For self-registration, use default USER role
-//            role = roleRepository.findByValue("SUPERADMIN")
-//                    .orElseThrow(() -> new Exception("Default role not found"));
-//        }
-
-//        Roles role = roleRepository.findById(userRequest.getRoleId())
-//                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-
-
         if (user.isPresent()) {
             throw new Exception("User already exists");
         }
@@ -107,68 +92,6 @@ public class UserServiceImpl implements UserService {
                 .build();
 
     }
-
-//    @Override
-//    public UserResponse createUser(UserRequest userRequest, boolean isAdminCreation) {
-//        Optional<User> user = userRepository.findByEmail(userRequest.getEmail());
-//
-////        Roles userRole = roleRepository.findByValue("SUPERADMIN")
-////                .orElseThrow(() -> new Exception("Default role not found"));
-//
-//        Roles role;
-//        if (isAdminCreation) {
-//            // For admin-created users, use the role from request
-//            role = roleRepository.findById(userRequest.getRoleId())
-//                    .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-//        } else {
-//            // For self-registration, use default USER role
-//            role = roleRepository.findByValue("SUPERADMIN")
-//                    .orElseThrow(() -> new Exception("Default role not found"));
-//        }
-//
-////        Roles role = roleRepository.findById(userRequest.getRoleId())
-////                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
-//
-//
-//        if (user.isPresent()) {
-//            throw new Exception("User already exists");
-//        }
-//
-//        User createUser = new User();
-//        createUser.setEmail(userRequest.getEmail());
-//        createUser.setFirstName(userRequest.getFirstName());
-//        createUser.setLastName(userRequest.getLastName());
-//        createUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-//        createUser.setPhoneNumber(userRequest.getPhoneNumber());
-//        createUser.setAddress(userRequest.getAddress());
-//        createUser.setRoles(List.of(role));
-//        createUser.setNin(userRequest.getNin());
-//        createUser.setCity(userRequest.getCity());
-//        createUser.setState(userRequest.getState());
-//        createUser.setZip(userRequest.getZip());
-//        createUser.setStreet(userRequest.getStreet());
-//        //createUser.setRole(roles);
-//        createUser.setCreateDate(LocalDate.now());
-//        userRepository.save(createUser);
-//        publisher.publishEvent(new EmailNotificationEvent(this, "welcome", ImmutableMap.of("recipient", createUser.getEmail(), "name", createUser.getFirstName() + "  " + createUser.getLastName())));
-//
-//        return buildUserResponseWithPermissions(createUser, role);
-//
-////                UserResponse.builder()
-////                .id(createUser.getId())
-////                .email(userRequest.getEmail())
-////                .firstName(userRequest.getFirstName())
-////                .lastName(userRequest.getLastName())
-////                .phoneNumber(userRequest.getPhoneNumber())
-////                .address(userRequest.getAddress())
-////                .nin(userRequest.getNin())
-////                .city(userRequest.getCity())
-////                .state(userRequest.getState())
-////                .street(userRequest.getStreet())
-////                .zip(userRequest.getZip())
-////                .build();
-//
-//    }
 
 
     @Override
@@ -211,6 +134,9 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUser(Long userId, UserRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+
+
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
@@ -273,33 +199,102 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Override
     public AdminUserResponse createAdminUser(UserAdminRequest request) {
+        Optional<User> users = userRepository.findByEmail(request.getEmail());
         Roles role = roleRepository.findById(request.getRoleId())
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
+        if (users.isPresent()) {
+            throw new IllegalArgumentException("User already exists");
+        }
+
         User user = new User();
-        user.setFirstName(request.getName());
-        user.setCreatedAt(LocalDateTime.now());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setStreet(request.getStreet());
+        user.setAddress(request.getAddress());
+        user.setCity(request.getCity());
+        user.setState(request.getState());
+        user.setZip(request.getZip());
+        user.setNin(request.getNin());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setCreatedAt(LocalDateTime.now());
+        user.setCreateDate(LocalDate.now());
         user.setRole(role);
 
-        // Automatically pull permissions from the role
-        user.setPermissions(role.getPermissions());
+        // Set permissions from role
+        user.setPermissions(new ArrayList<>(role.getPermissions()));
 
         User saved = userRepository.save(user);
 
-        return new AdminUserResponse(
-                saved.getId(),
-                saved.getFirstName(),
-                saved.getEmail(),
-                saved.getRole().getName(),
-                saved.getPermissions().stream()
+        return AdminUserResponse.builder()
+                .id(saved.getId())
+                .firstName(saved.getFirstName())
+                .lastName(saved.getLastName())
+                .email(saved.getEmail())
+                .role(saved.getRole() != null ? saved.getRole().getName() : null)
+                .address(saved.getAddress())
+                .city(saved.getCity())
+                .state(saved.getState())
+                .zip(saved.getZip())
+                .street(saved.getStreet())
+                .phoneNumber(saved.getPhoneNumber())
+                .nin(saved.getNin())
+                .permissions(saved.getPermissions() != null
+                        ? saved.getPermissions().stream()
                         .map(Permission::getName)
                         .collect(Collectors.toList())
-        );
+                        : Collections.emptyList())
+                .build();
     }
+
+
+//    @Override
+//    public AdminUserResponse createAdminUser(UserAdminRequest request) {
+//        Optional<User> users = userRepository.findByEmail(request.getEmail());
+//        Roles role = roleRepository.findById(request.getRoleId())
+//                .orElseThrow(() -> new RuntimeException("Role not found"));
+//
+//        if (users.isPresent()) {
+//            throw new Exception("User already exists");
+//        }
+//
+//        User user = new User();
+//        user.setFirstName(request.getFirstName());
+//        user.setCreatedAt(LocalDateTime.now());
+//        user.setEmail(request.getEmail());
+//        user.setCreateDate(LocalDate.now());
+//        user.setPhoneNumber(request.getPhoneNumber());
+//        user.setStreet(request.getStreet());
+//        user.setPassword(passwordEncoder.encode(request.getPassword()));
+//        user.setRole(role);
+//        // Automatically pull permissions from the role
+//       // user.setPermissions(role.getPermissions());
+//
+//        User saved = userRepository.save(user);
+//
+//        return AdminUserResponse.builder()
+//                .id(saved.getId())
+//                .firstName(saved.getFirstName())
+//                .lastName(saved.getLastName())
+//                .email(saved.getEmail())
+//                .role(saved.getRole().getName())
+//                .address(saved.getAddress())
+//                .city(saved.getCity())
+//                .state(saved.getState())
+//                .zip(saved.getZip())
+//                .street(saved.getStreet())
+//                .phoneNumber(saved.getPhoneNumber())
+//                .nin(saved.getNin())
+//                .permissions(saved.getPermissions().stream()
+//                        .map(Permission::getName)
+//                        .collect(Collectors.toList()))
+//                .build();
+//
+//
+//    }
 
 
 
