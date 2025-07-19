@@ -41,4 +41,8 @@ public interface LandApplicationService {
     Long saveFormRequest(CustomaryAllocationRequest formRequest);
 
     void uploadFilesCustomary(Long formId, MultipartFile passportPhoto, MultipartFile taxClearance, MultipartFile affidavit, MultipartFile communityConsentLetter, MultipartFile developmentSketch) throws IOException;
+
+    Long saveStatutoryFormRequest(StatutoryApplicationRequest formRequest);
+
+    void uploadFilesStatutory(Long formId, MultipartFile passportPhoto, MultipartFile taxClearance, MultipartFile affidavit, MultipartFile communityConsentLetter, MultipartFile developmentSketch, MultipartFile oathDeclaration) throws IOException;
 }

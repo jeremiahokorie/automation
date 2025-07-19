@@ -124,13 +124,13 @@ public class StatutoryApplicationRequest {
     private Boolean illiterateJuratAttached;
 
     // Attachments (these should be saved separately or as paths/filenames)
-    private String passportPhoto;
-    private String taxClearance;
-    private String feeReceipt;
-    private String ageDeclaration;
-    private String naturalizationDoc;
-    private String oathDeclaration;
-    private Status status;
+//    private String passportPhoto;
+//    private String taxClearance;
+//    private String feeReceipt;
+//    private String ageDeclaration;
+//    private String naturalizationDoc;
+//    private String oathDeclaration;
+//    private Status status;
 
     private LocalDate dateOfApplication;
     private MultipartFile passportOfOwner;

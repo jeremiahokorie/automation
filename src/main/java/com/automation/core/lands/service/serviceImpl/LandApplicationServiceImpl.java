@@ -36,6 +36,8 @@ import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RequiredArgsConstructor
 @Service
 public class LandApplicationServiceImpl implements LandApplicationService {
@@ -202,7 +204,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         allocationApplication.setExistingLandLocation(statutoryApplicationRequest.getExistingLandLocation());
         allocationApplication.setAcquiringAuthority(statutoryApplicationRequest.getAcquiringAuthority());
         allocationApplication.setOwnsStateLand(statutoryApplicationRequest.getOwnsStateLand());
-        allocationApplication.setOathDeclaration(statutoryApplicationRequest.getOathDeclaration());
+       // allocationApplication.setOathDeclaration(statutoryApplicationRequest.getOathDeclaration());
         allocationApplication.setIsLandDeveloped(statutoryApplicationRequest.getIsLandDeveloped());
         allocationApplication.setOtherFeesBreakdown(statutoryApplicationRequest.getOtherFeesBreakdown());
         allocationApplication.setIsAssignorOrAssignee(statutoryApplicationRequest.getIsAssignorOrAssignee());
@@ -339,6 +341,44 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         }
 
         customaryAllocationRepository.save(entity);
+    }
+
+    @Override
+    public Long saveStatutoryFormRequest(StatutoryApplicationRequest formRequest) {
+        StatutoryAllocationApplication entity = new StatutoryAllocationApplication();
+        entity.setApplicationNo(formRequest.getApplicationNo());
+
+        entity = statutoryApplicationRepository.save(entity);
+        return entity.getId();
+    }
+
+
+    @Override
+    public void uploadFilesStatutory(Long formId, MultipartFile passportPhoto, MultipartFile taxClearance, MultipartFile feeReceipt, MultipartFile ageDeclaration, MultipartFile naturalizationDoc, MultipartFile oathDeclaration) throws IOException {
+        StatutoryAllocationApplication entity = statutoryApplicationRepository.findById(formId)
+                .orElseThrow(() -> new NoSuchElementException("Form id not found"));
+
+        if (passportPhoto != null && !passportPhoto.isEmpty()) {
+            String path = store(passportPhoto, formId, "passportPhoto");
+            entity.setPassportPhotos(path);
+        }
+        if (taxClearance != null && !taxClearance.isEmpty()) {
+            entity.setTaxClearances(store(taxClearance, formId, "taxClearance"));
+        }
+        if (feeReceipt != null && !feeReceipt.isEmpty()) {
+            entity.setFeeReceipt(store(feeReceipt, formId, "feeReceipt"));
+        }
+        if (ageDeclaration != null && !ageDeclaration.isEmpty()) {
+            entity.setDeclarationOfAge(store(ageDeclaration, formId, "ageDeclaration"));
+        }
+        if (naturalizationDoc != null && !naturalizationDoc.isEmpty()) {
+            entity.setNaturalizationDoc(store(naturalizationDoc, formId, "naturalizationDoc"));
+        }
+        if (oathDeclaration != null && !oathDeclaration.isEmpty()) {
+            entity.setOathDeclaration(store(oathDeclaration, formId, "oathDeclaration"));
+        }
+
+        statutoryApplicationRepository.save(entity);
     }
 
     @Override

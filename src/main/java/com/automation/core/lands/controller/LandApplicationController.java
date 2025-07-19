@@ -52,40 +52,67 @@ public class LandApplicationController {
         return ResponseEntity.ok("Files uploaded successfully");
     }
 
-    @PostMapping(value = "/customary")
-    public ResponseEntity<Map<String, String>> uploadDocuments(
-            @RequestBody CustomaryAllocationRequest customaryAllocationRequest,
-            @RequestParam Map<String, MultipartFile> documents
-    ) {
-        try {
-            Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Failed to upload documents");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+    @PostMapping("/submit-statutory-form")
+    public ResponseEntity<?> submitStatutoryForm(@RequestBody StatutoryApplicationRequest formRequest) {
+        Long formId = landApplicationService.saveStatutoryFormRequest(formRequest);
+        return ResponseEntity.ok(Map.of("formId", formId));
     }
+
+    @PostMapping(value = "/upload-statutory-files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadStatutoryFiles(
+            @RequestParam("formId") Long formId,
+            @RequestPart(value = "passportPhoto", required = false) MultipartFile passportPhoto,
+            @RequestPart(value = "taxClearance", required = false) MultipartFile taxClearance,
+            @RequestPart(value = "feeReceipt", required = false) MultipartFile feeReceipt,
+            @RequestPart(value = "ageDeclaration", required = false) MultipartFile ageDeclaration,
+            @RequestPart(value = "naturalizationDoc", required = false) MultipartFile naturalizationDoc,
+            @RequestPart(value = "oathDeclaration", required = false) MultipartFile oathDeclaration
+    ) throws IOException {
+        landApplicationService.uploadFilesStatutory(formId, passportPhoto, taxClearance, feeReceipt, ageDeclaration, naturalizationDoc, oathDeclaration);
+        return ResponseEntity.ok("Files uploaded successfully");
+    }
+
+    //    private String passportPhoto;
+//    private String taxClearance;
+//    private String feeReceipt;
+//    private String ageDeclaration;
+//    private String naturalizationDoc;
+//    private String oathDeclaration;
+
+ //   @PostMapping(value = "/customary")
+//    public ResponseEntity<Map<String, String>> uploadDocuments(
+//            @RequestBody CustomaryAllocationRequest customaryAllocationRequest,
+//            @RequestParam Map<String, MultipartFile> documents
+//    ) {
+//        try {
+//            Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
+//            return ResponseEntity.ok(response);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Map<String, String> errorResponse = new HashMap<>();
+//            errorResponse.put("error", "Failed to upload documents");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+//        }
+//    }
 
 
    // @PreAuthorize("isAuthenticated()")
-    @PostMapping("/statutory")
-    public ResponseEntity<Map<String, String>> statutoryLandApplication(@RequestBody StatutoryApplicationRequest statutoryApplicationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
-        try {
-            Map<String, String> response = landApplicationService.statutoryallocation(statutoryApplicationRequest, documents);
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Failed to upload documents");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-
-       // return ResponseEntity.ok(response);
-
-
-    }
+//    @PostMapping("/statutory")
+//    public ResponseEntity<Map<String, String>> statutoryLandApplication(@RequestBody StatutoryApplicationRequest statutoryApplicationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
+//        try {
+//            Map<String, String> response = landApplicationService.statutoryallocation(statutoryApplicationRequest, documents);
+//            return ResponseEntity.ok(response);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Map<String, String> errorResponse = new HashMap<>();
+//            errorResponse.put("error", "Failed to upload documents");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+//        }
+//
+//       // return ResponseEntity.ok(response);
+//
+//
+//    }
 
     @GetMapping("/all-statutory-allocations")
     public ResponseEntity<AppResponse<List<CustomaryAllocationResponse>>> getAllCustomaryAllocations() {
