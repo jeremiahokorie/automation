@@ -347,7 +347,37 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     public Long saveStatutoryFormRequest(StatutoryApplicationRequest formRequest) {
         StatutoryAllocationApplication entity = new StatutoryAllocationApplication();
         entity.setApplicationNo(formRequest.getApplicationNo());
-
+        entity.setStatus(Status.PENDING);
+        entity.setAssignedDate(LocalDate.now());
+        entity.setGpsAccuracy(formRequest.getGpsAccuracy());
+        entity.setLatitude(formRequest.getLatitude());
+        entity.setLongitude(formRequest.getLongitude());
+        entity.setAltitude(formRequest.getAltitude());
+        entity.setIsAssignorOrAssignee(formRequest.getIsAssignorOrAssignee());
+        entity.setApplicationFeeAmount(formRequest.getApplicationFeeAmount());
+        entity.setOtherFeesBreakdown(formRequest.getOtherFeesBreakdown());
+        entity.setGender(formRequest.getGender());
+        entity.setHomeAddress(formRequest.getHomeAddress());
+        entity.setLga(formRequest.getLga());
+        entity.setNationality(formRequest.getNationality());
+        entity.setOccupation(formRequest.getOccupation());
+        entity.setTownOrArea(formRequest.getTownOrArea());
+        entity.setTitle(formRequest.getTitle());
+        entity.setLuacNo(formRequest.getLuacNo());
+        entity.setOwnsStateLand(formRequest.getOwnsStateLand());
+        entity.setIsLandDeveloped(formRequest.getIsLandDeveloped());
+        entity.setStateOfOrigin(formRequest.getStateOfOrigin());
+        entity.setEmail(formRequest.getEmail());
+        entity.setMaritalStatus(formRequest.getMaritalStatus());
+        entity.setPhoneNumber(formRequest.getPhoneNumber());
+        entity.setSwornDeclaration(formRequest.getSwornDeclaration());
+        entity.setResidentialBuildingType(formRequest.getResidentialBuildingType());
+        entity.setPlotType(formRequest.getPlotType());
+        entity.setApplicationFeeType(formRequest.getApplicationFeeType());
+        entity.setPreviousAcquisitionDate(formRequest.getPreviousAcquisitionDate());
+        entity.setAssigneeNameAndAddress(formRequest.getAssigneeNameAndAddress());
+        entity.setAssignedDate(LocalDate.now());
+        entity.setPlaceOfBirth(formRequest.getPlaceOfBirth());
         entity = statutoryApplicationRepository.save(entity);
         return entity.getId();
     }
@@ -385,6 +415,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     public Long saveFormRequest(CustomaryAllocationRequest formRequest) {
         CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
         entity.setApplicationDate(LocalDate.now());
+        entity.setStatus(Status.PENDING);
         entity.setPurposeDetail(formRequest.getPurposeDetail());
         entity.setLga(formRequest.getLga());
         entity.setNationality(formRequest.getNationality());
@@ -399,6 +430,17 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setApplicantName(formRequest.getApplicantName());
         entity.setIsPayed(formRequest.getIsPayed());
         entity.setGender(formRequest.getGender());
+        entity.setTownOrArea(formRequest.getTownOrArea());
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setProposedBuildingType(formRequest.getProposedBuildingType());
+        entity.setProposedDevelopmentCost(formRequest.getProposedDevelopmentCost());
+        entity.setLandPurpose(formRequest.getLandPurpose());
+        entity.setOccupation(formRequest.getOccupation());
+        entity.setTownOrArea(formRequest.getTownOrArea());
+        entity.setHomeAddress(formRequest.getHomeAddress());
+        entity.setExistingLandLocation(formRequest.getExistingLandLocation());
+        entity.setCommunityLeaderTitle(formRequest.getCommunityLeaderTitle());
+
 
         entity = customaryAllocationRepository.save(entity);
         return entity.getId();

@@ -166,8 +166,8 @@ public class StatutoryApplicationRequest {
 //    private String otherDoc4Path;
 
     // GPS info
-//    private Double latitude;
-//    private Double longitude;
-//    private Double altitude;
-//    private Double gpsAccuracy;
+    private Double latitude;
+    private Double longitude;
+    private Double altitude;
+    private Double gpsAccuracy;
 }
