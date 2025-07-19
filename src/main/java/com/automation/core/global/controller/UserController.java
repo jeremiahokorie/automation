@@ -74,6 +74,7 @@ public class UserController {
 //                .status(HttpStatus.OK.value()).data(userResponse).error("").build();
 //        return new ResponseEntity<>(response, HttpStatus.OK);
 //    }
+//jigawa state commodity xchange service
 
    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @GetMapping("/users")
@@ -84,7 +85,6 @@ public class UserController {
                 .status(HttpStatus.OK.value()).data(users).build());
     }
 
-
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @DeleteMapping("/admin/{id}/user")
     public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {
@@ -94,7 +94,6 @@ public class UserController {
                 .status(HttpStatus.OK.value()).data(userResponse).build()
         );
     }
-
 
     @PutMapping("/users/{userId}")
     // @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
