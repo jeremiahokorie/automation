@@ -37,8 +37,8 @@ public class LandApplicationController {
 
     @PostMapping("/submit-customary-data")
     @Operation(
-            summary = "Create a new customary application endpoint, This endpoint will return the ID of the request after a successful creation, pass the ID when user is uploading the files from the /upload-customary-files endpoint",
-            description = "Creates a new customary request in the system with the provided information."
+            summary = "Create a new customary application endpoint.",
+            description = " This endpoint will return the ID of the request after a successful creation, pass the ID when user is uploading the files from the /upload-customary-files endpoint, Creates a new customary request in the system with the provided information."
     )
     public ResponseEntity<?> submitForm(@RequestBody CustomaryAllocationRequest formRequest) {
         Long formId = landApplicationService.saveFormRequest(formRequest);
@@ -50,7 +50,8 @@ public class LandApplicationController {
     @PostMapping(value = "/upload-customary-files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Endpoint to Upload Customary files alone",
-            description = "Returns Files uploaded successfully."
+            description = "Returns Files uploaded successfully.Pass the formId returned from the submit-customary-data response as formId in this request" +
+                    " and upload files"
     )
     public ResponseEntity<?> uploadFiles(
             @RequestParam("formId") Long formId,
@@ -67,8 +68,9 @@ public class LandApplicationController {
 
     @PostMapping("/submit-statutory-data")
     @Operation(
-            summary = "Create a new statutory application endpoint, This endpoint will return the ID of the request after a successful creation, pass the ID when user is uploading the files from the /upload-statutory-files endpoint",
-            description = "Creates a new statutory request in the system with the provided information."
+            summary = "Create a new statutory application endpoint.",
+            description = "Creates a new statutory request in the system with the " +
+                    "provided information.This endpoint will return the ID of the request after a successful creation, pass the ID when user is uploading the files from the /upload-statutory-files endpoint"
     )
     public ResponseEntity<?> submitStatutoryForm(@RequestBody StatutoryApplicationRequest formRequest) {
         Long formId = landApplicationService.saveStatutoryFormRequest(formRequest);
@@ -78,7 +80,10 @@ public class LandApplicationController {
     @PostMapping(value = "/upload-statutory-files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Upload files for statutory application",
-            description = "This endpoint is for user to upload required document after filling and submitting their statutory application."
+            description = "This endpoint is for user to upload required document " +
+                    "after filling and submitting their statutory application." +
+                    "Pass the formId returned from the submit-statutory-data response as formId in this request" +
+                    " and upload files"
     )
     public ResponseEntity<?> uploadStatutoryFiles(
             @RequestParam("formId") Long formId,
@@ -93,12 +98,6 @@ public class LandApplicationController {
         return ResponseEntity.ok("Files uploaded successfully");
     }
 
-    //    private String passportPhoto;
-//    private String taxClearance;
-//    private String feeReceipt;
-//    private String ageDeclaration;
-//    private String naturalizationDoc;
-//    private String oathDeclaration;
 
  //   @PostMapping(value = "/customary")
 //    public ResponseEntity<Map<String, String>> uploadDocuments(
@@ -150,7 +149,9 @@ public class LandApplicationController {
     @GetMapping("/all-customary-allocations")
     @Operation(
             summary = "Get all created customary application from the database",
-            description = "This endpoint is for user to upload required document after filling and submitting their customary application."
+            description = "This endpoint is for user to upload required document " +
+                    "after filling and submitting their customary application."
+
     )
     public ResponseEntity<AppResponse<List<StatutoryApplicationResponse>>> getAllAllocations() {
         List<StatutoryApplicationResponse> allocations = landApplicationService.getAllStatutoryAllocations();
@@ -171,6 +172,10 @@ public class LandApplicationController {
     }
 
     @GetMapping("/customary-summary")
+    @Operation(
+            summary = "Get summary of the customary application ",
+            description = "This endpoint is for user to get  customary summary."
+    )
     public ResponseEntity<LandApplicationSummaryResponse>summary(){
         LandApplicationSummaryResponse landApp = landApplicationService.getAllCustomarySummary();
         return ResponseEntity.ok().body(landApp);
