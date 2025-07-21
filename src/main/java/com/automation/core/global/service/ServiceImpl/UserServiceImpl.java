@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
                 .street(user.getStreet())
                 .nin(user.getNin())
                 .city(user.getCity())
-                .roleName(user.getRole().getName())
+                //.roleName(user.getRole().getName())
                 .state(user.getState())
                 .zip(user.getZip())
                 .build()).collect(Collectors.toList());

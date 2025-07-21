@@ -9,6 +9,7 @@ import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.commerce.service.service.BusinessTypeService;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.util.constant.AppConstant;
+import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,8 @@ public class BusinessRegistrationController {
 
   // @PreAuthorize("isAuthenticated()")
     @PostMapping("/register")
+    @ApiOperation(value = "register a new business ",
+            notes = "This endpoint registers a business")
     public ResponseEntity<AppResponse<BusinessRegistrationResponse>> registerBusiness(@RequestBody BusinessRegistrationRequest businessRegistrationRequest) {
         BusinessRegistrationResponse businessRegistrationResponse = businessRegistrationService.register(businessRegistrationRequest);
         AppResponse<BusinessRegistrationResponse> response = AppResponse.<BusinessRegistrationResponse>builder()
@@ -39,6 +42,8 @@ public class BusinessRegistrationController {
 
 
     @GetMapping("/businesses")
+    @ApiOperation(value = "get all registered business ",
+            notes = "This endpoint returns all registered business")
    // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AppResponse<List<BusinessRegistrationResponse>>> getBusinessRegistration() {
         List<BusinessRegistrationResponse> response = businessRegistrationService.getRegisteredBusiness();
@@ -47,7 +52,7 @@ public class BusinessRegistrationController {
                 .status(HttpStatus.OK.value()).data(response).error("").build());
     }
 
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'COMMISSIONER')")
+   // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'COMMISSIONER')")
     @PutMapping("/{businessNumber}/verify")
     public ResponseEntity<AppResponse<BusinessRegistrationResponse>> verifyBusiness(@PathVariable String businessNumber) {
         BusinessRegistrationResponse response = businessRegistrationService.verifyBusiness(businessNumber);
