@@ -96,8 +96,6 @@ public class CustomaryAllocationApplication {
     private String developmentSketch;
 
 
-
-
     // GPS (if collected)
     private Double latitude;
     private Double longitude;

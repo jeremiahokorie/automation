@@ -91,8 +91,9 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
             businessRegistration.setDateRegistered(LocalDate.now());
             businessRegistration.setAuthorizationUrl(authorizationUrl);
+            businessRegistration.setIsPayed(false);
            // businessRegistration.setBusinessType(businessType);
-            businessRepository.save(businessRegistration);
+             businessRepository.save(businessRegistration);
 
                 Inspection inspection = new Inspection();
                 inspection.setRequestId(UUID.randomUUID());
@@ -109,6 +110,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         }
 
         return BusinessRegistrationResponse.builder()
+                .id(businessRegistration.getId())
                 .comment(businessRegistrationRequest.getComment())
                 .status(businessRegistrationRequest.getStatus())
                 .businessName(businessRegistrationRequest.getBusinessName())
@@ -121,7 +123,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .authorizationUrl(businessRegistration.getAuthorizationUrl())
                 .authorizationUrl(authorizationUrl)
                 .isRenewal(true)
-                .isPayed(true).build();
+                .isPayed(false)
+                .build();
         } catch (IOException e) {
             throw new Exception("Payment gateway response parsing error");
         }
