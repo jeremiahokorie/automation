@@ -47,8 +47,12 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     public BusinessRegistrationResponse register(BusinessRegistrationRequest businessRegistrationRequest) {
         BusinessRegistration businessRegistration = businessRepository.findBybusinessNumber(businessRegistrationRequest.getBusinessNumber());
 
-        if (businessRegistration != null) {
-            throw new Exception("Business already exists");
+        // Validate business Number
+        if (businessRegistrationRequest.getBusinessNumber() == null || businessRegistrationRequest.getBusinessNumber().isEmpty()) {
+            throw new CustomException("Business number is required");
+        }
+        if (businessRegistrationRequest.getBusinessNumber().length() < 5) {
+            throw new CustomException("Business number must be at least 5 characters long");
         }
 
         // Build payment request

@@ -75,7 +75,6 @@ public class BusinessRegistrationController {
     public ResponseEntity<AppResponse<ApprovalandRejectResponse>> approveBusiness(
             @PathVariable String businessNumber,
             @Valid @RequestBody ApprovalandRejectRequest commentRequest) {
-
         ApprovalandRejectResponse businessRenewalResponse = businessRegistrationService.approveRequest(businessNumber, commentRequest);
 
         AppResponse<ApprovalandRejectResponse> response = AppResponse.<ApprovalandRejectResponse>builder()

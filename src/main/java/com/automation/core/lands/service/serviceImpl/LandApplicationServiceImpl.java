@@ -348,6 +348,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         StatutoryAllocationApplication entity = new StatutoryAllocationApplication();
         entity.setApplicationNo(formRequest.getApplicationNo());
         entity.setStatus(Status.PENDING);
+        entity.setApplicantName(formRequest.getApplicantName());
         entity.setAssignedDate(LocalDate.now());
         entity.setGpsAccuracy(formRequest.getGpsAccuracy());
         entity.setLatitude(formRequest.getLatitude());
@@ -377,6 +378,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setPreviousAcquisitionDate(formRequest.getPreviousAcquisitionDate());
         entity.setAssigneeNameAndAddress(formRequest.getAssigneeNameAndAddress());
         entity.setAssignedDate(LocalDate.now());
+        entity.setIsPayed(formRequest.getIsPayed());
         entity.setPlaceOfBirth(formRequest.getPlaceOfBirth());
         entity = statutoryApplicationRepository.save(entity);
         return entity.getId();

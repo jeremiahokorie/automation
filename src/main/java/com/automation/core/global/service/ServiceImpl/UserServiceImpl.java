@@ -116,8 +116,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse deleteById(Long id) {
-//      User user = userRepository.findById(id).orElseThrow(() -> new Exception("User with Id not found"));
-//      userRepository.delete(user);
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with ID: " + id);
+        }
+        // Check if the user has any roles
+        // Delete the user and their associated roles
         roleRepository.deleteById(id);
         userRepository.deleteById(id);
         return new UserResponse("Deleted user with ID: " + id);
@@ -134,10 +137,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUser(Long userId, UserRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
-
-
+        // Update user details
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
@@ -148,9 +150,9 @@ public class UserServiceImpl implements UserService {
         user.setState(request.getState());
         user.setZip(request.getZip());
         user.setStreet(request.getStreet());
-        user.setZip(request.getZip());
 
         User updatedUser = userRepository.save(user);
+
         return UserResponse.builder()
                 .id(updatedUser.getId())
                 .email(updatedUser.getEmail())
@@ -164,6 +166,7 @@ public class UserServiceImpl implements UserService {
                 .street(updatedUser.getStreet())
                 .zip(updatedUser.getZip())
                 .build();
+
     }
 
 
