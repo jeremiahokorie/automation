@@ -41,6 +41,7 @@ public class Roles {
         for (Permission permission : permissions) {
             authorities.add(permission.getValue());
         }
+
         return authorities;
     }
 }

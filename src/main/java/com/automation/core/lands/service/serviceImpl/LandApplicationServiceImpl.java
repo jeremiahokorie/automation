@@ -253,8 +253,24 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .assigneeNameAndAddress(statutoryAllocationApplication.getAssigneeNameAndAddress())
                 .luacNo(statutoryAllocationApplication.getLuacNo())
                 .compensationStatus(statutoryAllocationApplication.getCompensationStatus())
-                .dateOfBirth(LocalDate.now())
+                .applicationDate(statutoryAllocationApplication.getApplicationDate())
                 .phoneNumber(statutoryAllocationApplication.getPhoneNumber())
+                .title(statutoryAllocationApplication.getTitle())
+                .titleOther(statutoryAllocationApplication.getTitleOther())
+                .stateOfOrigin(statutoryAllocationApplication.getStateOfOrigin())
+                .nationality(statutoryAllocationApplication.getNationality())
+                .stateOfOrigin(statutoryAllocationApplication.getStateOfOrigin())
+                .placeOfBirth(statutoryAllocationApplication.getPlaceOfBirth())
+                .gpsAccuracy(statutoryAllocationApplication.getGpsAccuracy())
+                .lga(statutoryAllocationApplication.getLga())
+                .existingTitleNo(statutoryAllocationApplication.getExistingTitleNo())
+                .existingLandLocation(statutoryAllocationApplication.getExistingLandLocation())
+                .isAssignorOrAssignee(statutoryAllocationApplication.getIsAssignorOrAssignee())
+                .plotType(statutoryAllocationApplication.getPlotType())
+                .plotTypeDetail(statutoryAllocationApplication.getPlotTypeDetail())
+                .longitude(statutoryAllocationApplication.getLongitude())
+                .latitude(statutoryAllocationApplication.getLatitude())
+                .altitude(statutoryAllocationApplication.getAltitude())
                 .compensationPartPayment(statutoryAllocationApplication.getCompensationPartPayment())
                 .ownsStateLand(statutoryAllocationApplication.getOwnsStateLand())
                 .email(statutoryAllocationApplication.getEmail())
@@ -267,7 +283,21 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .ageDeclaration(statutoryAllocationApplication.getDeclarationOfAge())
                 .naturalizationDoc(statutoryAllocationApplication.getNaturalizationDoc())
                 .oathDeclaration(statutoryAllocationApplication.getOathDeclaration())
+                .swornDeclaration(statutoryAllocationApplication.getSwornDeclaration())
+                .acquiringAuthority(statutoryAllocationApplication.getAcquiringAuthority())
+                .proposedInvestment(statutoryAllocationApplication.getProposedInvestment())
+                .compensationPartPayment(statutoryAllocationApplication.getCompensationPartPayment())
+                .dateOfBirth(statutoryAllocationApplication.getDateOfBirth())
+                .declarationDate(statutoryAllocationApplication.getDeclarationDate())
+                .investmentFinancing(statutoryAllocationApplication.getInvestmentFinancing())
+                .memorandumArticlesPath(statutoryAllocationApplication.getMemorandumArticlesPath())
+                .townOrArea(statutoryAllocationApplication.getTownOrArea())
+                .applicationFeeType(statutoryAllocationApplication.getApplicationFeeType())
+                .previousAcquisitionDate(statutoryAllocationApplication.getPreviousAcquisitionDate())
+                .plotSizeOther(statutoryAllocationApplication.getPlotSizeOther())
+                .residentialBuildingType(statutoryAllocationApplication.getResidentialBuildingType())
                 .isLandDeveloped(statutoryAllocationApplication.getIsLandDeveloped()).build()
+
         ).collect(Collectors.toList());
     }
 
@@ -295,6 +325,14 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .taxClearance(customaryAllocation.getTaxClearance())
                 .affidavit(customaryAllocation.getAffidavit())
                 .communityConsent(customaryAllocation.getCommunityConsent())
+                .proposedBuildingType(customaryAllocation.getProposedBuildingType())
+                .proposedDevelopmentCost(customaryAllocation.getProposedDevelopmentCost())
+                .landPurpose(customaryAllocation.getLandPurpose())
+                .existingLandLocation(customaryAllocation.getExistingLandLocation())
+                .purposeDetail(customaryAllocation.getPurposeDetail())
+                .latitude(customaryAllocation.getLatitude())
+                .longitude(customaryAllocation.getLongitude())
+                .altitude(customaryAllocation.getAltitude())
                 .developmentSketch(customaryAllocation.getDevelopmentSketch())
                 .nationality(customaryAllocation.getNationality()).build()
         ).collect(Collectors.toList());
@@ -350,7 +388,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         if (developmentSketch != null && !developmentSketch.isEmpty()) {
             entity.setDevelopmentSketch(store(developmentSketch, id, "developmentSketch"));
         }
-
         customaryAllocationRepository.save(entity);
     }
 
@@ -361,6 +398,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setStatus(Status.PENDING);
         entity.setApplicantName(formRequest.getApplicantName());
         entity.setAssignedDate(LocalDate.now());
+        entity.setApplicationDate(LocalDate.now());
         entity.setGpsAccuracy(formRequest.getGpsAccuracy());
         entity.setLatitude(formRequest.getLatitude());
         entity.setLongitude(formRequest.getLongitude());
@@ -401,8 +439,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         StatutoryAllocationApplication entity = statutoryApplicationRepository.findById(formId)
                 .orElseThrow(() -> new NoSuchElementException("Form id not found"));
 
-
-
         if (passportPhoto != null && !passportPhoto.isEmpty()) {
             String path = store(passportPhoto, formId, "passportPhoto");
             entity.setPassportPhotos(path);
@@ -423,12 +459,14 @@ public class LandApplicationServiceImpl implements LandApplicationService {
             entity.setOathDeclaration(store(oathDeclaration, formId, "oathDeclaration"));
         }
 
+        // Save the updated entity
         statutoryApplicationRepository.save(entity);
     }
 
     @Override
     public Long saveFormRequest(CustomaryAllocationRequest formRequest) {
         // Validate required fields
+        //
 
         CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
         entity.setApplicationDate(LocalDate.now());
@@ -441,7 +479,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setEmail(formRequest.getEmail());
         entity.setMaritalStatus(formRequest.getMaritalStatus());
         entity.setNationality(formRequest.getNationality());
-        entity.setApplicantTitle(formRequest.getApplicantTitle());
         entity.setStateOfOrigin(formRequest.getStateOfOrigin());
         entity.setEmail(formRequest.getEmail());
         entity.setApplicantName(formRequest.getApplicantName());
@@ -457,8 +494,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setHomeAddress(formRequest.getHomeAddress());
         entity.setExistingLandLocation(formRequest.getExistingLandLocation());
         entity.setCommunityLeaderTitle(formRequest.getCommunityLeaderTitle());
-
-
         entity = customaryAllocationRepository.save(entity);
         return entity.getId();
     }

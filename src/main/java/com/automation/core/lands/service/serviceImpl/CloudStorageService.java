@@ -30,6 +30,10 @@ public class CloudStorageService {
                         .build(),
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize())
         );
+
+        //method to retrieve files
+
+
         return s3.utilities().getUrl(builder -> builder.bucket(bucket).key(key)).toExternalForm();
     }
 }

@@ -1,10 +1,13 @@
 package com.automation.core.global.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiParam;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -14,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Builder
+@SuperBuilder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,11 +42,17 @@ public class User implements Serializable {
     private String phoneNumber;
     @Column(name = "address")
     private String address;
+
+    @Column(name = "street")
     private String street;
+
+    @Column(name = "city")
     private String city;
     private String state;
     private String zip;
     private String nin;
+
+    @Column(name = "status")
     private String status;
     @Column(name = "reset_token")
     private String resetToken;
@@ -69,6 +78,16 @@ public class User implements Serializable {
     private Boolean isPayed = false;
 
     private LocalDateTime createdAt;
+
+    @Builder.Default
+    @JsonIgnore
+    @ApiParam(value = "Page number. This is to support multi paged response", example = "1")
+    private Integer page = 1;
+
+    @ApiParam(value = "Page size of returned records. Number of records to be returned on a page.", example = "10")
+    @JsonIgnore
+    @Builder.Default
+    private Integer size = 25;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Roles> roles;

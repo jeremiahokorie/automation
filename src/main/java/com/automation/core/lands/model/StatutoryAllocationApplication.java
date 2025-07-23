@@ -1,6 +1,8 @@
 package com.automation.core.lands.model;
 
 import com.automation.util.enums.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiParam;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -163,6 +165,16 @@ public class StatutoryAllocationApplication {
     private Double longitude;
     private Double altitude;
     private Double gpsAccuracy;
+
+    @Builder.Default
+    @JsonIgnore
+    @ApiParam(value = "Page number. This is to support multi paged response", example = "1")
+    private Integer page = 1;
+
+    @ApiParam(value = "Page size of returned records. Number of records to be returned on a page.", example = "10")
+    @JsonIgnore
+    @Builder.Default
+    private Integer size = 25;
 
     @PrePersist
     public void prePersist() {
