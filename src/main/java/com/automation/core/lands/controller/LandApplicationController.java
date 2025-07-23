@@ -45,8 +45,6 @@ public class LandApplicationController {
         return ResponseEntity.ok(Map.of("formId", formId));
     }
 
-
-
     @PostMapping(value = "/upload-customary-files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             summary = "Endpoint to Upload Customary files alone",
@@ -134,7 +132,7 @@ public class LandApplicationController {
 //
 //    }
 
-    @GetMapping("/all-statutory-allocations")
+    @GetMapping("/all-customary-allocations")
     @Operation(
             summary = "Get all created statutory application from the database",
             description = "This endpoint is for fetching all created statutory request from the database."
@@ -146,7 +144,7 @@ public class LandApplicationController {
                 .status(HttpStatus.OK.value()).data(allocations).error("").build());
     }
 
-    @GetMapping("/all-customary-allocations")
+    @GetMapping("/all-statutory-allocations")
     @Operation(
             summary = "Get all created customary application from the database",
             description = "This endpoint is for user to upload required document " +

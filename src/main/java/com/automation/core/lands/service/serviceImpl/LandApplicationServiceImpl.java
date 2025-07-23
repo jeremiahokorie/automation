@@ -261,6 +261,12 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .gender(statutoryAllocationApplication.getGender())
                 .existingLandLocation(statutoryAllocationApplication.getExistingLandLocation())
                 .homeAddress(statutoryAllocationApplication.getHomeAddress())
+                .passportPhoto(statutoryAllocationApplication.getPassportPhotos())
+                .taxClearance(statutoryAllocationApplication.getTaxClearances())
+                .feeReceipt(statutoryAllocationApplication.getFeeReceipt())
+                .ageDeclaration(statutoryAllocationApplication.getDeclarationOfAge())
+                .naturalizationDoc(statutoryAllocationApplication.getNaturalizationDoc())
+                .oathDeclaration(statutoryAllocationApplication.getOathDeclaration())
                 .isLandDeveloped(statutoryAllocationApplication.getIsLandDeveloped()).build()
         ).collect(Collectors.toList());
     }
@@ -285,6 +291,11 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .email(customaryAllocation.getEmail())
                 .maritalStatus(customaryAllocation.getMaritalStatus())
                 .lga(customaryAllocation.getLga())
+                .passportPhoto(customaryAllocation.getPassportPhoto())
+                .taxClearance(customaryAllocation.getTaxClearance())
+                .affidavit(customaryAllocation.getAffidavit())
+                .communityConsent(customaryAllocation.getCommunityConsent())
+                .developmentSketch(customaryAllocation.getDevelopmentSketch())
                 .nationality(customaryAllocation.getNationality()).build()
         ).collect(Collectors.toList());
     }
@@ -390,6 +401,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         StatutoryAllocationApplication entity = statutoryApplicationRepository.findById(formId)
                 .orElseThrow(() -> new NoSuchElementException("Form id not found"));
 
+
+
         if (passportPhoto != null && !passportPhoto.isEmpty()) {
             String path = store(passportPhoto, formId, "passportPhoto");
             entity.setPassportPhotos(path);
@@ -415,6 +428,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
 
     @Override
     public Long saveFormRequest(CustomaryAllocationRequest formRequest) {
+        // Validate required fields
+
         CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
         entity.setApplicationDate(LocalDate.now());
         entity.setStatus(Status.PENDING);
