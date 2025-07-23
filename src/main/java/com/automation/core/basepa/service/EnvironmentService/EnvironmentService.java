@@ -6,6 +6,7 @@ import com.automation.core.basepa.dto.request.PermitRenewRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.dto.response.EnvironmentResponse;
 import com.automation.core.basepa.dto.response.EnvironmentSummaryResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface EnvironmentService {
     EnvironmentResponse renewPermit(PermitRenewRequest permitRenewRequest);
 
     EnvironmentSummaryResponse getEnvironmentSummary();
+
+    Page<EnvironmentResponse> getAllAppliedPermit(int page, int size, String sortBy, String sortDir);
 }

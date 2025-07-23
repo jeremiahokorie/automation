@@ -32,6 +32,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -286,5 +289,35 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         environment.setTotalReviewed((int) environmentRepository.countByStatus(Status.REVIEWED));
         environment.setTotalRegisteredEnvironment(Math.toIntExact(environmentRepository.count()));
         return environment;
+    }
+
+    @Override
+    public Page<EnvironmentResponse> getAllAppliedPermit(int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return environmentRepository.findAll(pageRequest)
+                .map(permit -> EnvironmentResponse.builder()
+                        .id(permit.getId())
+                        .phone(permit.getPhone())
+                        .applicationDate(permit.getApplicationDate())
+                        .status(permit.getStatus())
+                        .facilityName(permit.getFacilityName())
+                        .disposalLocation(permit.getDisposalLocation())
+                        .facilityAddress(permit.getFacilityAddress())
+                        .industryType(permit.getIndustryType())
+                        .applicantName(permit.getApplicantName())
+                        .contactPerson(permit.getContactPerson())
+                        .address(permit.getAddress())
+                        .authorizationUrl(permit.getAuthorizationUrl())
+                        .permitType(permit.getPermitType())
+                        .wasteQuantity(permit.getWasteQuantity())
+                        .disposalFrequency(permit.getDisposalFrequency())
+                        .disposalMethod(permit.getDisposalMethod())
+                        .disposalLocation(permit.getDisposalLocation())
+                        .hasEnvironmentalAudit(permit.getHasEnvironmentalAudit())
+                        .operationalLicenseNumber(permit.getOperationalLicenseNumber())
+                        .email(permit.getEmail()).build());
     }
 }

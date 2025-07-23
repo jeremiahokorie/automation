@@ -16,6 +16,9 @@ import com.automation.core.inspection.service.InspectionService.InspectionServic
 import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,5 +106,26 @@ public class InspectionServiceImpl implements InspectionService {
         inspection.setCreatedAt(LocalDateTime.now());
         inspectionRepository.save(inspection);
         return InspectionResponse.builder().id(inspection.getId()).build();
+    }
+
+    @Override
+    public Page<InspectionResponse> getPaginatedInspection(int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return inspectionRepository.findAll(pageRequest)
+                .map(inspection -> InspectionResponse.builder()
+                        .id(inspection.getId())
+                        .applicantName(inspection.getApplicantName())
+                        .requestId(inspection.getRequestId())
+                        .applicationType(inspection.getApplicationType())
+                        .status(inspection.getStatus())
+                        .notes(inspection.getNotes())
+                        .sourceService(inspection.getSourceService())
+                        .createdAt(inspection.getCreatedAt())
+                        .updatedAt(inspection.getUpdatedAt())
+                        .assignedTo(inspection.getAssignedTo())
+                        .build());
     }
 }

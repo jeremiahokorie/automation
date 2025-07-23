@@ -24,6 +24,9 @@ import com.automation.util.enums.Status;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -278,22 +281,28 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         return businessRegistrationResponse;
     }
 
+    @Override
+    public Page<BusinessRegistrationResponse> getAllRegisteredBusiness(int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
-//    @Override
-//    public BusinessRenewalResponse approveRequest(String businessNumber) {
-//        BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
-//        if (registration == null || !registration.isExpired()) {
-//            throw new CustomException("Business not found or not yet due for renewal.");
-//        }
-//        registration.setStatus("APPROVED");
-//        businessRepository.save(registration);
-//        return BusinessRenewalResponse.builder()
-//                .businessNumber(registration.getBusinessNumber())
-//                .renewalDate(registration.getRenewalDate())
-//                .status(registration.getStatus())
-//                .businessName(registration.getBusinessName())
-//                .status(registration.getStatus())
-//                .businessName(registration.getBusinessName()).build();
-//    }
+        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return businessRepository.findAll(pageRequest)
+                .map(businessRegistration -> BusinessRegistrationResponse.builder()
+                        .id(businessRegistration.getId())
+                        .businessName(businessRegistration.getBusinessName())
+                        .businessNumber(businessRegistration.getBusinessNumber())
+                        .address(businessRegistration.getAddress())
+                        .email(businessRegistration.getEmail())
+                        .phone(businessRegistration.getPhone())
+                        .comment(businessRegistration.getComment())
+                        .ownerName(businessRegistration.getOwnerName())
+                        .dateRegistered(businessRegistration.getDateRegistered())
+                        .status(businessRegistration.getStatus())
+                        .authorizationUrl(businessRegistration.getAuthorizationUrl())
+                        .isRenewal(businessRegistration.isRenewal())
+                        .build());
+    }
 }
 

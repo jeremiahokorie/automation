@@ -9,6 +9,7 @@ import com.automation.core.global.dto.response.AdminUserResponse;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.global.dto.response.AuthResponse;
 import com.automation.core.global.dto.response.UserResponse;
+import com.automation.core.global.model.User;
 import com.automation.core.global.service.UserService.UserService;
 import com.automation.util.constant.AppConstant;
 import com.automation.util.jwt.JwtUtil;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -85,6 +87,21 @@ public class UserController {
                 .status(HttpStatus.OK.value()).data(users).build());
     }
 
+    @GetMapping("/paginated/users")
+    public ResponseEntity<AppResponse<Page<User>>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+
+        Page<User> users = userService.getAllUsers(page, size, sortBy, sortDir);
+        AppResponse<Page<User>> response = AppResponse.<Page<User>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value())
+                .data(users)
+                .build();
+        return ResponseEntity.ok(response);
+    }
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @DeleteMapping("/admin/{id}/user")
     public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {

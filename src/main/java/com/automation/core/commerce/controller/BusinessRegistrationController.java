@@ -8,11 +8,13 @@ import com.automation.core.commerce.dto.response.*;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.commerce.service.service.BusinessTypeService;
 import com.automation.core.global.dto.response.AppResponse;
+import com.automation.core.global.model.User;
 import com.automation.util.constant.AppConstant;
 import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,8 +54,27 @@ public class BusinessRegistrationController {
                 .status(HttpStatus.OK.value()).data(response).error("").build());
     }
 
+    @GetMapping("/paginated/businesses")
+    @ApiOperation(value = "get all registered business with pagination",
+            notes = "This endpoint returns all registered business with pagination")
+    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getBusinessRegistration(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getAllRegisteredBusiness(page, size, sortBy, sortDir);
+        AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value())
+                .data(responses)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'COMMISSIONER')")
     @PutMapping("/{businessNumber}/verify")
+    @ApiOperation(value = "verify a business",
+            notes = "This endpoint verifies a business by its business number")
     public ResponseEntity<AppResponse<BusinessRegistrationResponse>> verifyBusiness(@PathVariable String businessNumber) {
         BusinessRegistrationResponse response = businessRegistrationService.verifyBusiness(businessNumber);
         AppResponse<BusinessRegistrationResponse>verify = AppResponse.<BusinessRegistrationResponse>builder()
@@ -63,6 +84,8 @@ public class BusinessRegistrationController {
     }
 
     @PostMapping("/renewals")
+    @ApiOperation(value = "renew a business",
+            notes = "This endpoint renews a business")
     public ResponseEntity<AppResponse<BusinessRenewalResponse>>renewal(@RequestBody BusinessRenewalRequest businessRenewalRequest) {
         BusinessRenewalResponse businessRenewalResponse = businessRegistrationService.renewBusiness(businessRenewalRequest);
         AppResponse<BusinessRenewalResponse> response = AppResponse.<BusinessRenewalResponse>builder()
@@ -72,6 +95,8 @@ public class BusinessRegistrationController {
     }
 
     @PutMapping("/{businessNumber}/approve")
+    @ApiOperation(value = "approve a business",
+            notes = "This endpoint approves a business by its business number")
     public ResponseEntity<AppResponse<ApprovalandRejectResponse>> approveBusiness(
             @PathVariable String businessNumber,
             @Valid @RequestBody ApprovalandRejectRequest commentRequest) {
@@ -87,6 +112,8 @@ public class BusinessRegistrationController {
     }
 
     @PutMapping("/{businessNumber}/reject")
+    @ApiOperation(value = "reject a business",
+            notes = "This endpoint rejects a business by its business number")
     public ResponseEntity<AppResponse<ApprovalandRejectResponse>> rejectBusiness(
             @PathVariable String businessNumber,
             @RequestBody ApprovalandRejectRequest commentRequest) {
@@ -105,6 +132,8 @@ public class BusinessRegistrationController {
 
 
     @PostMapping("/businessType")
+    @ApiOperation(value = "create a new business type",
+            notes = "This endpoint creates a new business type")
     public ResponseEntity<AppResponse<BusinessTypeResponse>> createBusinessTypes(@RequestBody BusinessTypeRequest businessTypeRequest) {
         BusinessTypeResponse businessTypeResponse = businessTypeService.createBusinessType(businessTypeRequest);
         AppResponse<BusinessTypeResponse> response = AppResponse.<BusinessTypeResponse>builder()
@@ -115,6 +144,8 @@ public class BusinessRegistrationController {
 
 
     @GetMapping("/businessTpes")
+    @ApiOperation(value = "get all business types",
+            notes = "This endpoint returns all business types")
     public ResponseEntity<AppResponse<List<BusinessTypeResponse>>> getBusinessTypes() {
         List<BusinessTypeResponse> businesses = businessTypeService.getAllBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessTypeResponse>>builder()
@@ -123,6 +154,8 @@ public class BusinessRegistrationController {
     }
 
     @GetMapping("/business-summary")
+    @ApiOperation(value = "get business summary",
+            notes = "This endpoint returns a summary of business registrations")
     public ResponseEntity<BusinessSummaryResponse>summary(){
         BusinessSummaryResponse businessRegistrationResponse = businessRegistrationService.getBusinessSummary();
         return ResponseEntity.ok().body(businessRegistrationResponse);
