@@ -20,6 +20,12 @@ import java.time.LocalDate;
 public class StatutoryApplicationRequest {
     private LocalDate applicationDate;
 
+    @NotBlank
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
+
     private String applicationNo;
 
     private String luacNo;
@@ -29,8 +35,7 @@ public class StatutoryApplicationRequest {
     private String titleOther;
     private Boolean isPayed;
 
-    @NotBlank
-    private String applicantName;
+
 
     private String nationality;
 
@@ -138,7 +143,6 @@ public class StatutoryApplicationRequest {
     private String applicantTitle;
     private String nameOfApplicant;
     private String otherNationality; // if "Others" is selected
-    private String telephoneNumber;
     private String assigneeOrAssignorNameAndAddress;
     private String plotActivityDetail; // For Commercial or Educational plot types
     private String applicationFeeCategory;

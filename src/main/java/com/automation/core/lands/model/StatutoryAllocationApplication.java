@@ -36,9 +36,6 @@ public class StatutoryAllocationApplication {
 
     private String titleOther;
 
-    @NotBlank
-    private String applicantName;
-
     private String nationality;
 
     private String nationalityOther;
@@ -159,6 +156,10 @@ public class StatutoryAllocationApplication {
     private String otherDoc2Path;
     private String otherDoc3Path;
     private String otherDoc4Path;
+    @NotBlank
+    private String firstName;
+    @NotBlank
+    private String lastName;
 
     // GPS info
     private Double latitude;

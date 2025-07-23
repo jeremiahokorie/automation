@@ -133,7 +133,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     @Override
     public Map<String, String> customLandApplication(CustomaryAllocationRequest customaryAllocationRequest, Map<String, MultipartFile> documents) throws IOException {
         CustomaryAllocationApplication customaryAllocationApplication = new CustomaryAllocationApplication();
-        customaryAllocationApplication.setApplicantName(customaryAllocationRequest.getApplicantName());
+        customaryAllocationApplication.setFirstName(customaryAllocationRequest.getFirstName());
+        customaryAllocationApplication.setLastName(customaryAllocationRequest.getLastName());
         customaryAllocationApplication.setApplicationDate(LocalDate.now());
         customaryAllocationApplication.setApplicationFeeAmount(customaryAllocationRequest.getApplicationFeeAmount());
         customaryAllocationApplication.setLandPurpose(customaryAllocationRequest.getLandPurpose());
@@ -186,7 +187,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     @Override
     public Map<String, String> statutoryallocation(StatutoryApplicationRequest statutoryApplicationRequest, Map<String, MultipartFile> documents) throws IOException {
         StatutoryAllocationApplication allocationApplication = new StatutoryAllocationApplication();
-        allocationApplication.setApplicantName(statutoryApplicationRequest.getApplicantName());
+        allocationApplication.setFirstName(statutoryApplicationRequest.getFirstName());
+        allocationApplication.setLastName(statutoryApplicationRequest.getLastName());
         allocationApplication.setApplicationDate(LocalDate.now());
         allocationApplication.setApplicationFeeAmount(statutoryApplicationRequest.getApplicationFeeAmount());
         allocationApplication.setApplicationNo(statutoryApplicationRequest.getApplicationNo());
@@ -249,7 +251,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .applicationNo(statutoryAllocationApplication.getApplicationNo())
                 .acquiringAuthority(statutoryAllocationApplication.getAcquiringAuthority())
                 .applicationFeeAmount(statutoryAllocationApplication.getApplicationFeeAmount())
-                .applicantName(statutoryAllocationApplication.getApplicantName())
+                .firstName(statutoryAllocationApplication.getFirstName())
+                .lastName(statutoryAllocationApplication.getLastName())
                 .assigneeNameAndAddress(statutoryAllocationApplication.getAssigneeNameAndAddress())
                 .luacNo(statutoryAllocationApplication.getLuacNo())
                 .compensationStatus(statutoryAllocationApplication.getCompensationStatus())
@@ -296,6 +299,10 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .previousAcquisitionDate(statutoryAllocationApplication.getPreviousAcquisitionDate())
                 .plotSizeOther(statutoryAllocationApplication.getPlotSizeOther())
                 .residentialBuildingType(statutoryAllocationApplication.getResidentialBuildingType())
+                .nationalityOther(statutoryAllocationApplication.getNationalityOther())
+                .maritalStatus(statutoryAllocationApplication.getMaritalStatus())
+                .occupation(statutoryAllocationApplication.getOccupation())
+                .assignedDate(statutoryAllocationApplication.getAssignedDate())
                 .isLandDeveloped(statutoryAllocationApplication.getIsLandDeveloped()).build()
 
         ).collect(Collectors.toList());
@@ -305,7 +312,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     public List<CustomaryAllocationResponse> getAllCustomaryAllocations() {
         List<CustomaryAllocationApplication> customaryAllocationApplications = customaryAllocationRepository.findAll();
         return customaryAllocationApplications.stream().map(customaryAllocation -> CustomaryAllocationResponse.builder()
-                .applicantName(customaryAllocation.getApplicantName())
+                .firstName(customaryAllocation.getFirstName())
+                .lastName(customaryAllocation.getLastName())
                 .applicantTitle(customaryAllocation.getApplicantTitle())
                 .applicationFeeAmount(customaryAllocation.getApplicationFeeAmount())
                 .communityConsentDate(customaryAllocation.getCommunityConsentDate())
@@ -396,7 +404,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         StatutoryAllocationApplication entity = new StatutoryAllocationApplication();
         entity.setApplicationNo(formRequest.getApplicationNo());
         entity.setStatus(Status.PENDING);
-        entity.setApplicantName(formRequest.getApplicantName());
+        entity.setFirstName(formRequest.getFirstName());
+        entity.setLastName(formRequest.getLastName());
         entity.setAssignedDate(LocalDate.now());
         entity.setApplicationDate(LocalDate.now());
         entity.setGpsAccuracy(formRequest.getGpsAccuracy());
@@ -481,7 +490,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setNationality(formRequest.getNationality());
         entity.setStateOfOrigin(formRequest.getStateOfOrigin());
         entity.setEmail(formRequest.getEmail());
-        entity.setApplicantName(formRequest.getApplicantName());
+        entity.setFirstName(formRequest.getFirstName());
+        entity.setLastName(formRequest.getLastName());
         entity.setIsPayed(formRequest.getIsPayed());
         entity.setGender(formRequest.getGender());
         entity.setTownOrArea(formRequest.getTownOrArea());

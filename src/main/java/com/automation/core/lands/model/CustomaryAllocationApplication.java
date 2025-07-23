@@ -25,8 +25,12 @@ public class CustomaryAllocationApplication {
 
     private LocalDate applicationDate;
 
+
     @NotBlank
-    private String applicantName;
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
 
     private String applicantTitle;
 

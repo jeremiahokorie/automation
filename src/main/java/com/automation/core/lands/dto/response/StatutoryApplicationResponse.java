@@ -26,7 +26,10 @@ public class StatutoryApplicationResponse {
     private String titleOther;
 
     @NotBlank
-    private String applicantName;
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
 
     private String nationality;
 

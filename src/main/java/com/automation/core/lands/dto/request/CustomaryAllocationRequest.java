@@ -1,6 +1,7 @@
 package com.automation.core.lands.dto.request;
 
 import com.automation.util.enums.Status;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +16,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CustomaryAllocationRequest {
         private LocalDate applicationDate;
-        private String applicantName;
+        @NotBlank
         private String firstName;
+        @NotBlank
         private String lastName;
         private String applicantTitle;
         private String nationality;
@@ -53,7 +55,6 @@ public class CustomaryAllocationRequest {
         private String companyType;
         private String contactAddress;
         private String companyPhoneNumber;
-        private String phone;
         private String cacRegistrationNo;
         private LocalDate registrationDate;
         private String sourceOfCapital;

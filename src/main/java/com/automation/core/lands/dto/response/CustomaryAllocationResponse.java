@@ -1,5 +1,6 @@
 package com.automation.core.lands.dto.response;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class CustomaryAllocationResponse {
     public LocalDate applicationDate;
-    public String applicantName;
+    @NotBlank
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
     public String applicantTitle;
     public String nationality;
     public String placeOfBirth;
