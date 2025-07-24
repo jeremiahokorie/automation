@@ -1,6 +1,7 @@
 package com.automation.core.global.controller;
 
 
+import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.global.dto.request.AuthRequest;
 import com.automation.core.global.dto.request.ChangePasswordRequest;
 import com.automation.core.global.dto.request.UserAdminRequest;
@@ -13,6 +14,7 @@ import com.automation.core.global.model.User;
 import com.automation.core.global.service.UserService.UserService;
 import com.automation.util.constant.AppConstant;
 import com.automation.util.jwt.JwtUtil;
+import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -88,20 +90,40 @@ public class UserController {
     }
 
     @GetMapping("/paginated/users")
-    public ResponseEntity<AppResponse<Page<User>>> getUsers(
+    public ResponseEntity<AppResponse<Page<UserResponse>>> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
 
-        Page<User> users = userService.getAllUsers(page, size, sortBy, sortDir);
-        AppResponse<Page<User>> response = AppResponse.<Page<User>>builder()
+        Page<UserResponse> users = userService.getAllUsers(page, size, sortBy, sortDir);
+        AppResponse<Page<UserResponse>> response = AppResponse.<Page<UserResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value())
                 .data(users)
                 .build();
         return ResponseEntity.ok(response);
     }
+
+
+//    @GetMapping("/paginated/businesses")
+//    @ApiOperation(value = "get all registered business with pagination",
+//            notes = "This endpoint returns all registered business with pagination")
+//    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getBusinessRegistration(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "createdAt") String sortBy,
+//            @RequestParam(defaultValue = "asc") String sortDir) {
+//        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getAllRegisteredBusiness(page, size, sortBy, sortDir);
+//        AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
+//                .message(AppConstant.ApiResponseMessage.GET)
+//                .status(HttpStatus.OK.value())
+//                .data(responses)
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
+
+
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @DeleteMapping("/admin/{id}/user")
     public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {

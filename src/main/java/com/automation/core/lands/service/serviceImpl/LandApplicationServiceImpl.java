@@ -477,7 +477,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     @Override
     public Long saveFormRequest(CustomaryAllocationRequest formRequest) {
         // Validate required fields
-        //
         CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
         entity.setApplicationDate(LocalDate.now());
         entity.setStatus(Status.PENDING);

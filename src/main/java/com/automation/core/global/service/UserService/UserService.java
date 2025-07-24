@@ -27,7 +27,7 @@ public interface UserService {
 
     AdminUserResponse createAdminUser(UserAdminRequest request);
 
-    Page<User> getAllUsers(int page, int size, String sortBy, String sortDir);
+    Page<UserResponse> getAllUsers(int page, int size, String sortBy, String sortDir);
 
 
     // UserResponse deleteUsers(UserRequest userRequest);

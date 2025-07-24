@@ -96,12 +96,24 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public Page<User> getAllUsers(int page, int size, String sortBy, String sortDir) {
+    public Page<UserResponse> getAllUsers(int page, int size, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         PageRequest pageRequest = PageRequest.of(page, size, sort);
-        return userRepository.findAll(pageRequest);
+        return userRepository.findAll(pageRequest).map(users -> UserResponse.builder()
+                        .id(users.getId())
+                        .email(users.getEmail())
+                        .firstName(users.getFirstName())
+                        .lastName(users.getLastName())
+                        .phoneNumber(users.getPhoneNumber())
+                        .address(users.getAddress())
+                        .nin(users.getNin())
+                        .city(users.getCity())
+                        .state(users.getState())
+                        .street(users.getStreet())
+                        .zip(users.getZip())
+                        .build());
     }
 
 
