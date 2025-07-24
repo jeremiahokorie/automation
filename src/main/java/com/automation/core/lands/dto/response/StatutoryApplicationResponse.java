@@ -1,5 +1,6 @@
 package com.automation.core.lands.dto.response;
 
+import com.automation.util.enums.Status;
 import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -110,6 +111,8 @@ public class StatutoryApplicationResponse {
     private String acquiringAuthority;
 
     private String compensationStatus;
+
+    private Status status;// e.g., Pending, Approved, Rejected
 
     private String compensationPartPayment;
 

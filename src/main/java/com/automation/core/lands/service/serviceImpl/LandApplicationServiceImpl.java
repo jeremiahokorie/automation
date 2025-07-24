@@ -266,6 +266,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .placeOfBirth(statutoryAllocationApplication.getPlaceOfBirth())
                 .gpsAccuracy(statutoryAllocationApplication.getGpsAccuracy())
                 .lga(statutoryAllocationApplication.getLga())
+                .status(statutoryAllocationApplication.getStatus())
                 .existingTitleNo(statutoryAllocationApplication.getExistingTitleNo())
                 .existingLandLocation(statutoryAllocationApplication.getExistingLandLocation())
                 .isAssignorOrAssignee(statutoryAllocationApplication.getIsAssignorOrAssignee())
@@ -329,6 +330,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .email(customaryAllocation.getEmail())
                 .maritalStatus(customaryAllocation.getMaritalStatus())
                 .lga(customaryAllocation.getLga())
+                .status(customaryAllocation.getStatus())
                 .passportPhoto(customaryAllocation.getPassportPhoto())
                 .taxClearance(customaryAllocation.getTaxClearance())
                 .affidavit(customaryAllocation.getAffidavit())
@@ -476,7 +478,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     public Long saveFormRequest(CustomaryAllocationRequest formRequest) {
         // Validate required fields
         //
-
         CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
         entity.setApplicationDate(LocalDate.now());
         entity.setStatus(Status.PENDING);

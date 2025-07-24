@@ -47,7 +47,9 @@ public class StatutoryAllocationApplication {
     private LocalDate dateOfBirth;
 
     private String gender;
+
     private Status status;
+
     private String maritalStatus;
 
     private String occupation;
@@ -91,6 +93,7 @@ public class StatutoryAllocationApplication {
     private String residentialBuildingType; // Block of flats, etc.
 
     private String plotSize;
+
 
     private String plotSizeOther;
 

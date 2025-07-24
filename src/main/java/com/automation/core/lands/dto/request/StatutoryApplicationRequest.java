@@ -118,6 +118,7 @@ public class StatutoryApplicationRequest {
     private String compensationStatus;
 
     private String compensationPartPayment;
+    private Status status;
 
     @Lob
     private String swornDeclaration;

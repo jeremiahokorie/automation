@@ -1,5 +1,6 @@
 package com.automation.core.lands.dto.response;
 
+import com.automation.util.enums.Status;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,7 @@ public class CustomaryAllocationResponse {
     public String lga;
     public String phoneNumber;
     public String email;
+    private Status status;
     public Boolean ownsCustomaryLand;
     public String existingLandLocation;
     public String landPurpose;
