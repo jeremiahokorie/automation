@@ -3,6 +3,8 @@ package com.automation.core.lands.service.serviceImpl;
 
 import com.automation.core.basepa.dto.response.EnvironmentSummaryResponse;
 import com.automation.core.commerce.dto.response.LandApplicationSummaryResponse;
+import com.automation.core.inspection.model.Inspection;
+import com.automation.core.inspection.repository.InspectionRepository;
 import com.automation.core.lands.dto.request.CustomaryAllocationRequest;
 import com.automation.core.lands.dto.request.LandApplicationRequest;
 import com.automation.core.lands.dto.request.StatutoryApplicationRequest;
@@ -46,6 +48,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     private final StatutoryApplicationRepository statutoryApplicationRepository;
     private final LocalStorageService localStorageService;
     private final CustomaryAllocationRepository customaryAllocationRepository;
+    private final InspectionRepository inspectionRepository;
 
     private static final String UPLOAD_DIR_ = "/opt/uploads/customary-allocation/";
     private static final String UPLOAD_DIR = "/opt/uploads/statutory-allocation/";
@@ -290,7 +293,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .swornDeclaration(statutoryAllocationApplication.getSwornDeclaration())
                 .acquiringAuthority(statutoryAllocationApplication.getAcquiringAuthority())
                 .proposedInvestment(statutoryAllocationApplication.getProposedInvestment())
-                .compensationPartPayment(statutoryAllocationApplication.getCompensationPartPayment())
                 .dateOfBirth(statutoryAllocationApplication.getDateOfBirth())
                 .declarationDate(statutoryAllocationApplication.getDeclarationDate())
                 .investmentFinancing(statutoryAllocationApplication.getInvestmentFinancing())
@@ -305,7 +307,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .occupation(statutoryAllocationApplication.getOccupation())
                 .assignedDate(statutoryAllocationApplication.getAssignedDate())
                 .isLandDeveloped(statutoryAllocationApplication.getIsLandDeveloped()).build()
-
         ).collect(Collectors.toList());
     }
 
@@ -441,6 +442,17 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setIsPayed(formRequest.getIsPayed());
         entity.setPlaceOfBirth(formRequest.getPlaceOfBirth());
         entity = statutoryApplicationRepository.save(entity);
+
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(UUID.randomUUID());
+        inspection.setSourceService("STATUTORY LAND ALLOCATION");
+        inspection.setApplicantName(formRequest.getFirstName() +" "+ formRequest.getLastName());
+        inspection.setApplicationType(formRequest.getApplicationFeeType());
+        inspection.setStatutoryAllocationApplication(entity);
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspectionRepository.save(inspection);
+
         return entity.getId();
     }
 
@@ -505,6 +517,17 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setExistingLandLocation(formRequest.getExistingLandLocation());
         entity.setCommunityLeaderTitle(formRequest.getCommunityLeaderTitle());
         entity = customaryAllocationRepository.save(entity);
+
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(UUID.randomUUID());
+        inspection.setSourceService("CUSTOMARY LAND ALLOCATION");
+        inspection.setApplicantName(formRequest.getFirstName() +" "+ formRequest.getLastName());
+        inspection.setApplicationType(formRequest.getLandPurpose());
+        inspection.setCustomaryAllocationApplication(entity);
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspectionRepository.save(inspection);
+
         return entity.getId();
     }
 

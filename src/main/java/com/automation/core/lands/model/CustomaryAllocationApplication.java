@@ -7,11 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Builder
+@SuperBuilder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,11 +27,8 @@ public class CustomaryAllocationApplication {
 
     private LocalDate applicationDate;
 
-
-    @NotBlank
     private String firstName;
 
-    @NotBlank
     private String lastName;
 
     private String applicantTitle;

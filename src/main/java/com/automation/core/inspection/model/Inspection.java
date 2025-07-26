@@ -4,17 +4,21 @@ package com.automation.core.inspection.model;
 import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.global.model.User;
+import com.automation.core.lands.model.CustomaryAllocationApplication;
+import com.automation.core.lands.model.StatutoryAllocationApplication;
 import com.automation.util.enums.Status;
+import io.swagger.annotations.ApiParam;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Builder
+@SuperBuilder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -44,19 +48,22 @@ public class Inspection {
         createdAt = LocalDateTime.now();
     }
 
-//    // Direct relationship with User
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")  // Foreign key column in the Inspection table
-//    private User user;
-
     // Direct relationship with BusinessRegistration
     @OneToOne
     @JoinColumn(name = "business_registration_id")
     private BusinessRegistration businessRegistration;
 
-    // Direct relationship with Environment
+    @OneToOne
+    @JoinColumn(name = "statutory_allocation_applications_id")
+    private StatutoryAllocationApplication statutoryAllocationApplication;
+
+    @OneToOne
+    @JoinColumn(name = "customary_allocation_applications_id")
+    private CustomaryAllocationApplication customaryAllocationApplication;
+
     @OneToOne()
     @JoinColumn(name = "environment_id")
+    @ApiParam()
     private EnvironmentApplication environment;
 
 

@@ -55,7 +55,7 @@ public class EnvironmentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-  //  @PreAuthorize("isAuthenticated()")
+  //@PreAuthorize("isAuthenticated()")
     @GetMapping("/getPermits")
     @ApiOperation(value = "get all environment permits",
             notes = "This endpoint returns all environment permits")
@@ -67,14 +67,33 @@ public class EnvironmentController {
         );
     }
 
+
+//    @GetMapping("/paginated/getPermits")
+//    @ApiOperation(value = "get all environment permits with pagination",
+//            notes = "This endpoint returns all environment permits with pagination")
+//    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getBusinessRegistration(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "createdAt") String sortBy,
+//            @RequestParam(defaultValue = "asc") String sortDir) {
+//        Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
+//        AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
+//                .message(AppConstant.ApiResponseMessage.GET)
+//                .status(HttpStatus.OK.value())
+//                .data(responses)
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
+
+
     @GetMapping("/paginated/getPermits")
     @ApiOperation(value = "get all environment permits with pagination",
             notes = "This endpoint returns all environment permits with pagination")
-    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getBusinessRegistration(
+    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getPermits(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
         Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
         AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
@@ -84,7 +103,6 @@ public class EnvironmentController {
         return ResponseEntity.ok(response);
     }
 
-
     //@PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/approve")
     @ApiOperation(value = "approve environment permit",
@@ -92,9 +110,7 @@ public class EnvironmentController {
     public ResponseEntity<AppResponse<ApprovalResponse>> approvePermit(
             @PathVariable Long id,
             @Valid @RequestBody ApprovalRequest commentRequest) {
-
         ApprovalResponse approval = environmentService.approveRequest(id, commentRequest);
-
         AppResponse<ApprovalResponse> response = AppResponse.<ApprovalResponse>builder()
                 .message(AppConstant.ApiResponseMessage.UPDATE)
                 .status(HttpStatus.OK.value())
@@ -110,9 +126,7 @@ public class EnvironmentController {
     public ResponseEntity<AppResponse<ApprovalResponse>> rejectBusiness(
             @PathVariable Long id,
             @RequestBody ApprovalRequest commentRequest) {
-
         ApprovalResponse reject = environmentService.rejectRequest(id, commentRequest);
-
         AppResponse<ApprovalResponse> response = AppResponse.<ApprovalResponse>builder()
                 .message(AppConstant.ApiResponseMessage.UPDATE)
                 .status(HttpStatus.OK.value())

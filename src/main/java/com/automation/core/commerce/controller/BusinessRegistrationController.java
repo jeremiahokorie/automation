@@ -8,6 +8,7 @@ import com.automation.core.commerce.dto.response.*;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.commerce.service.service.BusinessTypeService;
 import com.automation.core.global.dto.response.AppResponse;
+import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.model.User;
 import com.automation.util.constant.AppConstant;
 import io.swagger.annotations.ApiOperation;
@@ -42,7 +43,6 @@ public class BusinessRegistrationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
     @GetMapping("/businesses")
     @ApiOperation(value = "get all registered business ",
             notes = "This endpoint returns all registered business")
@@ -54,14 +54,15 @@ public class BusinessRegistrationController {
                 .status(HttpStatus.OK.value()).data(response).error("").build());
     }
 
+
     @GetMapping("/paginated/businesses")
     @ApiOperation(value = "get all registered business with pagination",
             notes = "This endpoint returns all registered business with pagination")
-    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getBusinessRegistration(
+    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
         Page<BusinessRegistrationResponse> responses = businessRegistrationService.getAllRegisteredBusiness(page, size, sortBy, sortDir);
         AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)

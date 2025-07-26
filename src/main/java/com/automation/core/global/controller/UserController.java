@@ -59,7 +59,6 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
     @PostMapping("/register/admin")
     public ResponseEntity<AppResponse<AdminUserResponse>> createAdminUser(@RequestBody UserAdminRequest request) {
         AdminUserResponse adminResponse = userService.createAdminUser(request);
@@ -92,10 +91,9 @@ public class UserController {
     @GetMapping("/paginated/users")
     public ResponseEntity<AppResponse<Page<UserResponse>>> getUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
-
+            @RequestParam(defaultValue = "desc") String sortDir) {
         Page<UserResponse> users = userService.getAllUsers(page, size, sortBy, sortDir);
         AppResponse<Page<UserResponse>> response = AppResponse.<Page<UserResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
@@ -104,25 +102,6 @@ public class UserController {
                 .build();
         return ResponseEntity.ok(response);
     }
-
-
-//    @GetMapping("/paginated/businesses")
-//    @ApiOperation(value = "get all registered business with pagination",
-//            notes = "This endpoint returns all registered business with pagination")
-//    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getBusinessRegistration(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(defaultValue = "createdAt") String sortBy,
-//            @RequestParam(defaultValue = "asc") String sortDir) {
-//        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getAllRegisteredBusiness(page, size, sortBy, sortDir);
-//        AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
-//                .message(AppConstant.ApiResponseMessage.GET)
-//                .status(HttpStatus.OK.value())
-//                .data(responses)
-//                .build();
-//        return ResponseEntity.ok(response);
-//    }
-
 
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @DeleteMapping("/admin/{id}/user")

@@ -159,9 +159,7 @@ public class StatutoryAllocationApplication {
     private String otherDoc2Path;
     private String otherDoc3Path;
     private String otherDoc4Path;
-    @NotBlank
     private String firstName;
-    @NotBlank
     private String lastName;
 
     // GPS info

@@ -58,8 +58,8 @@ public class InspectionController {
     public ResponseEntity<AppResponse<Page<InspectionResponse>>> getPaginatedInspection(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
         Page<InspectionResponse> pages = inspectionService.getPaginatedInspection(page, size, sortBy, sortDir);
         AppResponse<Page<InspectionResponse>> response = AppResponse.<Page<InspectionResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
