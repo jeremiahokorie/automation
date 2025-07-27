@@ -43,7 +43,7 @@ public class BusinessRegistrationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/businesses")
+    @GetMapping("/paginated/businesses")
     @ApiOperation(value = "get all registered business ",
             notes = "This endpoint returns all registered business")
    // @PreAuthorize("isAuthenticated()")
@@ -55,22 +55,22 @@ public class BusinessRegistrationController {
     }
 
 
-    @GetMapping("/paginated/businesses")
-    @ApiOperation(value = "get all registered business with pagination",
-            notes = "This endpoint returns all registered business with pagination")
-    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
-        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getAllRegisteredBusiness(page, size, sortBy, sortDir);
-        AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
-                .message(AppConstant.ApiResponseMessage.GET)
-                .status(HttpStatus.OK.value())
-                .data(responses)
-                .build();
-        return ResponseEntity.ok(response);
-    }
+//    @GetMapping("/paginated/businesses")
+//    @ApiOperation(value = "get all registered business with pagination",
+//            notes = "This endpoint returns all registered business with pagination")
+//    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getUsers(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "id") String sortBy,
+//            @RequestParam(defaultValue = "desc") String sortDir) {
+//        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getAllRegisteredBusiness(page, size, sortBy, sortDir);
+//        AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
+//                .message(AppConstant.ApiResponseMessage.GET)
+//                .status(HttpStatus.OK.value())
+//                .data(responses)
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
 
    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'COMMISSIONER')")
     @PutMapping("/{businessNumber}/verify")

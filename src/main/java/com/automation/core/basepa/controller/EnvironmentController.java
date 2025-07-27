@@ -56,7 +56,7 @@ public class EnvironmentController {
     }
 
   //@PreAuthorize("isAuthenticated()")
-    @GetMapping("/getPermits")
+    @GetMapping("/paginated/getPermits")
     @ApiOperation(value = "get all environment permits",
             notes = "This endpoint returns all environment permits")
     public ResponseEntity<AppResponse<List<EnvironmentResponse>>> getPermits() {
@@ -86,22 +86,22 @@ public class EnvironmentController {
 //    }
 
 
-    @GetMapping("/paginated/getPermits")
-    @ApiOperation(value = "get all environment permits with pagination",
-            notes = "This endpoint returns all environment permits with pagination")
-    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getPermits(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
-        Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
-        AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
-                .message(AppConstant.ApiResponseMessage.GET)
-                .status(HttpStatus.OK.value())
-                .data(responses)
-                .build();
-        return ResponseEntity.ok(response);
-    }
+//    @GetMapping("/paginated/getPermits")
+//    @ApiOperation(value = "get all environment permits with pagination",
+//            notes = "This endpoint returns all environment permits with pagination")
+//    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getPermits(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "id") String sortBy,
+//            @RequestParam(defaultValue = "desc") String sortDir) {
+//        Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
+//        AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
+//                .message(AppConstant.ApiResponseMessage.GET)
+//                .status(HttpStatus.OK.value())
+//                .data(responses)
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
 
     //@PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/approve")
