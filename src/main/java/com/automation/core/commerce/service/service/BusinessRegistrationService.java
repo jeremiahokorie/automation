@@ -27,4 +27,6 @@ public interface BusinessRegistrationService {
     BusinessSummaryResponse getBusinessSummary();
 
     Page<BusinessRegistrationResponse> getAllRegisteredBusiness(int page, int size, String sortBy, String sortDir);
+
+    Page<BusinessRegistrationResponse> getPaginatedBusinesses(int offset, int pageSize);
 }

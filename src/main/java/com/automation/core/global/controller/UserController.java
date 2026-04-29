@@ -103,6 +103,18 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/paginated/users/{offset}/{pageSize}")
+    public ResponseEntity<AppResponse<Page<UserResponse>>>getPaginatedUsers(@PathVariable int offset, @PathVariable int pageSize){
+        Page<UserResponse> users = userService.getPaginatedUsers(offset, pageSize);
+        AppResponse<Page<UserResponse>> response = AppResponse.<Page<UserResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .recordCount(users.getSize())
+                .status(HttpStatus.OK.value())
+                .data(users)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @DeleteMapping("/admin/{id}/user")
     public ResponseEntity<AppResponse<UserResponse>> deleteUserById(@PathVariable Long id) {
@@ -121,8 +133,6 @@ public class UserController {
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value()).data(userResponse).build());
     }
-
-
 
     @PostMapping("/users/change-password")
     @PreAuthorize("isAuthenticated()")

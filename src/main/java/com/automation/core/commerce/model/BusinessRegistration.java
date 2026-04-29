@@ -34,9 +34,14 @@ public class BusinessRegistration {
     private String businessNumber;
     private String comment;
     private LocalDate renewalDate;
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     private String AuthorizationUrl;
     private Boolean isPayed;
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
+    @Column(name = "renewed_at")
+    private LocalDateTime renewedAt;
 
     @PrePersist
     public void prePersist() {

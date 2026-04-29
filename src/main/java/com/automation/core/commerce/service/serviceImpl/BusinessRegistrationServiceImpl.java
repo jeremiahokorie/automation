@@ -179,7 +179,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     @Override
     public BusinessRenewalResponse renewBusiness(BusinessRenewalRequest businessRenewalRequest) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessRenewalRequest.getBusinessNumber());
-        if (registration == null) {
+
+        if (registration.getBusinessNumber() == null || registration.getBusinessNumber().isEmpty()) {
             throw new Exception("Business not found or not yet due for renewal.");
         }
 
@@ -288,6 +289,26 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 : Sort.by(sortBy).descending();
 
         PageRequest pageRequest = PageRequest.of(page, size, sort);
+        return businessRepository.findAll(pageRequest)
+                .map(businessRegistration -> BusinessRegistrationResponse.builder()
+                        .id(businessRegistration.getId())
+                        .businessName(businessRegistration.getBusinessName())
+                        .businessNumber(businessRegistration.getBusinessNumber())
+                        .address(businessRegistration.getAddress())
+                        .email(businessRegistration.getEmail())
+                        .phone(businessRegistration.getPhone())
+                        .comment(businessRegistration.getComment())
+                        .ownerName(businessRegistration.getOwnerName())
+                        .dateRegistered(businessRegistration.getDateRegistered())
+                        .status(businessRegistration.getStatus())
+                        .authorizationUrl(businessRegistration.getAuthorizationUrl())
+                        .isRenewal(businessRegistration.isRenewal())
+                        .build());
+    }
+
+    @Override
+    public Page<BusinessRegistrationResponse> getPaginatedBusinesses(int offset, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(offset, pageSize);
         return businessRepository.findAll(pageRequest)
                 .map(businessRegistration -> BusinessRegistrationResponse.builder()
                         .id(businessRegistration.getId())

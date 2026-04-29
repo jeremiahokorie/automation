@@ -17,7 +17,7 @@ import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
 import com.automation.events.EmailNotificationEvent;
 import com.automation.util.jwt.JwtUtil;
-import com.google.common.collect.ImmutableMap;
+//import com.google.common.collect.ImmutableMap;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -114,6 +114,24 @@ public class UserServiceImpl implements UserService {
                         .street(users.getStreet())
                         .zip(users.getZip())
                         .build());
+    }
+
+    @Override
+    public Page<UserResponse> getPaginatedUsers(int offset, int pageSize) {
+        Page<User> usersPage = userRepository.findAll(PageRequest.of(offset, pageSize));
+        return usersPage.map(user -> UserResponse.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .address(user.getAddress())
+                .nin(user.getNin())
+                .city(user.getCity())
+                .state(user.getState())
+                .street(user.getStreet())
+                .zip(user.getZip())
+                .build());
     }
 
 
@@ -218,7 +236,7 @@ public class UserServiceImpl implements UserService {
             log.info("Reset link {}", resetLink);
             // publishResetLinkEvent(user.getEmail(), resetLink);
 
-            publisher.publishEvent(new EmailNotificationEvent(this, "password", ImmutableMap.of("recipient", user.getEmail(), "name", user.getFirstName(), "url", resetLink)));
+           // publisher.publishEvent(new EmailNotificationEvent(this, "password", ImmutableMap.of("recipient", user.getEmail(), "name", user.getFirstName(), "url", resetLink)));
 
         }else {
             throw new Exception("User not found");

@@ -57,6 +57,10 @@ public class EnvironmentApplication {
         private LocalDate rejectionDate;
         private String AuthorizationUrl;
         private LocalDateTime createdAt;
+        @Column(name = "expires_at", nullable = false)
+        private LocalDateTime expiresAt;
+        @Column(name = "renewed_at")
+        private LocalDateTime renewedAt;
 
         @PrePersist
         public void prePersist() {

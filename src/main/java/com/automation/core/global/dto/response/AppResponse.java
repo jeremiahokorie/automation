@@ -14,6 +14,9 @@ public class AppResponse<T> {
     @ApiParam(value = "HTTP status code")
     private int status;
 
+    @ApiParam(value = "Total number of records returned in the response")
+    private int recordCount;
+
     @ApiParam(value = "Description of http status code")
     private String message;
 
@@ -42,7 +45,6 @@ public class AppResponse<T> {
 //    }
 
 
-    // Add this new factory method for errors
     public static <T> AppResponse<T> error(int status, String message) {
         AppResponse<T> response = new AppResponse<>();
         response.setStatus(status);

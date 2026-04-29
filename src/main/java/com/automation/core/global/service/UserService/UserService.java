@@ -29,6 +29,8 @@ public interface UserService {
 
     Page<UserResponse> getAllUsers(int page, int size, String sortBy, String sortDir);
 
+    Page<UserResponse> getPaginatedUsers(int offset, int pageSize);
+
 
     // UserResponse deleteUsers(UserRequest userRequest);
 }

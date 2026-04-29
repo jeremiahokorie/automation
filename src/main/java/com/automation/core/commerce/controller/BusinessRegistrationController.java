@@ -43,7 +43,7 @@ public class BusinessRegistrationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/paginated/businesses")
+    @GetMapping("/businesses")
     @ApiOperation(value = "get all registered business ",
             notes = "This endpoint returns all registered business")
    // @PreAuthorize("isAuthenticated()")
@@ -51,26 +51,41 @@ public class BusinessRegistrationController {
         List<BusinessRegistrationResponse> response = businessRegistrationService.getRegisteredBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessRegistrationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
+                .recordCount(response.size())
                 .status(HttpStatus.OK.value()).data(response).error("").build());
     }
 
 
-//    @GetMapping("/paginated/businesses")
-//    @ApiOperation(value = "get all registered business with pagination",
-//            notes = "This endpoint returns all registered business with pagination")
-//    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getUsers(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(defaultValue = "id") String sortBy,
-//            @RequestParam(defaultValue = "desc") String sortDir) {
-//        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getAllRegisteredBusiness(page, size, sortBy, sortDir);
-//        AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
-//                .message(AppConstant.ApiResponseMessage.GET)
-//                .status(HttpStatus.OK.value())
-//                .data(responses)
-//                .build();
-//        return ResponseEntity.ok(response);
-//    }
+    @GetMapping("/paginated/businesses")
+    @ApiOperation(value = "get all registered business with pagination",
+            notes = "This endpoint returns all registered business with pagination")
+    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getAllRegisteredBusiness(page, size, sortBy, sortDir);
+        AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value())
+                .recordCount(responses.getSize())
+                .data(responses)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/paginated/businesses/{offset}/{pageSize}")
+    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getPaginatedBusinesses(@PathVariable int offset, @PathVariable int pageSize){
+        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getPaginatedBusinesses(offset, pageSize);
+        AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .recordCount(responses.getSize())
+                .status(HttpStatus.OK.value())
+                .data(responses)
+                .build();
+        return ResponseEntity.ok(response);
+
+    }
 
    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'COMMISSIONER')")
     @PutMapping("/{businessNumber}/verify")
@@ -151,15 +166,23 @@ public class BusinessRegistrationController {
         List<BusinessTypeResponse> businesses = businessTypeService.getAllBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessTypeResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
+                .recordCount(businesses.size())
                 .status(HttpStatus.OK.value()).data(businesses).error("").build());
     }
 
     @GetMapping("/business-summary")
     @ApiOperation(value = "get business summary",
             notes = "This endpoint returns a summary of business registrations")
-    public ResponseEntity<BusinessSummaryResponse>summary(){
+    public ResponseEntity<AppResponse<BusinessSummaryResponse>>summary(){
         BusinessSummaryResponse businessRegistrationResponse = businessRegistrationService.getBusinessSummary();
-        return ResponseEntity.ok().body(businessRegistrationResponse);
+        AppResponse<BusinessSummaryResponse> response = AppResponse.<BusinessSummaryResponse>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value())
+                .data(businessRegistrationResponse)
+                .error("")
+                .build();
+        return ResponseEntity.ok(response);
+
     }
 
 

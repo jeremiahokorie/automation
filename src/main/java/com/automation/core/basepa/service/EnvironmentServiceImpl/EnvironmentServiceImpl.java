@@ -221,6 +221,10 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         EnvironmentApplication renew = environmentRepository.findByoperationalLicenseNumber(permitRenewRequest.getOperationalLicenseNumber()).orElseThrow(()-> new Exception("Permit with Operational Id not found"));
         renew.setStatus(Status.PENDING);
 
+        if (renew.getOperationalLicenseNumber() == null || renew.getOperationalLicenseNumber().isEmpty()) {
+            throw new CustomException("Operational License Number is required for renewal");
+        }
+
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .amount(15000)
                 .bearer(1)
@@ -319,5 +323,33 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                         .hasEnvironmentalAudit(permit.getHasEnvironmentalAudit())
                         .operationalLicenseNumber(permit.getOperationalLicenseNumber())
                         .email(permit.getEmail()).build());
+    }
+
+    @Override
+    public Page<EnvironmentResponse> getPaginatedPermits(int offset, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(offset, pageSize);
+        return environmentRepository.findAll(pageRequest)
+                .map(permit -> EnvironmentResponse.builder()
+                        .id(permit.getId())
+                        .phone(permit.getPhone())
+                        .applicationDate(permit.getApplicationDate())
+                        .status(permit.getStatus())
+                        .facilityName(permit.getFacilityName())
+                        .disposalLocation(permit.getDisposalLocation())
+                        .facilityAddress(permit.getFacilityAddress())
+                        .industryType(permit.getIndustryType())
+                        .applicantName(permit.getApplicantName())
+                        .contactPerson(permit.getContactPerson())
+                        .address(permit.getAddress())
+                        .authorizationUrl(permit.getAuthorizationUrl())
+                        .permitType(permit.getPermitType())
+                        .wasteQuantity(permit.getWasteQuantity())
+                        .disposalFrequency(permit.getDisposalFrequency())
+                        .disposalMethod(permit.getDisposalMethod())
+                        .disposalLocation(permit.getDisposalLocation())
+                        .hasEnvironmentalAudit(permit.getHasEnvironmentalAudit())
+                        .operationalLicenseNumber(permit.getOperationalLicenseNumber())
+                        .email(permit.getEmail()).build());
+
     }
 }

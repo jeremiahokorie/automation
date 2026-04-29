@@ -12,6 +12,7 @@ import com.automation.core.inspection.dto.response.InspectionResponse;
 import com.automation.core.inspection.service.InspectionService.InspectionService;
 import com.automation.util.constant.AppConstant;
 import com.automation.util.enums.Status;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class InspectionController {
         return new ResponseEntity<>(appResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/paginated/inspection")
+    @GetMapping("/pending-inspection")
     @ApiOperation(value = "get all pending inspection requests",
             notes = "This endpoint returns all pending inspection requests")
     public ResponseEntity<AppResponse<List<InspectionResponse>>> getPendingInspection() {
@@ -52,22 +53,36 @@ public class InspectionController {
                        .status(HttpStatus.OK.value()).data(responses).error("").build());
     }
 
-//    @GetMapping("/paginated/inspection")
-//    @ApiOperation(value = "get all inspection requests with pagination",
-//            notes = "This endpoint returns all inspection requests with pagination")
-//    public ResponseEntity<AppResponse<Page<InspectionResponse>>> getPaginatedInspection(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(defaultValue = "id") String sortBy,
-//            @RequestParam(defaultValue = "desc") String sortDir) {
-//        Page<InspectionResponse> pages = inspectionService.getPaginatedInspection(page, size, sortBy, sortDir);
-//        AppResponse<Page<InspectionResponse>> response = AppResponse.<Page<InspectionResponse>>builder()
-//                .message(AppConstant.ApiResponseMessage.GET)
-//                .status(HttpStatus.OK.value())
-//                .data(pages)
-//                .build();
-//        return ResponseEntity.ok(response);
-//    }
+    @GetMapping("/paginated/inspection")
+    @ApiOperation(value = "get all inspection requests with pagination",
+            notes = "This endpoint returns all inspection requests with pagination")
+    public ResponseEntity<AppResponse<Page<InspectionResponse>>> getPaginatedInspection(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        Page<InspectionResponse> pages = inspectionService.getPaginatedInspection(page, size, sortBy, sortDir);
+        AppResponse<Page<InspectionResponse>> response = AppResponse.<Page<InspectionResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .status(HttpStatus.OK.value())
+                .data(pages)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/paginated/inspection/{offset}/{pageSize}")
+    @ApiOperation(value = "get all inspection requests with pagination",
+            notes = "This endpoint returns all inspection requests with pagination")
+    public ResponseEntity<AppResponse<Page<InspectionResponse>>>getPaginatedInspections(@PathVariable int offset, @PathVariable int pageSize){
+        Page<InspectionResponse> pages = inspectionService.getPaginatedInspections(offset, pageSize);
+        AppResponse<Page<InspectionResponse>> response = AppResponse.<Page<InspectionResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .recordCount(pages.getSize())
+                .status(HttpStatus.OK.value())
+                .data(pages)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 
     @PutMapping("/{id}/status")
     @ApiOperation(value = "update inspection status",

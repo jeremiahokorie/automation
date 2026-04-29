@@ -96,42 +96,6 @@ public class LandApplicationController {
         return ResponseEntity.ok("Files uploaded successfully");
     }
 
-
- //   @PostMapping(value = "/customary")
-//    public ResponseEntity<Map<String, String>> uploadDocuments(
-//            @RequestBody CustomaryAllocationRequest customaryAllocationRequest,
-//            @RequestParam Map<String, MultipartFile> documents
-//    ) {
-//        try {
-//            Map<String, String> response = landApplicationService.customLandApplication(customaryAllocationRequest, documents);
-//            return ResponseEntity.ok(response);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Map<String, String> errorResponse = new HashMap<>();
-//            errorResponse.put("error", "Failed to upload documents");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-//        }
-//    }
-
-
-   // @PreAuthorize("isAuthenticated()")
-//    @PostMapping("/statutory")
-//    public ResponseEntity<Map<String, String>> statutoryLandApplication(@RequestBody StatutoryApplicationRequest statutoryApplicationRequest, @RequestParam Map<String, MultipartFile> documents) throws IOException {
-//        try {
-//            Map<String, String> response = landApplicationService.statutoryallocation(statutoryApplicationRequest, documents);
-//            return ResponseEntity.ok(response);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Map<String, String> errorResponse = new HashMap<>();
-//            errorResponse.put("error", "Failed to upload documents");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-//        }
-//
-//       // return ResponseEntity.ok(response);
-//
-//
-//    }
-
     @GetMapping("/all-customary-allocations")
     @Operation(
             summary = "Get all created statutory application from the database",

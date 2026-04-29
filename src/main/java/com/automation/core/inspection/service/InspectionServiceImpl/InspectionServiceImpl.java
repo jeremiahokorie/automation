@@ -128,4 +128,22 @@ public class InspectionServiceImpl implements InspectionService {
                         .assignedTo(inspection.getAssignedTo())
                         .build());
     }
+
+    @Override
+    public Page<InspectionResponse> getPaginatedInspections(int offset, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(offset, pageSize);
+        return inspectionRepository.findAll(pageRequest)
+                .map(inspection -> InspectionResponse.builder()
+                        .id(inspection.getId())
+                        .applicantName(inspection.getApplicantName())
+                        .requestId(inspection.getRequestId())
+                        .applicationType(inspection.getApplicationType())
+                        .status(inspection.getStatus())
+                        .notes(inspection.getNotes())
+                        .sourceService(inspection.getSourceService())
+                        .createdAt(inspection.getCreatedAt())
+                        .updatedAt(inspection.getUpdatedAt())
+                        .assignedTo(inspection.getAssignedTo())
+                        .build());
+    }
 }

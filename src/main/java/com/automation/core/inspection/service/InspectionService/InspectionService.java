@@ -15,4 +15,6 @@ public interface InspectionService {
     InspectionResponse createInspection(InspectionRequest inspectionRequest);
 
     Page<InspectionResponse> getPaginatedInspection(int page, int size, String sortBy, String sortDir);
+
+    Page<InspectionResponse> getPaginatedInspections(int offset, int pageSize);
 }

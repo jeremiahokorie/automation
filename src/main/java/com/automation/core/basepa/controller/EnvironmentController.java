@@ -12,7 +12,8 @@ import com.automation.core.commerce.dto.response.BusinessSummaryResponse;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.util.constant.AppConstant;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.Response;
+import io.swagger.annotations.ApiParam;
+//import io.swagger.models.Response;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -56,13 +57,14 @@ public class EnvironmentController {
     }
 
   //@PreAuthorize("isAuthenticated()")
-    @GetMapping("/paginated/getPermits")
+    @GetMapping("/getPermits")
     @ApiOperation(value = "get all environment permits",
             notes = "This endpoint returns all environment permits")
     public ResponseEntity<AppResponse<List<EnvironmentResponse>>> getPermits() {
         List<EnvironmentResponse> response = environmentService.getAll();
         return ResponseEntity.ok().body(AppResponse.<List<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
+                .recordCount(response.size())
                 .status(HttpStatus.OK.value()).data(response).error("").build()
         );
     }
@@ -86,22 +88,23 @@ public class EnvironmentController {
 //    }
 
 
-//    @GetMapping("/paginated/getPermits")
-//    @ApiOperation(value = "get all environment permits with pagination",
-//            notes = "This endpoint returns all environment permits with pagination")
-//    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getPermits(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(defaultValue = "id") String sortBy,
-//            @RequestParam(defaultValue = "desc") String sortDir) {
-//        Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
-//        AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
-//                .message(AppConstant.ApiResponseMessage.GET)
-//                .status(HttpStatus.OK.value())
-//                .data(responses)
-//                .build();
-//        return ResponseEntity.ok(response);
-//    }
+    @GetMapping("/paginated/getPermits")
+    @ApiOperation(value = "get all environment permits with pagination",
+            notes = "This endpoint returns all environment permits with pagination")
+    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getPermits(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
+        AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .recordCount(responses.getNumberOfElements())
+                .status(HttpStatus.OK.value())
+                .data(responses)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 
     //@PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/approve")
@@ -145,4 +148,16 @@ public class EnvironmentController {
         return ResponseEntity.ok().body(businessRegistrationResponse);
     }
 
+    @GetMapping("/paginated/getPermits/{offset}/{pageSize}")
+    @ApiParam(name = "offset", value = "Offset for pagination", example = "0")
+    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>>getPaginatedPermits(@PathVariable int offset, @PathVariable int pageSize){
+        Page<EnvironmentResponse> responses = environmentService.getPaginatedPermits(offset, pageSize);
+        AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
+                .message(AppConstant.ApiResponseMessage.GET)
+                .recordCount(responses.getSize())
+                .status(HttpStatus.OK.value())
+                .data(responses)
+                .build();
+        return ResponseEntity.ok(response);
+    }
 }
