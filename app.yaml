@@ -4,7 +4,7 @@ services:
     source_dir: /
     github:
       repo: jeremiahokorie/automation
-      branch: main
+      branch: feature-update
       deploy_on_push: true
     run_command: java -jar target/*.jar
     build_command: mvn clean package -DskipTests
