@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 @Data
 @Builder
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppResponse<T> {
@@ -14,8 +13,8 @@ public class AppResponse<T> {
     @ApiParam(value = "HTTP status code")
     private int status;
 
-    @ApiParam(value = "Total number of records returned in the response")
-    private int recordCount;
+//    @ApiParam(value = "Total number of records returned in the response")
+//    private int recordCount;
 
     @ApiParam(value = "Description of http status code")
     private String message;

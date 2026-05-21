@@ -64,28 +64,10 @@ public class EnvironmentController {
         List<EnvironmentResponse> response = environmentService.getAll();
         return ResponseEntity.ok().body(AppResponse.<List<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
-                .recordCount(response.size())
+                //.recordCount(response.size())
                 .status(HttpStatus.OK.value()).data(response).error("").build()
         );
     }
-
-
-//    @GetMapping("/paginated/getPermits")
-//    @ApiOperation(value = "get all environment permits with pagination",
-//            notes = "This endpoint returns all environment permits with pagination")
-//    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getBusinessRegistration(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(defaultValue = "createdAt") String sortBy,
-//            @RequestParam(defaultValue = "asc") String sortDir) {
-//        Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
-//        AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
-//                .message(AppConstant.ApiResponseMessage.GET)
-//                .status(HttpStatus.OK.value())
-//                .data(responses)
-//                .build();
-//        return ResponseEntity.ok(response);
-//    }
 
 
     @GetMapping("/paginated/getPermits")
@@ -99,7 +81,7 @@ public class EnvironmentController {
         Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
         AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-                .recordCount(responses.getNumberOfElements())
+               // .recordCount(responses.getNumberOfElements())
                 .status(HttpStatus.OK.value())
                 .data(responses)
                 .build();
@@ -154,7 +136,7 @@ public class EnvironmentController {
         Page<EnvironmentResponse> responses = environmentService.getPaginatedPermits(offset, pageSize);
         AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-                .recordCount(responses.getSize())
+              //  .recordCount(responses.getSize())
                 .status(HttpStatus.OK.value())
                 .data(responses)
                 .build();

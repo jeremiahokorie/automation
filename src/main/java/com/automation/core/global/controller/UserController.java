@@ -108,7 +108,7 @@ public class UserController {
         Page<UserResponse> users = userService.getPaginatedUsers(offset, pageSize);
         AppResponse<Page<UserResponse>> response = AppResponse.<Page<UserResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-                .recordCount(users.getSize())
+               // .recordCount(users.getSize())
                 .status(HttpStatus.OK.value())
                 .data(users)
                 .build();

@@ -1,0 +1,14 @@
+name: process-automation-app
+services:
+  - name: api
+    source_dir: /
+    github:
+      repo: jeremiahokorie/automation
+      branch: main
+      deploy_on_push: true
+    run_command: java -jar target/*.jar
+    build_command: mvn clean package -DskipTests
+    http_port: 8080
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /

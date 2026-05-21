@@ -51,7 +51,7 @@ public class BusinessRegistrationController {
         List<BusinessRegistrationResponse> response = businessRegistrationService.getRegisteredBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessRegistrationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-                .recordCount(response.size())
+                //.recordCount(response.size())
                 .status(HttpStatus.OK.value()).data(response).error("").build());
     }
 
@@ -68,7 +68,7 @@ public class BusinessRegistrationController {
         AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value())
-                .recordCount(responses.getSize())
+               // .recordCount(responses.getSize())
                 .data(responses)
                 .build();
         return ResponseEntity.ok(response);
@@ -79,7 +79,7 @@ public class BusinessRegistrationController {
         Page<BusinessRegistrationResponse> responses = businessRegistrationService.getPaginatedBusinesses(offset, pageSize);
         AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-                .recordCount(responses.getSize())
+                //.recordCount(responses.getSize())
                 .status(HttpStatus.OK.value())
                 .data(responses)
                 .build();
@@ -166,7 +166,7 @@ public class BusinessRegistrationController {
         List<BusinessTypeResponse> businesses = businessTypeService.getAllBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessTypeResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-                .recordCount(businesses.size())
+                //.recordCount(businesses.size())
                 .status(HttpStatus.OK.value()).data(businesses).error("").build());
     }
 

@@ -77,7 +77,7 @@ public class InspectionController {
         Page<InspectionResponse> pages = inspectionService.getPaginatedInspections(offset, pageSize);
         AppResponse<Page<InspectionResponse>> response = AppResponse.<Page<InspectionResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-                .recordCount(pages.getSize())
+                //.recordCount(pages.getSize())
                 .status(HttpStatus.OK.value())
                 .data(pages)
                 .build();

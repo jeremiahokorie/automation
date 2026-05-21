@@ -23,11 +23,15 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity
 public class WebSecurityConfig{
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationProvider customUserDetailService;
-
+    // Inject your JwtAuthenticationFilter if you have one
+    private final JwtAuthenticationFilter jwtAuthFilter;
+//
+//    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
+//        this.jwtAuthFilter = jwtAuthFilter;
+//    }
 
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,6 +41,7 @@ public class WebSecurityConfig{
 //                .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(
 //                                "/v3/api-docs/**",
+//                                "/v3/api-docs",
 //                                "/swagger-ui/**",
 //                                "/swagger-ui.html",
 //                                "/swagger-resources/**",
@@ -47,6 +52,28 @@ public class WebSecurityConfig{
 //                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .authenticationProvider(customUserDetailService)
 //                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                // 1. Disable CSRF (Essential if you are testing POST/PUT APIs via Swagger)
+//                .csrf(csrf -> csrf.disable())
+//
+//                // 2. Configure endpoint permissions
+//                .authorizeHttpRequests(auth -> auth
+//                        // Allow public access to all Swagger UI files and assets
+//                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/webjars/**").permitAll()
+//                        // Allow public access to the OpenAPI JSON document endpoints
+//                        .requestMatchers("/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
+//                        // Any other API endpoints must be authenticated
+//                        .anyRequest().authenticated()
+//                )
+//
+//                // 3. Add your custom JWT filter BEFORE the standard security filter
+//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//
 //        return http.build();
 //    }
 
@@ -113,7 +140,7 @@ public class WebSecurityConfig{
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://bauchi-mda.netlify.app", "http://localhost:9001", "http://localhost:8080"));
+        configuration.setAllowedOrigins(List.of("https://bauchi-mda.netlify.app", "http://localhost:9001", "http://localhost:8081"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
