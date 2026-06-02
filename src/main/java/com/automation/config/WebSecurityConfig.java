@@ -97,7 +97,9 @@ public class WebSecurityConfig{
                                 "/swagger-ui.html",
                                 "/swagger-ui/index.html",
                                 "/v3/api-docs/**",
-                                "/swagger-ui/**"
+                                "/swagger-ui/**",
+                                "/api/auth/register"
+                              //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com
                         ).permitAll()
                         // User management
 //                        .requestMatchers(HttpMethod.GET, "/api/admin/access/roles").hasRole("SUPERADMIN")

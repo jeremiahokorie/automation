@@ -20,7 +20,11 @@ public class OpenAPIConfig {
     public OpenAPI customOpenAPI() {
         Server localServer = new Server();
         localServer.setUrl("http://localhost:" + serverPort);
-        localServer.setDescription("Local Development Server");
+        localServer.setDescription("Local Development");
+
+        Server prodServer = new Server();
+        prodServer.setUrl("https://eprocess.space");
+        prodServer.setDescription("Production Server");
 
         Contact contact = new Contact();
         contact.setName("Process Automation Team");
@@ -35,6 +39,6 @@ public class OpenAPIConfig {
 
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(localServer));
+                .servers(List.of(localServer,prodServer));
     }
 }
