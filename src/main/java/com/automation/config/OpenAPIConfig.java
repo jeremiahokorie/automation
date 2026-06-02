@@ -18,10 +18,6 @@ public class OpenAPIConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        Server localServer = new Server();
-        localServer.setUrl("http://localhost:" + serverPort);
-        localServer.setDescription("Local Development");
-
         Server prodServer = new Server();
         prodServer.setUrl("https://eprocess.space");
         prodServer.setDescription("Production Server");
@@ -35,10 +31,10 @@ public class OpenAPIConfig {
                 .version("1.0.0")
                 .description("Microservice for Process Automation")
                 .contact(contact)
-                .license(new License().name("Proprietary").url("https://process.ng"));
+                .license(new License().name("Proprietary").url("https://eprocess.space"));
 
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(localServer,prodServer));
+                .servers(List.of(prodServer));
     }
 }
