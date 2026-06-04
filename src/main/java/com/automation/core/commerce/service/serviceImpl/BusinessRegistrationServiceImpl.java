@@ -308,7 +308,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
 
     @Override
     public Page<BusinessRegistrationResponse> getPaginatedBusinesses(int offset, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(offset, pageSize);
+        PageRequest pageRequest = PageRequest.of(offset > 0 ? offset - 1 : 0, pageSize, Sort.by(Sort.Direction.DESC, "id"));
         return businessRepository.findAll(pageRequest)
                 .map(businessRegistration -> BusinessRegistrationResponse.builder()
                         .id(businessRegistration.getId())
@@ -325,5 +325,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                         .isRenewal(businessRegistration.isRenewal())
                         .build());
     }
+
+
 }
 
