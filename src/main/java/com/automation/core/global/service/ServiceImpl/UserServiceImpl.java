@@ -349,7 +349,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserResponse buildUserResponseWithPermissions(User user, Roles role) {
-        // Extract permission names from the role
         List<String> permissions = role.getPermissions().stream()
                 .map(Permission::getName)
                 .collect(Collectors.toList());
