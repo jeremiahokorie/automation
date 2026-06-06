@@ -107,11 +107,8 @@ public class UserController {
     public ResponseEntity<AppResponse<Page<UserResponse>>> getPaginatedUsers(
             @PathVariable int offset,
             @PathVariable int pageSize) {
-
-        int zeroBasedPage = offset > 0 ? offset - 1 : 0; // Convert 1-based to 0-based
-
-        Page<UserResponse> users = userService.getPaginatedUsers(zeroBasedPage, pageSize);
-        AppResponse<Page<UserResponse>> response = AppResponse.<Page<UserResponse>>builder()
+        Page<UserResponse> users = userService.getPaginatedUsers(offset - 1, pageSize);
+        AppResponse<Page<UserResponse>>response = AppResponse.<Page<UserResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value())
                 .data(users)
