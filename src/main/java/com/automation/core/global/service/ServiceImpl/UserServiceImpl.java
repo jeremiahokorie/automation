@@ -134,25 +134,6 @@ public class UserServiceImpl implements UserService {
                 .build());
     }
 
-//    @Override
-//    public Page<UserResponse> getPaginatedUsers(int offset, int pageSize) {
-//        Page<User> usersPage = userRepository.findAll(PageRequest.of(offset, pageSize));
-//        return usersPage.map(user -> UserResponse.builder()
-//                .id(user.getId())
-//                .email(user.getEmail())
-//                .firstName(user.getFirstName())
-//                .lastName(user.getLastName())
-//                .phoneNumber(user.getPhoneNumber())
-//                .address(user.getAddress())
-//                .nin(user.getNin())
-//                .city(user.getCity())
-//                .state(user.getState())
-//                .street(user.getStreet())
-//                .zip(user.getZip())
-//                .build());
-//    }
-
-
     @Override
     public List<UserResponse> getUsers() {
         List<User> users = userRepository.findAllByOrderByCreatedAtDesc();
