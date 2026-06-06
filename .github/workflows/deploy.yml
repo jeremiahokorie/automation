@@ -25,8 +25,8 @@ jobs:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USER }}
           key: ${{ secrets.DO_SSH_KEY }}
-          source: target/*.jar
-          target: /opt/automation/target/
+          source: "target/automation-0.0.1-SNAPSHOT.jar"
+          target: "/opt/automation/target/"
           strip_components: 1
 
       - name: Restart service
@@ -36,4 +36,8 @@ jobs:
           username: ${{ secrets.DO_USER }}
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
-            sudo systemctl restart myapp
+            sudo systemctl stop myapp
+            sleep 2
+            sudo systemctl start myapp
+            sleep 5
+            sudo systemctl status myapp
