@@ -148,4 +148,10 @@ public class UserController {
         userService.generatePasswordResetToken(email);
         return ResponseEntity.ok("Password reset token generated and sent to the user's email.");
     }
+
+    @PostMapping("/generate-password")
+    public ResponseEntity<String> generatePasswordResetTokenbk(@RequestParam String email) {
+        userService.generatePasswordResetToken(email);
+        return ResponseEntity.ok("Password reset token generated and sent to the user's email.");
+    }
 }
