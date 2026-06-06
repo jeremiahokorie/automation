@@ -75,8 +75,11 @@ public class BusinessRegistrationController {
     }
 
     @GetMapping("/paginated/businesses/{offset}/{pageSize}")
-    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getPaginatedBusinesses(@PathVariable int offset, @PathVariable int pageSize){
-        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getPaginatedBusinesses(offset, pageSize);
+    public ResponseEntity<AppResponse<Page<BusinessRegistrationResponse>>> getPaginatedBusinesses(
+            @PathVariable int offset,
+            @PathVariable int pageSize) {
+        int zeroBasedPage = offset > 0 ? offset - 1 : 0;
+        Page<BusinessRegistrationResponse> responses = businessRegistrationService.getPaginatedBusinesses(zeroBasedPage, pageSize);
         AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 //.recordCount(responses.getSize())

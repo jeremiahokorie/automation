@@ -6,6 +6,7 @@ import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.commerce.repository.BusinessRepository;
 import com.automation.core.global.exception.Exception;
+import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.inspection.dto.request.InspectionRequest;
 import com.automation.core.inspection.dto.request.StatusUpdateDto;
@@ -131,9 +132,10 @@ public class InspectionServiceImpl implements InspectionService {
 
     @Override
     public Page<InspectionResponse> getPaginatedInspections(int offset, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(offset, pageSize);
-        return inspectionRepository.findAll(pageRequest)
-                .map(inspection -> InspectionResponse.builder()
+        Page<Inspection> pageRequest = inspectionRepository.findAll(
+                PageRequest.of(offset, pageSize, Sort.by(Sort.Direction.DESC, "id"))
+        );
+        return pageRequest.map(inspection -> InspectionResponse.builder()
                         .id(inspection.getId())
                         .applicantName(inspection.getApplicantName())
                         .requestId(inspection.getRequestId())

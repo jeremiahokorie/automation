@@ -104,16 +104,32 @@ public class UserController {
     }
 
     @GetMapping("/paginated/users/{offset}/{pageSize}")
-    public ResponseEntity<AppResponse<Page<UserResponse>>>getPaginatedUsers(@PathVariable int offset, @PathVariable int pageSize){
-        Page<UserResponse> users = userService.getPaginatedUsers(offset, pageSize);
+    public ResponseEntity<AppResponse<Page<UserResponse>>> getPaginatedUsers(
+            @PathVariable int offset,
+            @PathVariable int pageSize) {
+
+        int zeroBasedPage = offset > 0 ? offset - 1 : 0; // Convert 1-based to 0-based
+
+        Page<UserResponse> users = userService.getPaginatedUsers(zeroBasedPage, pageSize);
         AppResponse<Page<UserResponse>> response = AppResponse.<Page<UserResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-               // .recordCount(users.getSize())
                 .status(HttpStatus.OK.value())
                 .data(users)
                 .build();
         return ResponseEntity.ok(response);
     }
+
+//    @GetMapping("/paginated/users/{offset}/{pageSize}")
+//    public ResponseEntity<AppResponse<Page<UserResponse>>>getPaginatedUsers(@PathVariable int offset, @PathVariable int pageSize){
+//        Page<UserResponse> users = userService.getPaginatedUsers(offset, pageSize);
+//        AppResponse<Page<UserResponse>> response = AppResponse.<Page<UserResponse>>builder()
+//                .message(AppConstant.ApiResponseMessage.GET)
+//               // .recordCount(users.getSize())
+//                .status(HttpStatus.OK.value())
+//                .data(users)
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
 
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @DeleteMapping("/admin/{id}/user")
@@ -145,12 +161,6 @@ public class UserController {
 
     @PostMapping("/generate-password-reset-token")
     public ResponseEntity<String> generatePasswordResetToken(@RequestParam String email) {
-        userService.generatePasswordResetToken(email);
-        return ResponseEntity.ok("Password reset token generated and sent to the user's email.");
-    }
-
-    @PostMapping("/generate-password")
-    public ResponseEntity<String> generatePasswordResetTokenbk(@RequestParam String email) {
         userService.generatePasswordResetToken(email);
         return ResponseEntity.ok("Password reset token generated and sent to the user's email.");
     }

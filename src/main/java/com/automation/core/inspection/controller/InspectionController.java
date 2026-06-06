@@ -73,8 +73,11 @@ public class InspectionController {
     @GetMapping("/paginated/inspection/{offset}/{pageSize}")
     @ApiOperation(value = "get all inspection requests with pagination",
             notes = "This endpoint returns all inspection requests with pagination")
-    public ResponseEntity<AppResponse<Page<InspectionResponse>>>getPaginatedInspections(@PathVariable int offset, @PathVariable int pageSize){
-        Page<InspectionResponse> pages = inspectionService.getPaginatedInspections(offset, pageSize);
+    public ResponseEntity<AppResponse<Page<InspectionResponse>>>getPaginatedInspections(
+            @PathVariable int offset,
+            @PathVariable int pageSize) {
+        int zeroBasedPage = offset > 0 ? offset - 1 : 0;
+        Page<InspectionResponse> pages = inspectionService.getPaginatedInspections(zeroBasedPage, pageSize);
         AppResponse<Page<InspectionResponse>> response = AppResponse.<Page<InspectionResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 //.recordCount(pages.getSize())
