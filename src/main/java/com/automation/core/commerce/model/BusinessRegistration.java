@@ -1,5 +1,6 @@
 package com.automation.core.commerce.model;
 
+import com.automation.core.global.model.User;
 import com.automation.util.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -42,6 +43,10 @@ public class BusinessRegistration {
     private LocalDateTime expiresAt;
     @Column(name = "renewed_at")
     private LocalDateTime renewedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User createdBy;
 
     @PrePersist
     public void prePersist() {

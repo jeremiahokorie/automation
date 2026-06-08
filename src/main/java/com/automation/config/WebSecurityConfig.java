@@ -99,8 +99,8 @@ public class WebSecurityConfig{
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/api/auth/register",
-                                "/api/business/**",
-                                "/api/environment/**",
+//                                "/api/business/**",
+//                                "/api/environment/**",
                                 "/api/certificates/occupancy/**"
 
                               //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com

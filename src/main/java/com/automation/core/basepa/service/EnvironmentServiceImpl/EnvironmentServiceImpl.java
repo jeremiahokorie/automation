@@ -18,6 +18,8 @@ import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
 import com.automation.core.global.exception.ResourceNotFoundException;
+import com.automation.core.global.model.User;
+import com.automation.core.global.repository.UserRepository;
 import com.automation.core.inspection.dto.request.InspectionRequest;
 import com.automation.core.inspection.model.Inspection;
 import com.automation.core.inspection.repository.InspectionRepository;
@@ -37,6 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -54,6 +57,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     private final EnvironmentRepository environmentRepository;
     private final PaymentService paymentService;
     private final InspectionRepository inspectionRepository;
+    private final UserRepository userRepository;
 
     @Override
     public EnvironmentResponse apply(EnvironmentRequest environmentRequest) {
@@ -111,6 +115,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setDisposalMethod(environmentRequest.getDisposalMethod());
 
             appyPermit.setWasteSource(SourceOfWaste.HOUSEHOLD);
+            appyPermit.setCreatedBy(getCurrentUser());
             environmentRepository.save(appyPermit);
 
             Inspection inspection = new Inspection();
@@ -157,7 +162,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
     @Override
     public List<EnvironmentResponse> getAll() {
-        List<EnvironmentApplication> appyPermit = environmentRepository.findAllByOrderByCreatedAtDesc();
+        List<EnvironmentApplication> appyPermit = environmentRepository.findByCreatedByOrderByCreatedAtDesc(getCurrentUser());
         return appyPermit.stream().map(permit -> EnvironmentResponse.builder()
                 .id(permit.getId())
                 .phone(permit.getPhone())
@@ -187,7 +192,6 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     public ApprovalResponse approveRequest(Long id, ApprovalRequest commentRequest) {
         EnvironmentApplication permit = environmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource Not Found"));
-
         permit.setStatus(Status.APPROVED);
         permit.setComment(commentRequest.getComment());
         permit.setApprovalDate(LocalDate.now());
@@ -351,5 +355,12 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                         .operationalLicenseNumber(permit.getOperationalLicenseNumber())
                         .email(permit.getEmail()).build());
 
+    }
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

@@ -1,6 +1,7 @@
 package com.automation.core.basepa.model;
 
 
+import com.automation.core.global.model.User;
 import com.automation.util.enums.PermitType;
 import com.automation.util.enums.SourceOfWaste;
 import com.automation.util.enums.Status;
@@ -61,6 +62,11 @@ public class EnvironmentApplication {
         private LocalDateTime expiresAt;
         @Column(name = "renewed_at")
         private LocalDateTime renewedAt;
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "user_id")
+        private User createdBy;
+
 
         @PrePersist
         public void prePersist() {

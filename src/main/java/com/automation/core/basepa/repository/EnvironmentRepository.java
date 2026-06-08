@@ -23,4 +23,7 @@ public interface EnvironmentRepository extends JpaRepository<EnvironmentApplicat
     List<EnvironmentApplication> findAllByOrderByCreatedAtDesc();
 
     Page<EnvironmentApplication> findAll(Pageable pageable);
+
+    List<EnvironmentApplication> findByCreatedByOrderByCreatedAtDesc(User user);
+    Page<EnvironmentApplication> findByCreatedBy(User user, Pageable pageable);
 }

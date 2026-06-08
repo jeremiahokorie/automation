@@ -14,6 +14,9 @@ import com.automation.core.commerce.repository.BusinessTypeRepository;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.exception.CustomException;
 import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.ResourceNotFoundException;
+import com.automation.core.global.model.User;
+import com.automation.core.global.repository.UserRepository;
 import com.automation.core.inspection.dto.request.InspectionRequest;
 import com.automation.core.inspection.model.Inspection;
 import com.automation.core.inspection.repository.InspectionRepository;
@@ -29,6 +32,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -45,6 +49,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     private final BusinessTypeRepository businessTypeRepository;
     private final PaymentService paymentService;
     private final InspectionRepository inspectionRepository;
+    private final UserRepository userRepository;
 
     @Override
     public BusinessRegistrationResponse register(BusinessRegistrationRequest businessRegistrationRequest) {
@@ -99,7 +104,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setDateRegistered(LocalDate.now());
             businessRegistration.setAuthorizationUrl(authorizationUrl);
             businessRegistration.setIsPayed(false);
-           // businessRegistration.setBusinessType(businessType);
+            businessRegistration.setCreatedBy(getCurrentUser());
+                // businessRegistration.setBusinessType(businessType);
              businessRepository.save(businessRegistration);
 
                 Inspection inspection = new Inspection();
@@ -139,7 +145,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
 
     @Override
     public List<BusinessRegistrationResponse> getRegisteredBusiness() {
-        List<BusinessRegistration> businessRegistrations = businessRepository.findAllByOrderByCreatedAtDesc();
+        List<BusinessRegistration> businessRegistrations = businessRepository.findByCreatedByOrderByCreatedAtDesc(getCurrentUser());
         return businessRegistrations.stream().map(businessRegistration -> BusinessRegistrationResponse.builder()
                 .id(businessRegistration.getId())
                 .email(businessRegistration.getEmail())
@@ -326,6 +332,11 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                         .build());
     }
 
-
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
 }
 
