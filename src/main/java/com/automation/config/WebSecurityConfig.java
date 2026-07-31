@@ -83,6 +83,9 @@ public class WebSecurityConfig{
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/v2/api-docs",
@@ -99,9 +102,14 @@ public class WebSecurityConfig{
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/api/auth/register",
-//                                "/api/business/**",
-//                                "/api/environment/**",
-                                "/api/certificates/occupancy/**"
+                                "/auth/login",
+                                "/business/**",
+                                "/environment/**",
+                                "/api/certificates/occupancy/**",
+                                "/auth/access/**",
+                                "/auth/**",
+                                "/inspection/**",
+                                "/environment/**"
 
                               //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com
                         ).permitAll()
@@ -146,7 +154,8 @@ public class WebSecurityConfig{
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://bauchi-mda.netlify.app", "http://localhost:9001", "http://localhost:8081"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8081","http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("https://bauchi-mda.netlify.app", "http://localhost:9001", "http://localhost:8081","http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

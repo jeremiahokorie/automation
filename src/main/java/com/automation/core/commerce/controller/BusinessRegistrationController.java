@@ -25,7 +25,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/business")
+@RequestMapping("/business")
 @RequiredArgsConstructor
 public class BusinessRegistrationController {
     private final BusinessRegistrationService businessRegistrationService;
@@ -87,7 +87,6 @@ public class BusinessRegistrationController {
                 .data(responses)
                 .build();
         return ResponseEntity.ok(response);
-
     }
 
    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'COMMISSIONER')")

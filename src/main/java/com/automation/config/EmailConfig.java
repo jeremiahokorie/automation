@@ -37,8 +37,4 @@ public class EmailConfig {
     public SimpleMailMessage simpleMailMessage() {
         return new SimpleMailMessage();
     }
-
-
-
-
 }

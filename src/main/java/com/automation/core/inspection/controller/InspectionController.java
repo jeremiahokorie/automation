@@ -26,7 +26,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("api/inspection")
+@RequestMapping("/inspection")
 @RequiredArgsConstructor
 public class InspectionController {
     private final InspectionService inspectionService;

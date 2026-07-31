@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/mda/")
+@RequestMapping("/mda/")
 @RequiredArgsConstructor
 public class ServiceController {
 

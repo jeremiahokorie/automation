@@ -37,7 +37,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;

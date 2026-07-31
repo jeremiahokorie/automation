@@ -27,11 +27,10 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("api/environment")
+@RequestMapping("/environment")
 @RequiredArgsConstructor
 public class EnvironmentController {
     private final EnvironmentService environmentService;
-
    // @PreAuthorize("isAuthenticated()")
     @PostMapping("/apply")
     @ApiOperation(value = "apply for an environment permit",
@@ -64,7 +63,6 @@ public class EnvironmentController {
         List<EnvironmentResponse> response = environmentService.getAll();
         return ResponseEntity.ok().body(AppResponse.<List<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.CREATED)
-                //.recordCount(response.size())
                 .status(HttpStatus.OK.value()).data(response).error("").build()
         );
     }
@@ -81,7 +79,6 @@ public class EnvironmentController {
         Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
         AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-               // .recordCount(responses.getNumberOfElements())
                 .status(HttpStatus.OK.value())
                 .data(responses)
                 .build();
@@ -104,6 +101,7 @@ public class EnvironmentController {
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/reject")
     @ApiOperation(value = "reject environment permit",
@@ -118,13 +116,11 @@ public class EnvironmentController {
                 .data(reject)
                 .error("")
                 .build();
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/environment-summary")
-    @ApiOperation(value = "get environment summary",
-            notes = "This endpoint returns the summary of environment permits")
+    @ApiOperation(value = "get environment summary", notes = "This endpoint returns the summary of environment permits")
     public ResponseEntity<EnvironmentSummaryResponse>summary(){
         EnvironmentSummaryResponse businessRegistrationResponse = environmentService.getEnvironmentSummary();
         return ResponseEntity.ok().body(businessRegistrationResponse);
@@ -136,10 +132,10 @@ public class EnvironmentController {
         Page<EnvironmentResponse> responses = environmentService.getPaginatedPermits(offset, pageSize);
         AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-              //  .recordCount(responses.getSize())
                 .status(HttpStatus.OK.value())
                 .data(responses)
                 .build();
         return ResponseEntity.ok(response);
     }
+
 }

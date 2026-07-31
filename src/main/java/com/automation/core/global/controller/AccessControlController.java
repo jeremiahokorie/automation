@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("api/auth/access")
+@RequestMapping("/auth/access")
 @RequiredArgsConstructor
 public class AccessControlController {
     private final AccessControlService accessControlService;
