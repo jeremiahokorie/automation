@@ -109,7 +109,10 @@ public class WebSecurityConfig{
                                 "/auth/access/**",
                                 "/auth/**",
                                 "/inspection/**",
-                                "/environment/**"
+                                "/environment/**",
+                                "/wards/**",
+                                "/local-governments/**"
+
 
                               //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com
                         ).permitAll()
