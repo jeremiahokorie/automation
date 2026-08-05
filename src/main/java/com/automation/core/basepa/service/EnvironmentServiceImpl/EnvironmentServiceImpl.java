@@ -64,33 +64,33 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         EnvironmentApplication appyPermit = environmentRepository.findByemail(environmentRequest.getEmail());
 
         // Step 2: Build payment request
-//        PaymentRequest paymentRequest = PaymentRequest.builder()
-//                .amount(15000)
-//                .bearer(1)
-//                .callbackUrl("https://bauchi-mda.netlify.app/")
-//                .channels(List.of("card", "bank"))
-//                .customerFirstName(environmentRequest.getApplicantName())
-//                .customerLastName(environmentRequest.getApplicantName())
-//                .customerPhoneNumber(environmentRequest.getPhone())
-//                .email(environmentRequest.getEmail())
-//                .build();
-//
-//        // Step 3: Call the payment gateway
-//        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
-//        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-//            throw new Exception("Unable to initiate payment");
-//        }
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .amount(15000)
+                .bearer(1)
+                .callbackUrl("https://bauchi-mda.netlify.app/")
+                .channels(List.of("card", "bank"))
+                .customerFirstName(environmentRequest.getApplicantName())
+                .customerLastName(environmentRequest.getApplicantName())
+                .customerPhoneNumber(environmentRequest.getPhone())
+                .email(environmentRequest.getEmail())
+                .build();
+
+        // Step 3: Call the payment gateway
+        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+            throw new Exception("Unable to initiate payment");
+        }
 
         // Step 4: Parse the response JSON
         try {
-//            ObjectMapper mapper = new ObjectMapper();
-//            JsonNode root = mapper.readTree(paymentResponse.getBody());
-//            int status = root.path("status").asInt();
-//            if (status != 200) {
-//                throw new Exception("Payment failed to initialize");
-//            }
-//            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
-//            log.info("Authorization URL: {}", authorizationUrl);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(paymentResponse.getBody());
+            int status = root.path("status").asInt();
+            if (status != 200) {
+                throw new Exception("Payment failed to initialize");
+            }
+            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+            log.info("Authorization URL: {}", authorizationUrl);
 
         if (appyPermit == null) {
             appyPermit = new EnvironmentApplication();
@@ -105,7 +105,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setPermitType(environmentRequest.getPermitType());
             appyPermit.setWasteDescription(environmentRequest.getWasteDescription());
             appyPermit.setPhone(environmentRequest.getPhone());
-           // appyPermit.setAuthorizationUrl(authorizationUrl);
+            appyPermit.setAuthorizationUrl(authorizationUrl);
             appyPermit.setIndustryType(environmentRequest.getIndustryType());
             appyPermit.setWasteQuantity(environmentRequest.getWasteQuantity());
             appyPermit.setOperationalLicenseNumber(environmentRequest.getOperationalLicenseNumber());
@@ -152,10 +152,10 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .operationalLicenseNumber(environmentRequest.getOperationalLicenseNumber())
                 .contactPerson(environmentRequest.getContactPerson())
                 .facilityAddress(environmentRequest.getFacilityAddress())
-             //   .authorizationUrl(authorizationUrl)
+                .authorizationUrl(authorizationUrl)
                 .hasEnvironmentalAudit(environmentRequest.getHasEnvironmentalAudit())
                 .build();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new Exception("Payment gateway response parsing error");
         }
     }

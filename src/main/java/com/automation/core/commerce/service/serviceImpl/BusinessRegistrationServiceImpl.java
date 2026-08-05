@@ -65,32 +65,32 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         }
 
         // Build payment request
-//        PaymentRequest paymentRequest = PaymentRequest.builder()
-//                .amount(15000)
-//                .bearer(1)
-//                .callbackUrl("https://bauchi-mda.netlify.app/")
-//                .channels(List.of("card", "bank"))
-//                .customerFirstName(businessRegistrationRequest.getOwnerName())
-//                .customerLastName(businessRegistrationRequest.getOwnerName())
-//                .customerPhoneNumber(businessRegistrationRequest.getPhone())
-//                .email(businessRegistrationRequest.getEmail())
-//                .build();
-//
-//        // Call the payment gateway
-//        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
-//        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-//            throw new Exception("Unable to initiate payment");
-//        }
+        PaymentRequest paymentRequest = PaymentRequest.builder()
+                .amount(15000)
+                .bearer(1)
+                .callbackUrl("https://bauchi-mda.netlify.app/")
+                .channels(List.of("card", "bank"))
+                .customerFirstName(businessRegistrationRequest.getOwnerName())
+                .customerLastName(businessRegistrationRequest.getOwnerName())
+                .customerPhoneNumber(businessRegistrationRequest.getPhone())
+                .email(businessRegistrationRequest.getEmail())
+                .build();
+
+        // Call the payment gateway
+        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+            throw new Exception("Unable to initiate payment");
+        }
 
         // Parse the response JSON
         try {
-//            ObjectMapper mapper = new ObjectMapper();
-//            JsonNode root = mapper.readTree(paymentResponse.getBody());
-//            int status = root.path("status").asInt();
-//            if (status != 200) {
-//                throw new Exception("Payment failed to initialize");
-//            }
-//            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(paymentResponse.getBody());
+            int status = root.path("status").asInt();
+            if (status != 200) {
+                throw new Exception("Payment failed to initialize");
+            }
+            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 
             if (businessRegistration == null) {
             businessRegistration = new BusinessRegistration();
@@ -103,7 +103,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setComment(businessRegistrationRequest.getComment());
             businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
             businessRegistration.setDateRegistered(LocalDate.now());
-         //   businessRegistration.setAuthorizationUrl(authorizationUrl);
+            businessRegistration.setAuthorizationUrl(authorizationUrl);
             businessRegistration.setIsPayed(false);
             businessRegistration.setCreatedBy(getCurrentUser());
                 // businessRegistration.setBusinessType(businessType);
@@ -134,12 +134,12 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .phone(businessRegistrationRequest.getPhone())
                 .address(businessRegistrationRequest.getAddress())
                 .email(businessRegistrationRequest.getEmail())
-              //  .authorizationUrl(businessRegistration.getAuthorizationUrl())
-              //  .authorizationUrl(authorizationUrl)
+                .authorizationUrl(businessRegistration.getAuthorizationUrl())
+                .authorizationUrl(authorizationUrl)
                 .isRenewal(true)
                 .isPayed(false)
                 .build();
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new Exception("Payment gateway response parsing error");
         }
     }

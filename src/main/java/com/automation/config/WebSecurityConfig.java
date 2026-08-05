@@ -26,8 +26,6 @@ import java.util.List;
 public class WebSecurityConfig{
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationProvider customUserDetailService;
-    // Inject your JwtAuthenticationFilter if you have one
-    private final JwtAuthenticationFilter jwtAuthFilter;
 //
 //    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
 //        this.jwtAuthFilter = jwtAuthFilter;
@@ -86,62 +84,61 @@ public class WebSecurityConfig{
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/v2/api-docs",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/swagger-resources",
-                                "/swagger-resources/**",
-                                "/swagger-resources/configuration/ui",
-                                "/configuration/ui",
-                                "/configuration/security",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/index.html",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/api/auth/register",
-                                "/auth/login",
-                                "/business/**",
-                                "/environment/**",
-                                "/api/certificates/occupancy/**",
-                                "/auth/access/**",
-                                "/auth/**",
-                                "/inspection/**",
-                                "/environment/**",
-                                "/wards/**",
-                                "/local-governments/**"
+                                .requestMatchers(
+                                        "/api/auth/**",
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/swagger-resources/configuration/ui",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/index.html",
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/api/auth/register",
+                                        "/auth/login",
+                                        "/business/**",
+                                        "/environment/**",
+                                        "/api/certificates/occupancy/**",
+                                        "/auth/access/**",
+                                        "/auth/**",
+                                        "/inspection/**",
+                                        "/wards/**",
+                                        "/local-governments/**"
 
 
-                              //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com
-                        ).permitAll()
-                        // User management
+                                        //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com
+                                ).permitAll()
+                                // User management
 //                        .requestMatchers(HttpMethod.GET, "/api/admin/access/roles").hasRole("SUPERADMIN")
 //                        .requestMatchers(HttpMethod.POST, "/api/admin/access/roles").hasRole("SUPERADMIN")
-                        //.requestMatchers(HttpMethod.GET, "/api/dashboard/summary").hasRole("SUPERADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/auth/users").hasAnyRole("SUPERADMIN","SUPER_USER")
-                        .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("SUPERADMIN")
+                                //.requestMatchers(HttpMethod.GET, "/api/dashboard/summary").hasRole("SUPERADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/auth/users").hasAnyRole("SUPERADMIN","SUPER_USER")
+                                .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("SUPERADMIN")
 
-                        // Environment registration api/environment/apply-permit
-                        .requestMatchers(HttpMethod.POST, "/api/environment/apply").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/environment/apply").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/environment/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
+                                // Environment registration api/environment/apply-permit
+                                .requestMatchers(HttpMethod.POST, "/api/environment/apply").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/environment/apply").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/environment/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
 
-                        // Business registration
-                        .requestMatchers(HttpMethod.POST, "/api/business/register").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/business/businesses").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/business/approve/**").hasAnyRole("SUPERADMIN", "ADMIN", "USER","SUPER_USER")
+                                // Business registration
+                                .requestMatchers(HttpMethod.POST, "/api/business/register").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/business/businesses").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/business/approve/**").hasAnyRole("SUPERADMIN", "ADMIN", "USER","SUPER_USER")
 
-                        // Certificate of occupancy
-                        .requestMatchers(HttpMethod.POST, "/api/certificates/occupancy").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/certificates/occupancy/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
+                                // Certificate of occupancy
+                                .requestMatchers(HttpMethod.POST, "/api/certificates/occupancy").authenticated()
+                                .requestMatchers(HttpMethod.PUT, "/api/certificates/occupancy/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
 
-                        // System configuration
-                        .requestMatchers("/api/system/**").hasRole("SUPERADMIN")
+                                // System configuration
+                                .requestMatchers("/api/system/**").hasRole("SUPERADMIN")
 
-                        // All other authenticated requests
-                        .anyRequest().authenticated()
+                                // All other authenticated requests
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(customUserDetailService)

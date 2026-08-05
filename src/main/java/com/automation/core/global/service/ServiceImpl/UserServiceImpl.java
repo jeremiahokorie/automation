@@ -136,23 +136,6 @@ public class UserServiceImpl implements UserService {
                 .build());
     }
 
-//    @Override
-//    public Page<UserResponse> getPaginatedUsers(int offset, int pageSize) {
-//        Page<User> usersPage = userRepository.findAll(PageRequest.of(offset > 0 ? offset - 1 : 0, pageSize));
-//        return usersPage.map(user -> UserResponse.builder()
-//                .id(user.getId())
-//                .email(user.getEmail())
-//                .firstName(user.getFirstName())
-//                .lastName(user.getLastName())
-//                .phoneNumber(user.getPhoneNumber())
-//                .address(user.getAddress())
-//                .nin(user.getNin())
-//                .city(user.getCity())
-//                .state(user.getState())
-//                .street(user.getStreet())
-//                .zip(user.getZip())
-//                .build());
-//    }
 
     @Override
     public List<UserResponse> getUsers() {
@@ -313,54 +296,6 @@ public class UserServiceImpl implements UserService {
                         : Collections.emptyList())
                 .build();
     }
-
-
-//    @Override
-//    public AdminUserResponse createAdminUser(UserAdminRequest request) {
-//        Optional<User> users = userRepository.findByEmail(request.getEmail());
-//        Roles role = roleRepository.findById(request.getRoleId())
-//                .orElseThrow(() -> new RuntimeException("Role not found"));
-//
-//        if (users.isPresent()) {
-//            throw new Exception("User already exists");
-//        }
-//
-//        User user = new User();
-//        user.setFirstName(request.getFirstName());
-//        user.setCreatedAt(LocalDateTime.now());
-//        user.setEmail(request.getEmail());
-//        user.setCreateDate(LocalDate.now());
-//        user.setPhoneNumber(request.getPhoneNumber());
-//        user.setStreet(request.getStreet());
-//        user.setPassword(passwordEncoder.encode(request.getPassword()));
-//        user.setRole(role);
-//        // Automatically pull permissions from the role
-//       // user.setPermissions(role.getPermissions());
-//
-//        User saved = userRepository.save(user);
-//
-//        return AdminUserResponse.builder()
-//                .id(saved.getId())
-//                .firstName(saved.getFirstName())
-//                .lastName(saved.getLastName())
-//                .email(saved.getEmail())
-//                .role(saved.getRole().getName())
-//                .address(saved.getAddress())
-//                .city(saved.getCity())
-//                .state(saved.getState())
-//                .zip(saved.getZip())
-//                .street(saved.getStreet())
-//                .phoneNumber(saved.getPhoneNumber())
-//                .nin(saved.getNin())
-//                .permissions(saved.getPermissions().stream()
-//                        .map(Permission::getName)
-//                        .collect(Collectors.toList()))
-//                .build();
-//
-//
-//    }
-
-
 
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         return user.getRoles().stream()
