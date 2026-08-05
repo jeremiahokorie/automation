@@ -31,7 +31,7 @@ public class BusinessRegistrationController {
     private final BusinessRegistrationService businessRegistrationService;
     private final BusinessTypeService businessTypeService;
 
-  // @PreAuthorize("isAuthenticated()")
+
     @PostMapping("/register")
     @ApiOperation(value = "register a new business ",
             notes = "This endpoint registers a business")
@@ -46,7 +46,6 @@ public class BusinessRegistrationController {
     @GetMapping("/businesses")
     @ApiOperation(value = "get all registered business ",
             notes = "This endpoint returns all registered business")
-   // @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AppResponse<List<BusinessRegistrationResponse>>> getBusinessRegistration() {
         List<BusinessRegistrationResponse> response = businessRegistrationService.getRegisteredBusiness();
         return ResponseEntity.ok().body(AppResponse.<List<BusinessRegistrationResponse>>builder()
@@ -89,8 +88,10 @@ public class BusinessRegistrationController {
         return ResponseEntity.ok(response);
     }
 
-   // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'COMMISSIONER')")
+
+
     @PutMapping("/{businessNumber}/verify")
+
     @ApiOperation(value = "verify a business",
             notes = "This endpoint verifies a business by its business number")
     public ResponseEntity<AppResponse<BusinessRegistrationResponse>> verifyBusiness(@PathVariable String businessNumber) {

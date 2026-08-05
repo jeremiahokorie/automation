@@ -1,5 +1,6 @@
 package com.automation.core.payment.service;
 
+import com.automation.config.CredoProperties;
 import com.automation.core.payment.dto.request.PaymentRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
+    private final CredoProperties credoProperties;
 
     private final RestTemplate restTemplate;
     private final String PAYMENT_GATEWAY_URL = "https://api.credodemo.com/transaction/initialize";

@@ -31,7 +31,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EnvironmentController {
     private final EnvironmentService environmentService;
-   // @PreAuthorize("isAuthenticated()")
+
     @PostMapping("/apply")
     @ApiOperation(value = "apply for an environment permit",
             notes = "This endpoint allows users to apply for an environment permit")
@@ -43,7 +43,7 @@ public class EnvironmentController {
         return new ResponseEntity<>(appResponse, HttpStatus.OK);
     }
 
-   // @PreAuthorize("isAuthenticated()")
+
     @PutMapping("/renew")
     @ApiOperation(value = "renew environment permit",
             notes = "This endpoint renews an environment permit")
@@ -55,7 +55,7 @@ public class EnvironmentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-  //@PreAuthorize("isAuthenticated()")
+
     @GetMapping("/getPermits")
     @ApiOperation(value = "get all environment permits",
             notes = "This endpoint returns all environment permits")
@@ -85,7 +85,6 @@ public class EnvironmentController {
         return ResponseEntity.ok(response);
     }
 
-    //@PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/approve")
     @ApiOperation(value = "approve environment permit",
             notes = "This endpoint approves an environment permit by its ID")
@@ -102,7 +101,6 @@ public class EnvironmentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN', 'ENVIRONMENT_OFFICER')")
     @PutMapping("/{id}/reject")
     @ApiOperation(value = "reject environment permit",
             notes = "This endpoint rejects an environment permit by its ID")

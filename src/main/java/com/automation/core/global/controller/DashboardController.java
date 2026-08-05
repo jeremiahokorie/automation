@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.*;
     public class DashboardController {
     private final DashboardService dashboardService;
 
-//  @Secured({"REPORT_READ","REPORT_WRITE"})
     @GetMapping("/summary")
-   // @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<DashboardResponse> getDashboardSummary() {
         DashboardResponse summary = dashboardService.getDashboardSummary();
         return ResponseEntity.ok(summary);

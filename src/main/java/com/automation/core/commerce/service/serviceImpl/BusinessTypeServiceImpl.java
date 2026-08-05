@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class BusinessTypeServiceImpl implements BusinessTypeService {
+public class  BusinessTypeServiceImpl implements BusinessTypeService {
     private final BusinessTypeRepository businessTypeRepository;
 
     @Override

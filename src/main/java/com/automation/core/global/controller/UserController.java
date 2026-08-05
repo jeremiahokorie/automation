@@ -79,7 +79,6 @@ public class UserController {
 //    }
 //jigawa state commodity xchange service
 
-   // @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     @GetMapping("/users")
     public ResponseEntity<AppResponse<List<UserResponse>>> getUsers() {
         List<UserResponse> users = userService.getUsers();
@@ -139,7 +138,6 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}")
-    // @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
     public ResponseEntity<AppResponse<UserResponse>> updateUser(@PathVariable Long userId,@Valid @RequestBody UserRequest request) {
         UserResponse userResponse = userService.updateUser(userId, request);
         return ResponseEntity.ok().body(AppResponse.<UserResponse>builder()

@@ -32,6 +32,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -64,32 +65,32 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         }
 
         // Build payment request
-        PaymentRequest paymentRequest = PaymentRequest.builder()
-                .amount(15000)
-                .bearer(1)
-                .callbackUrl("https://bauchi-mda.netlify.app/")
-                .channels(List.of("card", "bank"))
-                .customerFirstName(businessRegistrationRequest.getOwnerName())
-                .customerLastName(businessRegistrationRequest.getOwnerName())
-                .customerPhoneNumber(businessRegistrationRequest.getPhone())
-                .email(businessRegistrationRequest.getEmail())
-                .build();
-
-        // Call the payment gateway
-        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
-        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-            throw new Exception("Unable to initiate payment");
-        }
+//        PaymentRequest paymentRequest = PaymentRequest.builder()
+//                .amount(15000)
+//                .bearer(1)
+//                .callbackUrl("https://bauchi-mda.netlify.app/")
+//                .channels(List.of("card", "bank"))
+//                .customerFirstName(businessRegistrationRequest.getOwnerName())
+//                .customerLastName(businessRegistrationRequest.getOwnerName())
+//                .customerPhoneNumber(businessRegistrationRequest.getPhone())
+//                .email(businessRegistrationRequest.getEmail())
+//                .build();
+//
+//        // Call the payment gateway
+//        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+//        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+//            throw new Exception("Unable to initiate payment");
+//        }
 
         // Parse the response JSON
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(paymentResponse.getBody());
-            int status = root.path("status").asInt();
-            if (status != 200) {
-                throw new Exception("Payment failed to initialize");
-            }
-            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+//            ObjectMapper mapper = new ObjectMapper();
+//            JsonNode root = mapper.readTree(paymentResponse.getBody());
+//            int status = root.path("status").asInt();
+//            if (status != 200) {
+//                throw new Exception("Payment failed to initialize");
+//            }
+//            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 
             if (businessRegistration == null) {
             businessRegistration = new BusinessRegistration();
@@ -102,7 +103,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             businessRegistration.setComment(businessRegistrationRequest.getComment());
             businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
             businessRegistration.setDateRegistered(LocalDate.now());
-            businessRegistration.setAuthorizationUrl(authorizationUrl);
+         //   businessRegistration.setAuthorizationUrl(authorizationUrl);
             businessRegistration.setIsPayed(false);
             businessRegistration.setCreatedBy(getCurrentUser());
                 // businessRegistration.setBusinessType(businessType);
@@ -133,12 +134,12 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .phone(businessRegistrationRequest.getPhone())
                 .address(businessRegistrationRequest.getAddress())
                 .email(businessRegistrationRequest.getEmail())
-                .authorizationUrl(businessRegistration.getAuthorizationUrl())
-                .authorizationUrl(authorizationUrl)
+              //  .authorizationUrl(businessRegistration.getAuthorizationUrl())
+              //  .authorizationUrl(authorizationUrl)
                 .isRenewal(true)
                 .isPayed(false)
                 .build();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new Exception("Payment gateway response parsing error");
         }
     }
@@ -295,41 +296,48 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 : Sort.by(sortBy).descending();
 
         PageRequest pageRequest = PageRequest.of(page, size, sort);
-        return businessRepository.findAll(pageRequest)
-                .map(businessRegistration -> BusinessRegistrationResponse.builder()
-                        .id(businessRegistration.getId())
-                        .businessName(businessRegistration.getBusinessName())
-                        .businessNumber(businessRegistration.getBusinessNumber())
-                        .address(businessRegistration.getAddress())
-                        .email(businessRegistration.getEmail())
-                        .phone(businessRegistration.getPhone())
-                        .comment(businessRegistration.getComment())
-                        .ownerName(businessRegistration.getOwnerName())
-                        .dateRegistered(businessRegistration.getDateRegistered())
-                        .status(businessRegistration.getStatus())
-                        .authorizationUrl(businessRegistration.getAuthorizationUrl())
-                        .isRenewal(businessRegistration.isRenewal())
-                        .build());
+
+        if (isAdminOrSuperAdmin()) {
+            return businessRepository.findAll(pageRequest).map(this::toResponse);
+        }
+
+        return businessRepository.findByCreatedBy(getCurrentUser(), pageRequest)
+                .map(this::toResponse);
     }
 
     @Override
     public Page<BusinessRegistrationResponse> getPaginatedBusinesses(int offset, int pageSize) {
         PageRequest pageRequest = PageRequest.of(offset > 0 ? offset - 1 : 0, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-        return businessRepository.findAll(pageRequest)
-                .map(businessRegistration -> BusinessRegistrationResponse.builder()
-                        .id(businessRegistration.getId())
-                        .businessName(businessRegistration.getBusinessName())
-                        .businessNumber(businessRegistration.getBusinessNumber())
-                        .address(businessRegistration.getAddress())
-                        .email(businessRegistration.getEmail())
-                        .phone(businessRegistration.getPhone())
-                        .comment(businessRegistration.getComment())
-                        .ownerName(businessRegistration.getOwnerName())
-                        .dateRegistered(businessRegistration.getDateRegistered())
-                        .status(businessRegistration.getStatus())
-                        .authorizationUrl(businessRegistration.getAuthorizationUrl())
-                        .isRenewal(businessRegistration.isRenewal())
-                        .build());
+
+        if (isAdminOrSuperAdmin()) {
+            return businessRepository.findAll(pageRequest).map(this::toResponse);
+        }
+
+        return businessRepository.findByCreatedBy(getCurrentUser(), pageRequest)
+                .map(this::toResponse);
+    }
+
+    private BusinessRegistrationResponse toResponse(BusinessRegistration businessRegistration) {
+        return BusinessRegistrationResponse.builder()
+                .id(businessRegistration.getId())
+                .businessName(businessRegistration.getBusinessName())
+                .businessNumber(businessRegistration.getBusinessNumber())
+                .address(businessRegistration.getAddress())
+                .email(businessRegistration.getEmail())
+                .phone(businessRegistration.getPhone())
+                .comment(businessRegistration.getComment())
+                .ownerName(businessRegistration.getOwnerName())
+                .dateRegistered(businessRegistration.getDateRegistered())
+                .status(businessRegistration.getStatus())
+                .authorizationUrl(businessRegistration.getAuthorizationUrl())
+                .isRenewal(businessRegistration.isRenewal())
+                .build();
+    }
+
+    private boolean isAdminOrSuperAdmin() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(authority -> authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERADMIN"));
     }
 
     private User getCurrentUser() {
