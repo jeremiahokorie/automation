@@ -84,6 +84,8 @@ public class WebSecurityConfig{
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/abia-id/apply").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/abia-id/my-applications").authenticated()
                                 .requestMatchers(
                                         "/api/auth/**",
                                         "/v2/api-docs",

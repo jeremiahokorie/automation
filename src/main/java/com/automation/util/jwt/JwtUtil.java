@@ -58,14 +58,13 @@ public class JwtUtil {
         return expiration.before(new Date());
     }
 
-
-
     public String generateToken(User userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", userDetails.getEmail());
         claims.put("email", userDetails.getEmail());
         claims.put("firstName", userDetails.getFirstName());
         claims.put("lastName", userDetails.getLastName());
+        claims.put("phone",userDetails.getPhoneNumber());
         List<String> roles = userDetails.getRoles().stream()
                 .map(Roles::getValue)
                 .collect(Collectors.toList());
@@ -73,6 +72,7 @@ public class JwtUtil {
 //        List<String> roles = userDetails.getRoles().stream()
 //                .map(role -> "ROLE_" + role.getValue())
 //                .collect(Collectors.toList());
+
         claims.put("roles", roles);
 
         return Jwts.builder()

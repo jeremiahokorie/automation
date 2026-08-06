@@ -1,8 +1,0 @@
-- [ ] Create central document module (controller, DTOs, service interface/impl)
-- [ ] Add Invoice and StateLicense entities + repositories
-- [ ] Add DB migration for invoice and state_license tables
-- [ ] Integrate generation into BusinessRegistrationServiceImpl (register/renew)
-- [ ] Integrate generation into EnvironmentServiceImpl (apply/renew)
-- [ ] Add security matcher for document endpoints
-- [ ] Compile and fix issues
-- [ ] Run API-focused verification plan definition
