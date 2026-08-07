@@ -270,6 +270,7 @@ public class UserServiceImpl implements UserService {
         user.setCreatedAt(LocalDateTime.now());
         user.setCreateDate(LocalDate.now());
         user.setRole(role);
+        user.setRoles(List.of(role));
 
         // Set permissions from role
         user.setPermissions(new ArrayList<>(role.getPermissions()));

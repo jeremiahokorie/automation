@@ -68,17 +68,6 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//    @PostMapping("/admin/users")
-//   // @PreAuthorize("hasRole('SUPERADMIN')")
-//    public ResponseEntity<AppResponse<UserResponse>> createUserAsAdmin(@RequestBody UserRequest userRequest) {
-//        UserResponse userResponse = userService.createUser(userRequest);
-//        AppResponse<UserResponse> response = AppResponse.<UserResponse>builder()
-//                .message(AppConstant.ApiResponseMessage.CREATED)
-//                .status(HttpStatus.OK.value()).data(userResponse).error("").build();
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-//jigawa state commodity xchange service
-
     @GetMapping("/users")
     public ResponseEntity<AppResponse<List<UserResponse>>> getUsers() {
         List<UserResponse> users = userService.getUsers();
