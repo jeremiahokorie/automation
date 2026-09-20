@@ -56,6 +56,8 @@ public class EnvironmentApplication {
         private String comment;
         private LocalDate approvalDate;
         private LocalDate rejectionDate;
+        private String permitUrl;
+        private LocalDateTime permitGeneratedDate;
         private String AuthorizationUrl;
         private LocalDateTime createdAt;
         @Column(name = "expires_at", nullable = false)

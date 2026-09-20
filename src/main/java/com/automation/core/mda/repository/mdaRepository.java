@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface mdaRepository extends JpaRepository<mdaModel, Integer> {
+public interface mdaRepository extends JpaRepository<mdaModel, Long> {
     boolean existsByCode(String code);
     void deleteByCode(String code);
     Optional<mdaModel> findBycode(String code);

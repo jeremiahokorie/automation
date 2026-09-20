@@ -26,4 +26,6 @@ public interface EnvironmentService {
     Page<EnvironmentResponse> getAllAppliedPermit(int page, int size, String sortBy, String sortDir);
 
     Page<EnvironmentResponse> getPaginatedPermits(int offset, int pageSize);
+
+    String getPermitUrl(Long id);
 }

@@ -8,6 +8,17 @@ import com.automation.core.commerce.dto.response.*;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.commerce.service.service.BusinessTypeService;
 import com.automation.core.global.dto.response.AppResponse;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.net.MalformedURLException;
+import com.automation.core.global.exception.ResourceNotFoundException;
+import com.automation.core.commerce.model.BusinessRegistration;
+import com.automation.core.commerce.repository.BusinessRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.model.User;
 import com.automation.util.constant.AppConstant;
@@ -67,7 +78,6 @@ public class BusinessRegistrationController {
         AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value())
-               // .recordCount(responses.getSize())
                 .data(responses)
                 .build();
         return ResponseEntity.ok(response);
@@ -81,13 +91,11 @@ public class BusinessRegistrationController {
         Page<BusinessRegistrationResponse> responses = businessRegistrationService.getPaginatedBusinesses(zeroBasedPage, pageSize);
         AppResponse<Page<BusinessRegistrationResponse>> response = AppResponse.<Page<BusinessRegistrationResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
-                //.recordCount(responses.getSize())
                 .status(HttpStatus.OK.value())
                 .data(responses)
                 .build();
         return ResponseEntity.ok(response);
     }
-
 
 
     @PutMapping("/{businessNumber}/verify")
@@ -185,8 +193,22 @@ public class BusinessRegistrationController {
                 .error("")
                 .build();
         return ResponseEntity.ok(response);
-
     }
 
-
+    @GetMapping("/{businessNumber}/permit")
+    @ApiOperation(value = "download business permit",
+            notes = "This endpoint allows downloading the approved business premises permit")
+    public ResponseEntity<Resource> downloadPermit(@PathVariable String businessNumber) {
+        String permitUrl = businessRegistrationService.getPermitUrl(businessNumber);
+        Path path = Paths.get(permitUrl);
+        try {
+            Resource resource = new UrlResource(path.toUri());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName().toString() + "\"")
+                    .body(resource);
+        } catch (MalformedURLException e) {
+            throw new ResourceNotFoundException("Permit file not found");
+        }
+    }
 }

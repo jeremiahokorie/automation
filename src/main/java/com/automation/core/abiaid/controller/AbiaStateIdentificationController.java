@@ -50,4 +50,18 @@ public class AbiaStateIdentificationController {
                 .build();
         return ResponseEntity.ok(appResponse);
     }
+
+    @GetMapping("/verify/{abiaIdNumber}")
+    @ApiOperation(value = "verify an abia state identification number", notes = "This endpoint verifies the validity of an Abia State Identification Number")
+    public ResponseEntity<AppResponse<AbiaStateIdentificationResponse>> verify(@PathVariable String abiaIdNumber) {
+        AbiaStateIdentificationResponse response = service.verifyByAbiaIdNumber(abiaIdNumber);
+        AppResponse<AbiaStateIdentificationResponse> appResponse = AppResponse
+                .<AbiaStateIdentificationResponse>builder()
+                .message("Identification number verified successfully")
+                .status(HttpStatus.OK.value())
+                .data(response)
+                .error("")
+                .build();
+        return ResponseEntity.ok(appResponse);
+    }
 }

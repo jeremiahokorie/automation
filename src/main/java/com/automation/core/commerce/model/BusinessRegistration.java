@@ -35,6 +35,8 @@ public class BusinessRegistration {
     private String businessNumber;
     private String comment;
     private LocalDate renewalDate;
+    private String permitUrl;
+    private LocalDateTime permitGeneratedDate;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     private String AuthorizationUrl;

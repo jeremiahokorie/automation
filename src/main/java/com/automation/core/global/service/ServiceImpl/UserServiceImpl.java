@@ -15,6 +15,10 @@ import com.automation.core.global.repository.PermissionRepository;
 import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.global.service.UserService.UserService;
+import com.automation.core.lga.model.LocalGovernment;
+import com.automation.core.lga.model.Ward;
+import com.automation.core.lga.repository.LocalGovernmentRepository;
+import com.automation.core.lga.repository.WardRepository;
 import com.automation.events.EmailNotificationEvent;
 import com.automation.util.jwt.JwtUtil;
 //import com.google.common.collect.ImmutableMap;
@@ -48,6 +52,8 @@ public class UserServiceImpl implements UserService {
     private final ApplicationEventPublisher publisher;
     private final PermissionRepository permissionRepository;
     private final JwtUtil jwtUtil;
+    private final LocalGovernmentRepository localGovernmentRepository;
+    private final WardRepository wardRepository;
     private User user;
     private UserService userService;
 
@@ -55,7 +61,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByEmail(userRequest.getEmail());
 
-        Roles userRole = roleRepository.findByValue("SUPERADMIN")
+        Roles userRole = roleRepository.findByValue("USER")
                 .orElseThrow(() -> new Exception("Default role not found"));
 
         if (user.isPresent()) {
@@ -72,9 +78,10 @@ public class UserServiceImpl implements UserService {
         createUser.setRoles(List.of(userRole));
         createUser.setNin(userRequest.getNin());
         createUser.setCity(userRequest.getCity());
-        createUser.setState(userRequest.getState());
         createUser.setZip(userRequest.getZip());
         createUser.setStreet(userRequest.getStreet());
+        Ward ward = resolveWardForRequest(userRequest.getLocalGovernmentId(), userRequest.getWardId());
+        createUser.setWard(ward);
         //createUser.setRole(roles);
         createUser.setCreateDate(LocalDate.now());
         userRepository.save(createUser);
@@ -89,7 +96,6 @@ public class UserServiceImpl implements UserService {
                 .address(userRequest.getAddress())
                 .nin(userRequest.getNin())
                 .city(userRequest.getCity())
-                .state(userRequest.getState())
                 .street(userRequest.getStreet())
                 .zip(userRequest.getZip())
                 .build();
@@ -110,7 +116,6 @@ public class UserServiceImpl implements UserService {
                         .address(users.getAddress())
                         .nin(users.getNin())
                         .city(users.getCity())
-                        .state(users.getState())
                         .street(users.getStreet())
                         .zip(users.getZip())
                         .build());
@@ -152,7 +157,6 @@ public class UserServiceImpl implements UserService {
                 .nin(user.getNin())
                 .city(user.getCity())
                 //.roleName(user.getRole().getName())
-                .state(user.getState())
                 .zip(user.getZip())
                 .build()).collect(Collectors.toList());
     }
@@ -173,7 +177,6 @@ public class UserServiceImpl implements UserService {
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
         user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-//        log.info("User found with email: {}", user.getPassword());
        return user;
     }
 
@@ -190,9 +193,10 @@ public class UserServiceImpl implements UserService {
         user.setAddress(request.getAddress());
         user.setNin(request.getNin());
         user.setCity(request.getCity());
-        user.setState(request.getState());
         user.setZip(request.getZip());
         user.setStreet(request.getStreet());
+        Ward ward = resolveWardForRequest(request.getLocalGovernmentId(), request.getWardId());
+        user.setWard(ward);
 
         User updatedUser = userRepository.save(user);
 
@@ -205,7 +209,6 @@ public class UserServiceImpl implements UserService {
                 .address(updatedUser.getAddress())
                 .nin(updatedUser.getNin())
                 .city(updatedUser.getCity())
-                .state(updatedUser.getState())
                 .street(updatedUser.getStreet())
                 .zip(updatedUser.getZip())
                 .build();
@@ -263,9 +266,10 @@ public class UserServiceImpl implements UserService {
         user.setStreet(request.getStreet());
         user.setAddress(request.getAddress());
         user.setCity(request.getCity());
-        user.setState(request.getState());
         user.setZip(request.getZip());
         user.setNin(request.getNin());
+        Ward ward = resolveWardForRequest(request.getLocalGovernmentId(), request.getWardId());
+        user.setWard(ward);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
         user.setCreateDate(LocalDate.now());
@@ -285,7 +289,6 @@ public class UserServiceImpl implements UserService {
                 .role(saved.getRole() != null ? saved.getRole().getName() : null)
                 .address(saved.getAddress())
                 .city(saved.getCity())
-                .state(saved.getState())
                 .zip(saved.getZip())
                 .street(saved.getStreet())
                 .phoneNumber(saved.getPhoneNumber())
@@ -322,6 +325,27 @@ public class UserServiceImpl implements UserService {
                 .street(user.getStreet())
                 .zip(user.getZip())
                 .build();
+    }
+
+    private Ward resolveWardForRequest(String localGovernmentId, String wardId) {
+        if (localGovernmentId == null || localGovernmentId.isBlank()) {
+            throw new IllegalArgumentException("localGovernmentId is required");
+        }
+        if (wardId == null || wardId.isBlank()) {
+            throw new IllegalArgumentException("wardId is required");
+        }
+
+        LocalGovernment localGovernment = localGovernmentRepository.findById(localGovernmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Local government not found"));
+
+        Ward ward = wardRepository.findById(wardId)
+                .orElseThrow(() -> new IllegalArgumentException("Ward not found"));
+
+        if (ward.getLocalGovernment() == null || !localGovernment.getId().equals(ward.getLocalGovernment().getId())) {
+            throw new IllegalArgumentException("Ward does not belong to selected local government");
+        }
+
+        return ward;
     }
 
 }

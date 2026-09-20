@@ -32,18 +32,21 @@ import java.util.Set;
 public class WardActivityServiceImpl implements WardActivityService {
 
     private static final Set<String> REPRESENTATIVE_ROLES = Set.of("REPRESENTATIVE", "SUPERADMIN", "ADMIN");
-    private static final Set<String> WARD_LEADER_ROLES = Set.of("WARD_LEADER","USER");
+    private static final Set<String> WARD_LEADER_ROLES = Set.of("WARD_LEADER");
 
     private final ActivityReportRepository activityReportRepository;
     private final UserRepository userRepository;
     private final WardRepository wardRepository;
+    private final com.automation.core.lga.repository.LocalGovernmentRepository localGovernmentRepository;
 
     public WardActivityServiceImpl(ActivityReportRepository activityReportRepository,
                                    UserRepository userRepository,
-                                   WardRepository wardRepository) {
+                                   WardRepository wardRepository,
+                                   com.automation.core.lga.repository.LocalGovernmentRepository localGovernmentRepository) {
         this.activityReportRepository = activityReportRepository;
         this.userRepository = userRepository;
         this.wardRepository = wardRepository;
+        this.localGovernmentRepository = localGovernmentRepository;
     }
 
     @Override
@@ -52,7 +55,22 @@ public class WardActivityServiceImpl implements WardActivityService {
         if (!isRepresentative(actor)) {
             throw new AccessDeniedException("Only representative can create wards");
         }
-        throw new UnsupportedOperationException("Ward creation here requires local government linkage and should use existing LGA flow");
+
+        com.automation.core.lga.model.LocalGovernment lga = localGovernmentRepository.findById(request.getLocalGovernmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Local government not found with ID: " + request.getLocalGovernmentId()));
+
+        com.automation.core.lga.model.Ward ward = com.automation.core.lga.model.Ward.builder()
+                .name(request.getName())
+                .localGovernment(lga)
+                .build();
+
+        // The Ward entity doesn't have a 'code' field in the model provided earlier,
+        // but the request has one. I should check if the model needs it.
+        // Looking at src/main/java/com/automation/core/lga/model/Ward.java, it only has id, name, localGovernment, createdAt, updatedAt.
+        // I'll stick to the model fields.
+
+        com.automation.core.lga.model.Ward savedWard = wardRepository.save(ward);
+        return toWardSimple(savedWard);
     }
 
     @Override
@@ -178,6 +196,9 @@ public class WardActivityServiceImpl implements WardActivityService {
     }
 
     private Ward resolveUserWard(User user) {
+        if (user.getWard() != null) {
+            return user.getWard();
+        }
         String wardRef = user.getAddress();
         if (wardRef == null || wardRef.isBlank()) {
             throw new AccessDeniedException("Ward leader account is not linked to a ward");
@@ -188,7 +209,7 @@ public class WardActivityServiceImpl implements WardActivityService {
                         .filter(w -> w.getName() != null && w.getName().equalsIgnoreCase(wardRef))
                         .findFirst()
                         .orElseThrow(() -> new ResourceNotFoundException(
-                                "Linked ward not found. Set user.address to ward id or exact ward name."
+                                "Linked ward not found. Set user.ward or user.address to ward id or exact ward name."
                         ))
         );
     }

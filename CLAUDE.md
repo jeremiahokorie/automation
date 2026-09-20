@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-- Build project: `./mvnw clean install`
+- Build project: `./mvnw clean install` (Requires `GITHUB_ACTOR` and `GITHUB_TOKEN` env vars for GitHub Packages authentication via `settings.xml`)
 - Run application: `./mvnw spring-boot:run`
 - Run all tests: `./mvnw test`
 - Run a single test: `./mvnw test -Dtest=ClassName`
@@ -14,57 +14,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Spring Boot 3.4.5 application using Java 17, organized with a domain-driven layered architecture.
 
 ### Project Structure
-- `com.automation.core`: Main business logic divided into domain modules (e.g., `commerce`, `lands`, `wardactivity`, `lga`, `payment`, `global`).
-    - Each domain typically follows a layered pattern:
-        - `controller`: REST API endpoints.
-        - `service`: Business logic interfaces and their implementations (`ServiceImpl`).
-        - `repository`: Data access layer using Spring Data JPA.
-        - `model`: Database entities.
-        - `dto`: Request and response objects for API communication.
+- `com.automation.core`: Contains business logic divided into domain modules (e.g., `abiaid`, `basepa`, `commerce`, `lands`, `revenue`, `wardactivity`). Each domain typically follows a layered pattern:
+    - `controller`: REST API endpoints.
+    - `service`: Business logic interfaces. Implementation classes are found in either a `serviceImpl` sub-package or directly within the `service` package.
+    - `repository`: Data access layer using Spring Data JPA.
+    - `model`: Database entities.
+    - `dto`: Request and response objects, often further divided into `request` and `response` sub-packages.
+- `com.automation.core.global`: Cross-cutting concerns including User management, Authentication, Roles, Permissions, and a global Approval system.
+- `com.automation.core.reporting`: A centralized reporting system using a Provider pattern. `ReportingDispatcher` routes requests to specific `ReportProvider` implementations (e.g., `CommerceReportProvider`).
 - `com.automation.config`: Global configuration for Security, JWT, Email, and App settings.
 - `com.automation.util`: Utility classes, constants, enums, and mappers.
+- `com.automation.common`: Common shared components and utilities.
 - `com.automation.events`: Event-driven notification system for Email and SMS.
-- `com.automation.core.global`: Cross-cutting concerns including User management, Authentication, Roles, Permissions, and a global Approval system.
 
 ### Technical Stack
 - **Framework**: Spring Boot 3.4.5
 - **Database**: MySQL with Flyway for schema migrations.
 - **Security**: Spring Security with JWT (using `jjwt` library) for authentication and role-based access control.
 - **API Documentation**: SpringDoc OpenAPI / Swagger.
-- **Key Libraries**:
-    - `iTextPDF` / `pdfbox`: PDF generation and manipulation.
-    - `OpenFeign`: For external service integration.
-    - `Lombok`: To reduce boilerplate code.
-    - `Thymeleaf` / `FreeMarker`: Template engines for emails and documents.
-    - `spring-boot-starter-validation`: For request body validation.
+- **Key Libraries**: `iTextPDF` / `pdfbox` (PDFs), `OpenFeign` (External services), `Lombok`, `Thymeleaf` / `FreeMarker` (Templates), `spring-boot-starter-validation`.
 
 ## Common Development Tasks
 
 ### Adding a New Domain Module
 1. Create a new package under `com.automation.core.<module_name>`.
-2. Implement the layered structure:
-    - `model`: Define JPA entities.
-    - `repository`: Create Spring Data JPA repositories.
-    - `service`: Define a service interface and its `ServiceImpl`.
-    - `dto`: Create request and response DTOs.
-    - `controller`: Implement REST endpoints using the service.
+2. Implement the layered structure: `model` $\rightarrow$ `repository` $\rightarrow$ `service` $\rightarrow$ `dto` $\rightarrow$ `controller`.
 
 ### Database Migrations
-- All schema changes must be handled via Flyway.
-- Create new migration scripts in `src/main/resources/db/migration/` following the naming convention `V<Version>__<Description>.sql`.
+- Use Flyway for all schema changes.
+- Scripts go in `src/main/resources/db/migration/` following the `V<Version>__<Description>.sql` convention.
 
 ### API Development
 - Use Lombok for boilerplate reduction.
-- Annotate controllers with Swagger/OpenAPI annotations for documentation.
-- Ensure all new endpoints are secured via Spring Security and integrated with the JWT authentication system.
+- Annotate controllers with OpenAPI annotations.
+- Ensure endpoints are secured via Spring Security and integrated with the JWT system.
 
 ## Workflow & Branching Policy
 
-- **Branch-First Development:** Before making any code changes, creating new features, or implementing bug fixes, you MUST verify the current branch.
-- **Requirement:** If not already on a dedicated feature or fix branch, you must suggest or create a new, appropriately named branch (e.g., `feature/description` or `fix/issue-name`) using `git checkout -b <branch-name>`.
-- **Constraint:** Do not apply code changes directly to `main`, `master`, `staging`, `development`, or `pre-develoment` branches.
-- **Workflow:**
-    1. Assess the task.
-    2. Check the current git branch.
-    3. If necessary, execute the git command to switch to a new branch.
-    4. Proceed with code implementation only after the branch is confirmed.
+- **Branch-First Development:** You MUST verify the current branch before any code changes.
+- **Constraint:** Do not apply changes directly to `main`, `master`, `staging`, `development`, or `pre-develoment`.
+- **Requirement:** Use a dedicated branch: `git checkout -b feature/description` or `git checkout -b fix/issue-name`.
+- **Workflow:** Assess task $\rightarrow$ Check branch $\rightarrow$ Create/Switch branch $\rightarrow$ Implement.

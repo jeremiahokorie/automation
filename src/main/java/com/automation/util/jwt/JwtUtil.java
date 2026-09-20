@@ -64,14 +64,20 @@ public class JwtUtil {
         claims.put("email", userDetails.getEmail());
         claims.put("firstName", userDetails.getFirstName());
         claims.put("lastName", userDetails.getLastName());
-        claims.put("phone",userDetails.getPhoneNumber());
+        claims.put("phone", userDetails.getPhoneNumber());
+
+        if (userDetails.getWard() != null) {
+            claims.put("wardId", userDetails.getWard().getId());
+            claims.put("wardName", userDetails.getWard().getName());
+            if (userDetails.getWard().getLocalGovernment() != null) {
+                claims.put("localGovernmentId", userDetails.getWard().getLocalGovernment().getId());
+                claims.put("localGovernmentName", userDetails.getWard().getLocalGovernment().getName());
+            }
+        }
+
         List<String> roles = userDetails.getRoles().stream()
                 .map(Roles::getValue)
                 .collect(Collectors.toList());
-
-//        List<String> roles = userDetails.getRoles().stream()
-//                .map(role -> "ROLE_" + role.getValue())
-//                .collect(Collectors.toList());
 
         claims.put("roles", roles);
 

@@ -35,4 +35,5 @@ public class CertificateOfOccupancy {
     private String comment;
     private LocalDate approvalDate;
     private LocalDate rejectionDate;
+    private String certificateUrl;
 }

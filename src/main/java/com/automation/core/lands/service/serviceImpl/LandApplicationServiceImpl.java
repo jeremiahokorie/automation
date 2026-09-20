@@ -1,8 +1,13 @@
 package com.automation.core.lands.service.serviceImpl;
 
 
-import com.automation.core.basepa.dto.response.EnvironmentSummaryResponse;
 import com.automation.core.commerce.dto.response.LandApplicationSummaryResponse;
+import com.automation.core.global.model.User;
+import com.automation.core.global.repository.UserRepository;
+import com.automation.core.tracking.enums.ApplicationStatus;
+import com.automation.core.tracking.service.ApplicationTrackingService;
+import com.automation.core.tracking.enums.ActionType;
+
 import com.automation.core.inspection.model.Inspection;
 import com.automation.core.inspection.repository.InspectionRepository;
 import com.automation.core.lands.dto.request.CustomaryAllocationRequest;
@@ -49,6 +54,8 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     private final LocalStorageService localStorageService;
     private final CustomaryAllocationRepository customaryAllocationRepository;
     private final InspectionRepository inspectionRepository;
+    private final UserRepository userRepository;
+    private final ApplicationTrackingService trackingService;
 
     private static final String UPLOAD_DIR_ = "/opt/uploads/customary-allocation/";
     private static final String UPLOAD_DIR = "/opt/uploads/statutory-allocation/";
@@ -163,11 +170,11 @@ public class LandApplicationServiceImpl implements LandApplicationService {
             }
 
             // Ensure the upload directory exists
-            Path uploadDirPath = Path.of(UPLOAD_DIR);
+            Path uploadDirPath = Path.of(UPLOAD_DIR_);
             Files.createDirectories(uploadDirPath);
 
             // Build and save the file path
-            String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String filePath = UPLOAD_DIR_ + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Files.copy(file.getInputStream(), Path.of(filePath));
 
             response.put(key, "Uploaded Successfully");
@@ -183,7 +190,27 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         }
 
         // Save the allocation record
+        customaryAllocationApplication.setStatus(Status.PENDING);
         customaryAllocationRepository.save(customaryAllocationApplication);
+
+        // Register in centralized tracking
+        User user = userRepository.findByEmail(customaryAllocationApplication.getEmail())
+                .orElse(null);
+        if (user != null) {
+            trackingService.registerApplication("LANDS_CUSTOMARY", customaryAllocationApplication.getId(), user);
+        }
+
+
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(UUID.randomUUID());
+        inspection.setSourceService("CUSTOMARY LAND ALLOCATION");
+        inspection.setApplicantName(customaryAllocationApplication.getFirstName() + " " + customaryAllocationApplication.getLastName());
+        inspection.setApplicationType(customaryAllocationApplication.getLandPurpose());
+        inspection.setCustomaryAllocationApplication(customaryAllocationApplication);
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspectionRepository.save(inspection);
+
         return response;
     }
 
@@ -223,11 +250,11 @@ public class LandApplicationServiceImpl implements LandApplicationService {
             }
 
             // Ensure the upload directory exists
-            Path uploadDirPath = Path.of(UPLOAD_DIR_);
+            Path uploadDirPath = Path.of(UPLOAD_DIR);
             Files.createDirectories(uploadDirPath);
 
             // Build and save the file path
-            String filePath = UPLOAD_DIR_ + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
             Files.copy(file.getInputStream(), Path.of(filePath));
 
             response.put(key, "Uploaded Successfully");
@@ -244,6 +271,12 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         }
 
         statutoryApplicationRepository.save(allocationApplication);
+
+        // Register in centralized tracking
+        User user = userRepository.findByEmail(allocationApplication.getEmail()).orElse(null);
+        if (user != null) {
+            trackingService.registerApplication("LANDS_STATUTORY", allocationApplication.getId(), user);
+        }
         return response;
     }
 
@@ -368,7 +401,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         customaryAllocationApplication.setTotalPending((int) customaryAllocationRepository.countByStatus(Status.PENDING));
         customaryAllocationApplication.setTotalReviewed((int) customaryAllocationRepository.countByStatus(Status.REVIEWED));
         customaryAllocationApplication.setTotalAppliedRequest(Math.toIntExact(customaryAllocationRepository.count()));
-        return null;
+        return customaryAllocationApplication;
     }
 
 
@@ -517,6 +550,12 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         entity.setExistingLandLocation(formRequest.getExistingLandLocation());
         entity.setCommunityLeaderTitle(formRequest.getCommunityLeaderTitle());
         entity = customaryAllocationRepository.save(entity);
+
+        // Register in centralized tracking
+        User user = userRepository.findByEmail(entity.getEmail()).orElse(null);
+        if (user != null) {
+            trackingService.registerApplication("LANDS_CUSTOMARY", entity.getId(), user);
+        }
 
         Inspection inspection = new Inspection();
         inspection.setRequestId(UUID.randomUUID());

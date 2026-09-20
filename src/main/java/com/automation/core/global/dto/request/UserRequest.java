@@ -23,8 +23,9 @@ public class UserRequest {
 //  private Long roleId;
     private String street;
     private String city;
-    private String state;
     private String zip;
     private String nin;
+    private String localGovernmentId;
+    private String wardId;
     //private Long roleId;
 }

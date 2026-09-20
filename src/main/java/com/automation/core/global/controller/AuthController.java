@@ -53,15 +53,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {
-        log.info("UserDetailsccc: {}", request.getEmail());
         try{
        // authenticationService.authenticate(request.getEmail(), request.getPassword());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 //      UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-            log.info("UserDetail: {}", request.getEmail());
+        log.info("UserDetail: {}", request.getEmail());
         User userDetails = userService.loadUserByUsername(request.getEmail());
         String token = jwtUtil.generateToken(userDetails);
-
         return ResponseEntity.ok()
                 .body(AppResponse.of(HttpStatus.OK.value(),new AuthResponse(token)));
     } catch (UsernameNotFoundException e) {
@@ -77,7 +75,6 @@ public class AuthController {
                 .body(AppResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Authentication failed"));
     }
     }
-
 
 
     @PostMapping("/refresh-token")
@@ -96,8 +93,4 @@ public class AuthController {
                 "accessToken", newAccessToken
         ));
     }
-
-
-
-
 }

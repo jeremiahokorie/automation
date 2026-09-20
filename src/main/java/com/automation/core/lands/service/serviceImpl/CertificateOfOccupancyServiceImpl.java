@@ -128,6 +128,23 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
         permit.setStatus(Status.APPROVED);
         permit.setComment(commentRequest.getComment());
         permit.setApprovalDate(LocalDate.now());
+
+        try {
+            // Generate CofO PDF
+            byte[] pdfBytes = ReportUtil.generateSingleCofOCertificate(permit);
+
+            // Save PDF to disk
+            String uploadDir = "/opt/uploads/certificates/";
+            Files.createDirectories(Paths.get(uploadDir));
+            String fileName = "CofO_" + permit.getId() + "_" + System.currentTimeMillis() + ".pdf";
+            Path filePath = Paths.get(uploadDir + fileName);
+            Files.write(filePath, pdfBytes);
+
+            permit.setCertificateUrl(filePath.toString());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to issue CofO certificate", e);
+        }
+
         repository.save(permit);
         return ApprovalResponse.builder()
                 .comment(permit.getComment())
@@ -154,5 +171,21 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
 
         // Generate and return report file (PDF, Excel, etc.)
         return ReportUtil.generatePdfReportFromCofO(records, reportType); // Utility method
+    }
+
+    @Override
+    public byte[] downloadCertificate(Long id) {
+        CertificateOfOccupancy permit = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Certificate not found"));
+
+        if (permit.getCertificateUrl() == null) {
+            throw new RuntimeException("Certificate has not been issued yet");
+        }
+
+        try {
+            return Files.readAllBytes(Paths.get(permit.getCertificateUrl()));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read certificate file", e);
+        }
     }
 }

@@ -20,10 +20,15 @@ public interface EnvironmentRepository extends JpaRepository<EnvironmentApplicat
 
     long countByStatus(Status status);
 
+    long countByStatusAndCreatedBy(Status status, User user);
+
+    long countByCreatedBy(User user);
+
     List<EnvironmentApplication> findAllByOrderByCreatedAtDesc();
 
     Page<EnvironmentApplication> findAll(Pageable pageable);
 
     List<EnvironmentApplication> findByCreatedByOrderByCreatedAtDesc(User user);
+
     Page<EnvironmentApplication> findByCreatedBy(User user, Pageable pageable);
 }

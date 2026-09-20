@@ -10,12 +10,18 @@ import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.dto.response.BusinessSummaryResponse;
 import com.automation.core.global.dto.response.AppResponse;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.net.MalformedURLException;
+import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.util.constant.AppConstant;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-//import io.swagger.models.Response;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -75,7 +81,7 @@ public class EnvironmentController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDir) {
+            @RequestParam(defaultValue = "desc") String sortDir) {
         Page<EnvironmentResponse> responses = environmentService.getAllAppliedPermit(page, size, sortBy, sortDir);
         AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
@@ -125,9 +131,11 @@ public class EnvironmentController {
     }
 
     @GetMapping("/paginated/getPermits/{offset}/{pageSize}")
-    @ApiParam(name = "offset", value = "Offset for pagination", example = "0")
-    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>>getPaginatedPermits(@PathVariable int offset, @PathVariable int pageSize){
-        Page<EnvironmentResponse> responses = environmentService.getPaginatedPermits(offset, pageSize);
+    public ResponseEntity<AppResponse<Page<EnvironmentResponse>>> getPaginatedBusinesses(
+            @PathVariable int offset,
+            @PathVariable int pageSize) {
+        int zeroBasedPage = offset > 0 ? offset - 1 : 0;
+        Page<EnvironmentResponse> responses = environmentService.getPaginatedPermits(zeroBasedPage, pageSize);
         AppResponse<Page<EnvironmentResponse>> response = AppResponse.<Page<EnvironmentResponse>>builder()
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value())
@@ -136,4 +144,20 @@ public class EnvironmentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}/permit")
+    @ApiOperation(value = "download environment permit",
+            notes = "This endpoint allows downloading the approved environmental permit")
+    public ResponseEntity<Resource> downloadPermit(@PathVariable Long id) {
+        String permitUrl = environmentService.getPermitUrl(id);
+        Path path = Paths.get(permitUrl);
+        try {
+            Resource resource = new UrlResource(path.toUri());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName().toString() + "\"")
+                    .body(resource);
+        } catch (MalformedURLException e) {
+            throw new ResourceNotFoundException("Permit file not found");
+        }
+    }
 }

@@ -69,11 +69,7 @@ public class WardActivityController {
 
     @Operation(summary = "Update report")
     @PutMapping("/reports/{id}")
-    public ActivityReportResponse updateReport(
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateActivityReportRequest request,
-            Authentication authentication
-    ) {
+    public ActivityReportResponse updateReport(@PathVariable Long id, @Valid @RequestBody UpdateActivityReportRequest request, Authentication authentication) {
         return wardActivityService.updateReport(id, request, authentication.getName());
     }
 

@@ -3,6 +3,7 @@ package com.automation.core.global.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiParam;
 import jakarta.persistence.*;
+import com.automation.core.lga.model.Ward;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -97,6 +98,10 @@ public class User implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Permission> permissions;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ward_id")
+    private Ward ward;
 
 
     public List<? extends GrantedAuthority> getAuthorities() {

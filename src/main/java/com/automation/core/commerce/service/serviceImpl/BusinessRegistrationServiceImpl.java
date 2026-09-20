@@ -17,6 +17,8 @@ import com.automation.core.global.exception.Exception;
 import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
+import com.automation.core.tracking.enums.ApplicationStatus;
+import com.automation.core.tracking.service.ApplicationTrackingService;
 import com.automation.core.inspection.dto.request.InspectionRequest;
 import com.automation.core.inspection.model.Inspection;
 import com.automation.core.inspection.repository.InspectionRepository;
@@ -24,6 +26,8 @@ import com.automation.core.inspection.service.InspectionService.InspectionServic
 import com.automation.core.payment.dto.request.PaymentRequest;
 import com.automation.core.payment.service.PaymentService;
 import com.automation.util.enums.Status;
+import com.automation.util.PermitUtil;
+import com.automation.util.FileStorageUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +55,8 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     private final PaymentService paymentService;
     private final InspectionRepository inspectionRepository;
     private final UserRepository userRepository;
+    private final FileStorageUtil fileStorageUtil;
+    private final ApplicationTrackingService trackingService;
 
     @Override
     public BusinessRegistrationResponse register(BusinessRegistrationRequest businessRegistrationRequest) {
@@ -77,51 +83,54 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .build();
 
         // Call the payment gateway
-        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
-        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-            throw new Exception("Unable to initiate payment");
-        }
+       // ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+//        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+//            throw new Exception("Unable to initiate payment");
+//        }
 
         // Parse the response JSON
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(paymentResponse.getBody());
-            int status = root.path("status").asInt();
-            if (status != 200) {
-                throw new Exception("Payment failed to initialize");
-            }
-            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+        //            ObjectMapper mapper = new ObjectMapper();
+//            JsonNode root = mapper.readTree(paymentResponse.getBody());
+//            int status = root.path("status").asInt();
+//            if (status != 200) {
+//                throw new Exception("Payment failed to initialize");
+//            }
+//            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 
-            if (businessRegistration == null) {
-            businessRegistration = new BusinessRegistration();
-            businessRegistration.setBusinessNumber(businessRegistrationRequest.getBusinessNumber());
-            businessRegistration.setBusinessName(businessRegistrationRequest.getBusinessName());
-            businessRegistration.setEmail(businessRegistrationRequest.getEmail());
-            businessRegistration.setPhone(businessRegistrationRequest.getPhone());
-            businessRegistration.setAddress(businessRegistrationRequest.getAddress());
-            businessRegistration.setStatus(Status.PENDING);
-            businessRegistration.setComment(businessRegistrationRequest.getComment());
-            businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
-            businessRegistration.setDateRegistered(LocalDate.now());
-            businessRegistration.setAuthorizationUrl(authorizationUrl);
-            businessRegistration.setIsPayed(false);
-            businessRegistration.setCreatedBy(getCurrentUser());
-                // businessRegistration.setBusinessType(businessType);
-             businessRepository.save(businessRegistration);
+        if (businessRegistration == null) {
+        businessRegistration = new BusinessRegistration();
+        businessRegistration.setBusinessNumber(businessRegistrationRequest.getBusinessNumber());
+        businessRegistration.setBusinessName(businessRegistrationRequest.getBusinessName());
+        businessRegistration.setEmail(businessRegistrationRequest.getEmail());
+        businessRegistration.setPhone(businessRegistrationRequest.getPhone());
+        businessRegistration.setAddress(businessRegistrationRequest.getAddress());
+        businessRegistration.setStatus(Status.PENDING);
+        businessRegistration.setComment(businessRegistrationRequest.getComment());
+        businessRegistration.setOwnerName(businessRegistrationRequest.getOwnerName());
+        businessRegistration.setDateRegistered(LocalDate.now());
+      //  businessRegistration.setAuthorizationUrl(authorizationUrl);
+        businessRegistration.setIsPayed(false);
+        businessRegistration.setCreatedBy(getCurrentUser());
+            // businessRegistration.setBusinessType(businessType);
+         businessRepository.save(businessRegistration);
 
-                Inspection inspection = new Inspection();
-                inspection.setRequestId(UUID.randomUUID());
-                inspection.setSourceService("BUSINESS REGISTRATION");
-                inspection.setApplicantName(businessRegistrationRequest.getOwnerName());
-                inspection.setApplicationType(businessRegistrationRequest.getBusinessName());
-                inspection.setBusinessRegistration(businessRegistration);
-                inspection.setStatus(Status.PENDING);
-                inspection.setCreatedAt(LocalDateTime.now());
-                inspectionRepository.save(inspection);
+         // Register in centralized tracking
+         trackingService.registerApplication("COMMERCE_BUSINESS", businessRegistration.getId(), businessRegistration.getCreatedBy());
 
-        }else {
-            throw new Exception("Business already exists");
-        }
+
+            Inspection inspection = new Inspection();
+            inspection.setRequestId(UUID.randomUUID());
+            inspection.setSourceService("BUSINESS REGISTRATION");
+            inspection.setApplicantName(businessRegistrationRequest.getOwnerName());
+            inspection.setApplicationType(businessRegistrationRequest.getBusinessName());
+            inspection.setBusinessRegistration(businessRegistration);
+            inspection.setStatus(Status.PENDING);
+            inspection.setCreatedAt(LocalDateTime.now());
+            inspectionRepository.save(inspection);
+
+    }else {
+        throw new Exception("Business already exists");
+    }
 
         return BusinessRegistrationResponse.builder()
                 .id(businessRegistration.getId())
@@ -135,13 +144,10 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .address(businessRegistrationRequest.getAddress())
                 .email(businessRegistrationRequest.getEmail())
                 .authorizationUrl(businessRegistration.getAuthorizationUrl())
-                .authorizationUrl(authorizationUrl)
+              //  .authorizationUrl(authorizationUrl)
                 .isRenewal(true)
                 .isPayed(false)
                 .build();
-        } catch (IOException e) {
-            throw new Exception("Payment gateway response parsing error");
-        }
     }
 
     @Override
@@ -221,6 +227,15 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         registration.setStatus(Status.PENDING);
         businessRepository.save(registration);
 
+        // Update in centralized tracking
+        trackingService.updateStatus(
+            "COMMERCE_BUSINESS_" + registration.getId(),
+            ApplicationStatus.PENDING,
+            "RENEWAL_SUBMITTED",
+            "System",
+            "Business renewal application submitted"
+        );
+
             Inspection inspection = new Inspection();
             inspection.setRequestId(UUID.randomUUID());
             inspection.setSourceService("RENEW BUSINESS REGISTRATION");
@@ -252,6 +267,26 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         registration.setStatus(Status.APPROVED);
         registration.setComment(comment.getComment());
         registration.setRenewalDate(LocalDate.now());
+
+        // Update in centralized tracking
+        trackingService.updateStatus(
+            "COMMERCE_BUSINESS_" + registration.getId(),
+            ApplicationStatus.APPROVED,
+            "FINAL_APPROVAL",
+            "Officer",
+            comment.getComment()
+        );
+
+        try {
+            byte[] permitPdf = PermitUtil.generateBusinessPremisesPermit(registration);
+            String filename = "permit_" + registration.getBusinessNumber() + "_" + System.currentTimeMillis() + ".pdf";
+            String permitUrl = fileStorageUtil.store(permitPdf, filename);
+            registration.setPermitUrl(permitUrl);
+            registration.setPermitGeneratedDate(LocalDateTime.now());
+        } catch (IOException e) {
+            throw new Exception("Failed to generate and store business permit");
+        }
+
         businessRepository.save(registration);
         return ApprovalandRejectResponse.builder()
                 .id(registration.getId())
@@ -270,6 +305,15 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         registration.setStatus(Status.REJECTED);
         registration.setComment(request.getComment());
 
+        // Update in centralized tracking
+        trackingService.updateStatus(
+            "COMMERCE_BUSINESS_" + registration.getId(),
+            ApplicationStatus.REJECTED,
+            "REJECTION",
+            "Officer",
+            request.getComment()
+        );
+
         businessRepository.save(registration);
 
         return ApprovalandRejectResponse.builder()
@@ -280,12 +324,16 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
 
     @Override
     public BusinessSummaryResponse getBusinessSummary() {
+        User user = getCurrentUser();
         BusinessSummaryResponse businessRegistrationResponse = new BusinessSummaryResponse();
-        businessRegistrationResponse.setTotalApproved((int) businessRepository.countByStatus(Status.APPROVED));
-        businessRegistrationResponse.setTotalRejected((int) businessRepository.countByStatus(Status.REJECTED));
-        businessRegistrationResponse.setTotalPending((int) businessRepository.countByStatus(Status.PENDING));
-        businessRegistrationResponse.setTotalReviewed((int) businessRepository.countByStatus(Status.REVIEWED));
-        businessRegistrationResponse.setTotalRegisteredBusiness(Math.toIntExact(businessRepository.count()));
+        businessRegistrationResponse.setTotalApproved((int) businessRepository.countByStatusAndCreatedBy(Status.APPROVED, user));
+        businessRegistrationResponse.setTotalRejected((int) businessRepository.countByStatusAndCreatedBy(Status.REJECTED, user));
+        businessRegistrationResponse.setTotalPending((int) businessRepository.countByStatusAndCreatedBy(Status.PENDING, user));
+        businessRegistrationResponse.setTotalReviewed((int) businessRepository.countByStatusAndCreatedBy(Status.REVIEWED, user));
+
+        long totalRegistered = businessRepository.findByCreatedByOrderByCreatedAtDesc(user).size();
+        businessRegistrationResponse.setTotalRegisteredBusiness(Math.toIntExact(totalRegistered));
+
         return businessRegistrationResponse;
     }
 
@@ -308,7 +356,6 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     @Override
     public Page<BusinessRegistrationResponse> getPaginatedBusinesses(int offset, int pageSize) {
         PageRequest pageRequest = PageRequest.of(offset > 0 ? offset - 1 : 0, pageSize, Sort.by(Sort.Direction.DESC, "id"));
-
         if (isAdminOrSuperAdmin()) {
             return businessRepository.findAll(pageRequest).map(this::toResponse);
         }
@@ -345,6 +392,15 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    @Override
+    public String getPermitUrl(String businessNumber) {
+        BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
+        if (registration == null || registration.getPermitUrl() == null) {
+            throw new ResourceNotFoundException("Permit not found for the given business number");
+        }
+        return registration.getPermitUrl();
     }
 }
 

@@ -103,15 +103,19 @@ public class WebSecurityConfig{
                                         "/swagger-ui/**",
                                         "/api/auth/register",
                                         "/auth/login",
-                                        "/business/**",
+                                        "/api/business/**",
                                         "/environment/**",
+                                        "/api/environment/**",
                                         "/api/certificates/occupancy/**",
                                         "/auth/access/**",
                                         "/auth/**",
+                                        "/reports/**",
                                         "/inspection/**",
                                         "/wards/**",
-                                        "/local-governments/**"
-
+                                        "/api/reporting/**",
+                                        "/local-governments/**",
+                                        "/revenue/**",
+                                        "/tracking/**"
 
                                         //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com
                                 ).permitAll()
@@ -156,8 +160,8 @@ public class WebSecurityConfig{
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8081","http://localhost:5173"));
-        configuration.setAllowedOrigins(List.of("https://bauchi-mda.netlify.app", "http://localhost:9001", "http://localhost:8081","http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8081","http://localhost:5173","http://localhost:5174"));
+        configuration.setAllowedOrigins(List.of("https://bauchi-mda.netlify.app", "http://localhost:9001", "http://localhost:8081","http://localhost:5173","http://localhost:5174"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

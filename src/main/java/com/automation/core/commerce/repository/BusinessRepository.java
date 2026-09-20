@@ -16,9 +16,12 @@ public interface BusinessRepository extends JpaRepository<BusinessRegistration, 
     BusinessRegistration findBybusinessNumber(String businessNumber);
 
     long countByStatus(Status status);
+    long countByStatusAndCreatedBy(Status status, User user);
     List<BusinessRegistration> findAllByOrderByCreatedAtDesc();
     Page<BusinessRegistration> findAll(Pageable pageable);
+
     List<BusinessRegistration> findByCreatedByOrderByCreatedAtDesc(User user);
+
     Page<BusinessRegistration> findByCreatedBy(User user, Pageable pageable);
 
 }

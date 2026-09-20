@@ -21,4 +21,6 @@ public interface CertificateOfOccupancyService {
     ApprovalResponse approveCofO(Long id, ApprovalRequest commentRequest);
 
     ApprovalResponse rejectCofO(Long id, ApprovalRequest commentRequest);
+
+    byte[] downloadCertificate(Long id);
 }

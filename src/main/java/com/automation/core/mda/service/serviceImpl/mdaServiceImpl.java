@@ -97,11 +97,11 @@ public class mdaServiceImpl implements mdaService {
     }
 
     public String deleteMda(Long id) {
-        Optional<mdaModel> mdaOptional = mdarepository.findById(Math.toIntExact(id));
+        Optional<mdaModel> mdaOptional = mdarepository.findById(id);
         if (mdaOptional.isPresent()) {
             mdaModel mda = mdaOptional.get();
             serviceRepository.deleteByMdaId(id);
-            mdarepository.deleteById(Math.toIntExact(id));
+            mdarepository.deleteById(id);
 
             return "MDA with ID " + id + " and its associated services deleted successfully";
         } else {

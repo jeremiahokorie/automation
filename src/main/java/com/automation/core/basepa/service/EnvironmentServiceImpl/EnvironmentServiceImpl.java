@@ -8,10 +8,15 @@ import com.automation.core.basepa.dto.response.EnvironmentResponse;
 import com.automation.core.basepa.dto.response.EnvironmentSummaryResponse;
 import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.basepa.repository.EnvironmentRepository;
+import com.automation.core.tracking.enums.ApplicationStatus;
+import com.automation.core.tracking.service.ApplicationTrackingService;
+import com.automation.util.PermitUtil;
+import com.automation.util.FileStorageUtil;
 import com.automation.core.basepa.service.EnvironmentService.EnvironmentService;
 import com.automation.core.commerce.dto.request.ApprovalandRejectRequest;
 import com.automation.core.commerce.dto.request.BusinessRenewalRequest;
 import com.automation.core.commerce.dto.response.ApprovalandRejectResponse;
+import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
 import com.automation.core.commerce.dto.response.BusinessSummaryResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
@@ -39,6 +44,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -58,39 +64,40 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     private final PaymentService paymentService;
     private final InspectionRepository inspectionRepository;
     private final UserRepository userRepository;
+    private final FileStorageUtil fileStorageUtil;
+    private final ApplicationTrackingService trackingService;
 
     @Override
     public EnvironmentResponse apply(EnvironmentRequest environmentRequest) {
         EnvironmentApplication appyPermit = environmentRepository.findByemail(environmentRequest.getEmail());
 
         // Step 2: Build payment request
-        PaymentRequest paymentRequest = PaymentRequest.builder()
-                .amount(15000)
-                .bearer(1)
-                .callbackUrl("https://bauchi-mda.netlify.app/")
-                .channels(List.of("card", "bank"))
-                .customerFirstName(environmentRequest.getApplicantName())
-                .customerLastName(environmentRequest.getApplicantName())
-                .customerPhoneNumber(environmentRequest.getPhone())
-                .email(environmentRequest.getEmail())
-                .build();
+//        PaymentRequest paymentRequest = PaymentRequest.builder()
+//                .amount(15000)
+//                .bearer(1)
+//                .callbackUrl("https://bauchi-mda.netlify.app/")
+//                .channels(List.of("card", "bank"))
+//                .customerFirstName(environmentRequest.getApplicantName())
+//                .customerLastName(environmentRequest.getApplicantName())
+//                .customerPhoneNumber(environmentRequest.getPhone())
+//                .email(environmentRequest.getEmail())
+//                .build();
 
         // Step 3: Call the payment gateway
-        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
-        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-            throw new Exception("Unable to initiate payment");
-        }
+//        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
+//        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
+//            throw new Exception("Unable to initiate payment");
+//        }
 
         // Step 4: Parse the response JSON
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(paymentResponse.getBody());
-            int status = root.path("status").asInt();
-            if (status != 200) {
-                throw new Exception("Payment failed to initialize");
-            }
-            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
-            log.info("Authorization URL: {}", authorizationUrl);
+        //            ObjectMapper mapper = new ObjectMapper();
+//            JsonNode root = mapper.readTree(paymentResponse.getBody());
+//            int status = root.path("status").asInt();
+//            if (status != 200) {
+//                throw new Exception("Payment failed to initialize");
+//            }
+//            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+//            log.info("Authorization URL: {}", authorizationUrl);
 
         if (appyPermit == null) {
             appyPermit = new EnvironmentApplication();
@@ -105,7 +112,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setPermitType(environmentRequest.getPermitType());
             appyPermit.setWasteDescription(environmentRequest.getWasteDescription());
             appyPermit.setPhone(environmentRequest.getPhone());
-            appyPermit.setAuthorizationUrl(authorizationUrl);
+//            appyPermit.setAuthorizationUrl(authorizationUrl);
             appyPermit.setIndustryType(environmentRequest.getIndustryType());
             appyPermit.setWasteQuantity(environmentRequest.getWasteQuantity());
             appyPermit.setOperationalLicenseNumber(environmentRequest.getOperationalLicenseNumber());
@@ -117,6 +124,10 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             appyPermit.setWasteSource(SourceOfWaste.HOUSEHOLD);
             appyPermit.setCreatedBy(getCurrentUser());
             environmentRepository.save(appyPermit);
+
+            // Register in centralized tracking
+            trackingService.registerApplication("BASEPA_ENV", appyPermit.getId(), appyPermit.getCreatedBy());
+
 
             Inspection inspection = new Inspection();
             inspection.setRequestId(UUID.randomUUID());
@@ -152,17 +163,19 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .operationalLicenseNumber(environmentRequest.getOperationalLicenseNumber())
                 .contactPerson(environmentRequest.getContactPerson())
                 .facilityAddress(environmentRequest.getFacilityAddress())
-                .authorizationUrl(authorizationUrl)
+//                .authorizationUrl(authorizationUrl)
                 .hasEnvironmentalAudit(environmentRequest.getHasEnvironmentalAudit())
                 .build();
-        } catch (IOException e) {
-            throw new Exception("Payment gateway response parsing error");
-        }
     }
 
     @Override
     public List<EnvironmentResponse> getAll() {
-        List<EnvironmentApplication> appyPermit = environmentRepository.findByCreatedByOrderByCreatedAtDesc(getCurrentUser());
+        List<EnvironmentApplication> appyPermit;
+        if (isAdmin()) {
+            appyPermit = environmentRepository.findAllByOrderByCreatedAtDesc();
+        } else {
+            appyPermit = environmentRepository.findByCreatedByOrderByCreatedAtDesc(getCurrentUser());
+        }
         return appyPermit.stream().map(permit -> EnvironmentResponse.builder()
                 .id(permit.getId())
                 .phone(permit.getPhone())
@@ -175,7 +188,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .applicantName(permit.getApplicantName())
                 .contactPerson(permit.getContactPerson())
                 .address(permit.getAddress())
-                .authorizationUrl(permit.getAuthorizationUrl())
+//                .authorizationUrl(permit.getAuthorizationUrl())
                 .permitType(permit.getPermitType())
                 .wasteQuantity(permit.getWasteQuantity())
                 .disposalFrequency(permit.getDisposalFrequency())
@@ -195,6 +208,26 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         permit.setStatus(Status.APPROVED);
         permit.setComment(commentRequest.getComment());
         permit.setApprovalDate(LocalDate.now());
+
+        // Update in centralized tracking
+        trackingService.updateStatus(
+            "BASEPA_ENV_" + permit.getId(),
+            ApplicationStatus.APPROVED,
+            "FINAL_APPROVAL",
+            "Officer",
+            commentRequest.getComment()
+        );
+
+        try {
+            byte[] permitPdf = PermitUtil.generateEnvironmentPermit(permit);
+            String filename = "env_permit_" + permit.getId() + "_" + System.currentTimeMillis() + ".pdf";
+            String permitUrl = fileStorageUtil.store(permitPdf, filename);
+            permit.setPermitUrl(permitUrl);
+            permit.setPermitGeneratedDate(LocalDateTime.now());
+        } catch (IOException e) {
+            throw new Exception("Failed to generate and store environmental permit");
+        }
+
         environmentRepository.save(permit);
         return ApprovalResponse.builder()
                 .comment(permit.getComment())
@@ -210,6 +243,15 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         rejectPermit.setStatus(Status.REJECTED);
         rejectPermit.setComment(commentRequest.getComment());
         rejectPermit.setRejectionDate(LocalDate.now());
+
+        // Update in centralized tracking
+        trackingService.updateStatus(
+            "BASEPA_ENV_" + rejectPermit.getId(),
+            ApplicationStatus.REJECTED,
+            "REJECTION",
+            "Officer",
+            commentRequest.getComment()
+        );
         environmentRepository.save(rejectPermit);
 
         return ApprovalResponse.builder()
@@ -255,7 +297,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 throw new Exception("Payment failed to initialize");
             }
 
-            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
+//            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 
         environmentRepository.save(renew);
 
@@ -279,7 +321,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .industryType(renew.getIndustryType())
                 .facilityName(renew.getFacilityName())
                 .phone(renew.getPhone())
-                .authorizationUrl(authorizationUrl)
+//                .authorizationUrl(authorizationUrl)
                 .permitType(renew.getPermitType())
                 .operationalLicenseNumber(renew.getOperationalLicenseNumber()).build();
         } catch (IOException e) {
@@ -291,11 +333,22 @@ public class EnvironmentServiceImpl implements EnvironmentService {
     @Override
     public EnvironmentSummaryResponse getEnvironmentSummary() {
         EnvironmentSummaryResponse environment = new EnvironmentSummaryResponse();
-        environment.setTotalApproved((int) environmentRepository.countByStatus(Status.APPROVED));
-        environment.setTotalRejected((int) environmentRepository.countByStatus(Status.REJECTED));
-        environment.setTotalPending((int) environmentRepository.countByStatus(Status.PENDING));
-        environment.setTotalReviewed((int) environmentRepository.countByStatus(Status.REVIEWED));
-        environment.setTotalRegisteredEnvironment(Math.toIntExact(environmentRepository.count()));
+        User user = getCurrentUser();
+        boolean isAdminUser = isAdmin();
+
+        if (isAdminUser) {
+            environment.setTotalApproved((int) environmentRepository.countByStatus(Status.APPROVED));
+            environment.setTotalRejected((int) environmentRepository.countByStatus(Status.REJECTED));
+            environment.setTotalPending((int) environmentRepository.countByStatus(Status.PENDING));
+            environment.setTotalReviewed((int) environmentRepository.countByStatus(Status.REVIEWED));
+            environment.setTotalRegisteredEnvironment(Math.toIntExact(environmentRepository.count()));
+        } else {
+            environment.setTotalApproved((int) environmentRepository.countByStatusAndCreatedBy(Status.APPROVED, user));
+            environment.setTotalRejected((int) environmentRepository.countByStatusAndCreatedBy(Status.REJECTED, user));
+            environment.setTotalPending((int) environmentRepository.countByStatusAndCreatedBy(Status.PENDING, user));
+            environment.setTotalReviewed((int) environmentRepository.countByStatusAndCreatedBy(Status.REVIEWED, user));
+            environment.setTotalRegisteredEnvironment(Math.toIntExact(environmentRepository.countByCreatedBy(user)));
+        }
         return environment;
     }
 
@@ -305,8 +358,13 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         PageRequest pageRequest = PageRequest.of(page, size, sort);
-        return environmentRepository.findAll(pageRequest)
-                .map(permit -> EnvironmentResponse.builder()
+        Page<EnvironmentApplication> permitsPage;
+        if (isAdmin()) {
+            permitsPage = environmentRepository.findAll(pageRequest);
+        } else {
+            permitsPage = environmentRepository.findByCreatedBy(getCurrentUser(), pageRequest);
+        }
+        return permitsPage.map(permit -> EnvironmentResponse.builder()
                         .id(permit.getId())
                         .phone(permit.getPhone())
                         .applicationDate(permit.getApplicationDate())
@@ -318,7 +376,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                         .applicantName(permit.getApplicantName())
                         .contactPerson(permit.getContactPerson())
                         .address(permit.getAddress())
-                        .authorizationUrl(permit.getAuthorizationUrl())
+//                        .authorizationUrl(permit.getAuthorizationUrl())
                         .permitType(permit.getPermitType())
                         .wasteQuantity(permit.getWasteQuantity())
                         .disposalFrequency(permit.getDisposalFrequency())
@@ -331,36 +389,98 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
     @Override
     public Page<EnvironmentResponse> getPaginatedPermits(int offset, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(offset, pageSize);
-        return environmentRepository.findAll(pageRequest)
-                .map(permit -> EnvironmentResponse.builder()
-                        .id(permit.getId())
-                        .phone(permit.getPhone())
-                        .applicationDate(permit.getApplicationDate())
-                        .status(permit.getStatus())
-                        .facilityName(permit.getFacilityName())
-                        .disposalLocation(permit.getDisposalLocation())
-                        .facilityAddress(permit.getFacilityAddress())
-                        .industryType(permit.getIndustryType())
-                        .applicantName(permit.getApplicantName())
-                        .contactPerson(permit.getContactPerson())
-                        .address(permit.getAddress())
-                        .authorizationUrl(permit.getAuthorizationUrl())
-                        .permitType(permit.getPermitType())
-                        .wasteQuantity(permit.getWasteQuantity())
-                        .disposalFrequency(permit.getDisposalFrequency())
-                        .disposalMethod(permit.getDisposalMethod())
-                        .disposalLocation(permit.getDisposalLocation())
-                        .hasEnvironmentalAudit(permit.getHasEnvironmentalAudit())
-                        .operationalLicenseNumber(permit.getOperationalLicenseNumber())
-                        .email(permit.getEmail()).build());
-
+        PageRequest pageRequest = PageRequest.of(offset > 0 ? offset - 1 : 0, pageSize, Sort.by(Sort.Direction.DESC, "id"));
+        if (isAdminOrSuperAdmin()) {
+            return environmentRepository.findAll(pageRequest).map(this::toResponse);
+        }
+        return environmentRepository.findByCreatedBy(getCurrentUser(), pageRequest)
+                .map(this::toResponse);
     }
+
+    private EnvironmentResponse toResponse(EnvironmentApplication permit) {
+        return EnvironmentResponse.builder()
+                .id(permit.getId())
+                .phone(permit.getPhone())
+                .applicationDate(permit.getApplicationDate())
+                .status(permit.getStatus())
+                .facilityName(permit.getFacilityName())
+                .disposalLocation(permit.getDisposalLocation())
+                .facilityAddress(permit.getFacilityAddress())
+                .industryType(permit.getIndustryType())
+                .applicantName(permit.getApplicantName())
+                .contactPerson(permit.getContactPerson())
+                .address(permit.getAddress())
+//                .authorizationUrl(permit.getAuthorizationUrl())
+                .permitType(permit.getPermitType())
+                .wasteQuantity(permit.getWasteQuantity())
+                .disposalFrequency(permit.getDisposalFrequency())
+                .disposalMethod(permit.getDisposalMethod())
+                .disposalLocation(permit.getDisposalLocation())
+                .hasEnvironmentalAudit(permit.getHasEnvironmentalAudit())
+                .operationalLicenseNumber(permit.getOperationalLicenseNumber())
+                .email(permit.getEmail()).build();
+    }
+
+//    @Override
+//    public Page<EnvironmentResponse> getPaginatedPermits(int offset, int pageSize) {
+//        PageRequest pageRequest = PageRequest.of(offset, pageSize);
+//        Page<EnvironmentApplication> permitsPage;
+//        if (isAdmin()) {
+//            permitsPage = environmentRepository.findAll(pageRequest);
+//        } else {
+//            permitsPage = environmentRepository.findByCreatedBy(getCurrentUser(), pageRequest);
+//        }
+//        return permitsPage.map(permit -> EnvironmentResponse.builder()
+//                        .id(permit.getId())
+//                        .phone(permit.getPhone())
+//                        .applicationDate(permit.getApplicationDate())
+//                        .status(permit.getStatus())
+//                        .facilityName(permit.getFacilityName())
+//                        .disposalLocation(permit.getDisposalLocation())
+//                        .facilityAddress(permit.getFacilityAddress())
+//                        .industryType(permit.getIndustryType())
+//                        .applicantName(permit.getApplicantName())
+//                        .contactPerson(permit.getContactPerson())
+//                        .address(permit.getAddress())
+//                        .authorizationUrl(permit.getAuthorizationUrl())
+//                        .permitType(permit.getPermitType())
+//                        .wasteQuantity(permit.getWasteQuantity())
+//                        .disposalFrequency(permit.getDisposalFrequency())
+//                        .disposalMethod(permit.getDisposalMethod())
+//                        .disposalLocation(permit.getDisposalLocation())
+//                        .hasEnvironmentalAudit(permit.getHasEnvironmentalAudit())
+//                        .operationalLicenseNumber(permit.getOperationalLicenseNumber())
+//                        .email(permit.getEmail()).build());
+//
+//    }
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext()
                 .getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private boolean isAdmin() {
+        User user = getCurrentUser();
+        if (user.getRoles() == null) return false;
+        return user.getRoles().stream()
+                .anyMatch(role -> "ADMIN".equalsIgnoreCase(role.getValue()) || "SUPERADMIN".equalsIgnoreCase(role.getValue()));
+    }
+
+    private boolean isAdminOrSuperAdmin() {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(authority -> authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERADMIN"));
+    }
+
+    @Override
+    public String getPermitUrl(Long id) {
+        EnvironmentApplication permit = environmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Permit not found for the given ID"));
+        if (permit.getPermitUrl() == null) {
+            throw new ResourceNotFoundException("Permit has not been generated yet");
+        }
+        return permit.getPermitUrl();
     }
 }

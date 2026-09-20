@@ -8,4 +8,6 @@ import java.util.List;
 public interface AbiaStateIdentificationService {
     AbiaStateIdentificationResponse apply(AbiaStateIdentificationRequest request);
     List<AbiaStateIdentificationResponse> getMyApplications();
+
+    AbiaStateIdentificationResponse verifyByAbiaIdNumber(String abiaIdNumber);
 }

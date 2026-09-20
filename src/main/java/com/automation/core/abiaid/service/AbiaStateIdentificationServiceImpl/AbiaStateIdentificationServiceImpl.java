@@ -6,6 +6,7 @@ import com.automation.core.abiaid.model.AbiaStateIdentification;
 import com.automation.core.abiaid.repository.AbiaStateIdentificationRepository;
 import com.automation.core.abiaid.service.AbiaStateIdentificationService.AbiaStateIdentificationService;
 import com.automation.core.global.exception.ResourceNotFoundException;
+import com.automation.core.tracking.service.ApplicationTrackingService;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.lga.model.LocalGovernment;
@@ -31,6 +32,7 @@ public class AbiaStateIdentificationServiceImpl implements AbiaStateIdentificati
     private final UserRepository userRepository;
     private final LocalGovernmentService localGovernmentService;
     private final WardService wardService;
+    private final ApplicationTrackingService trackingService;
 
     @Override
     public AbiaStateIdentificationResponse apply(AbiaStateIdentificationRequest request) {
@@ -60,6 +62,10 @@ public class AbiaStateIdentificationServiceImpl implements AbiaStateIdentificati
                 .build();
 
         AbiaStateIdentification saved = repository.save(record);
+
+        // Register in centralized tracking
+        trackingService.registerApplication("ABIA_ID", saved.getId(), currentUser);
+
         return toResponse(saved);
     }
 
@@ -69,6 +75,18 @@ public class AbiaStateIdentificationServiceImpl implements AbiaStateIdentificati
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public AbiaStateIdentificationResponse verifyByAbiaIdNumber(String abiaIdNumber) {
+        AbiaStateIdentification record = repository.findByAbiaIdNumber(abiaIdNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Identification number not found"));
+
+        if (record.getStatus() != Status.APPROVED) {
+            throw new ResourceNotFoundException("Identification number is not approved");
+        }
+
+        return toResponse(record);
     }
 
     private AbiaStateIdentificationResponse toResponse(AbiaStateIdentification entity) {
