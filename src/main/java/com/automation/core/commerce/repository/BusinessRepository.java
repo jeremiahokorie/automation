@@ -24,4 +24,8 @@ public interface BusinessRepository extends JpaRepository<BusinessRegistration, 
 
     Page<BusinessRegistration> findByCreatedBy(User user, Pageable pageable);
 
+    List<BusinessRegistration> findByStatusAndCreatedAtBetween(Status status, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    List<BusinessRegistration> findByCreatedByAndStatusAndCreatedAtBetween(User user, Status status, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    List<BusinessRegistration> findByCreatedAtBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
+    List<BusinessRegistration> findByCreatedByAndCreatedAtBetween(User user, java.time.LocalDateTime start, java.time.LocalDateTime end);
 }

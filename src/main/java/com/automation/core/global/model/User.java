@@ -51,7 +51,11 @@ public class User implements Serializable {
     private String city;
     private String state;
     private String zip;
+    @Column(name = "nin")
     private String nin;
+    @Column(name = "absin")
+    private String absin;
+
 
     @Column(name = "status")
     private String status;
@@ -91,10 +95,10 @@ public class User implements Serializable {
     private Integer size = 25;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Roles> roles;
+    private List<Role> roles;
 
     @ManyToOne
-    private Roles role;
+    private Role role;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Permission> permissions;

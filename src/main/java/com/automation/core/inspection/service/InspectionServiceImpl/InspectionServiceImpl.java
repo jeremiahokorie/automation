@@ -5,7 +5,7 @@ import com.automation.core.basepa.repository.EnvironmentRepository;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.commerce.repository.BusinessRepository;
-import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.GlobalException;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.inspection.dto.request.InspectionRequest;
@@ -35,13 +35,15 @@ public class InspectionServiceImpl implements InspectionService {
     private final UserRepository userRepository;
     private final BusinessRepository businessRepository;
     private final EnvironmentRepository environmentRepository;
+    private final com.automation.core.tracking.service.ApplicationTrackingService trackingService;
+
 
 
     @Override
     @Transactional
     public InspectionResponse updateInspectionStatus(Long id, StatusUpdateDto dto) {
         Inspection inspection = inspectionRepository.findById(id)
-                .orElseThrow(() -> new Exception("Inspection not found"));
+                .orElseThrow(() -> new GlobalException("Inspection not found"));
 
         Status newStatus = Status.valueOf(dto.getNewStatus());
         inspection.setStatus(newStatus);
@@ -53,12 +55,18 @@ public class InspectionServiceImpl implements InspectionService {
             BusinessRegistration business = inspection.getBusinessRegistration();
             business.setStatus(newStatus);
             businessRepository.save(business);
+
+            // Sync with Tracking
+            syncTrackingStatus(business.getId(), newStatus, "INSPECTION_COMPLETED", dto.getUpdatedBy(), dto.getNotes());
         }
 
         if (inspection.getEnvironment() != null) {
             EnvironmentApplication environment = inspection.getEnvironment();
             environment.setStatus(newStatus);
             environmentRepository.save(environment);
+
+            // Sync with Tracking
+            syncTrackingStatus(environment.getId(), newStatus, "INSPECTION_COMPLETED", dto.getUpdatedBy(), dto.getNotes());
         }
 
         inspectionRepository.save(inspection);
@@ -66,10 +74,29 @@ public class InspectionServiceImpl implements InspectionService {
         return InspectionResponse.builder().id(inspection.getId()).build();
     }
 
+    private void syncTrackingStatus(Long applicationId, Status inspectionStatus, String stage, String officer, String comment) {
+        try {
+            com.automation.core.tracking.enums.ApplicationStatus trackingStatus = mapInspectionStatusToTrackingStatus(inspectionStatus);
+            trackingService.updateStatusByApplicationId(applicationId, trackingStatus, stage, officer, comment);
+        } catch (Exception e) {
+            // Log error but don't fail the inspection update
+            java.util.logging.Logger.getLogger(InspectionServiceImpl.class.getName()).severe("Failed to sync tracking status: " + e.getMessage());
+        }
+    }
+
+    private com.automation.core.tracking.enums.ApplicationStatus mapInspectionStatusToTrackingStatus(Status status) {
+        return switch (status) {
+            case APPROVED -> com.automation.core.tracking.enums.ApplicationStatus.APPROVED;
+            case REJECTED -> com.automation.core.tracking.enums.ApplicationStatus.REJECTED;
+            case PENDING -> com.automation.core.tracking.enums.ApplicationStatus.PENDING;
+            default -> com.automation.core.tracking.enums.ApplicationStatus.PENDING;
+        };
+    }
+
 //    @Override
 //    public InspectionResponse updateInspectionStatus(Long id, StatusUpdateDto dto) {
 //        Inspection inspection = inspectionRepository.findById(id)
-//                .orElseThrow(() -> new Exception("Inspection not found"));
+//                .orElseThrow(() -> new GlobalException("Inspection not found"));
 //        inspection.setStatus(Status.valueOf(dto.getNewStatus()));
 //        inspection.setNotes(dto.getNotes());
 //        inspection.setAssignedTo(dto.getUpdatedBy());

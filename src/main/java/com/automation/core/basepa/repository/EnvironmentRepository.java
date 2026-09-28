@@ -31,4 +31,9 @@ public interface EnvironmentRepository extends JpaRepository<EnvironmentApplicat
     List<EnvironmentApplication> findByCreatedByOrderByCreatedAtDesc(User user);
 
     Page<EnvironmentApplication> findByCreatedBy(User user, Pageable pageable);
+
+    List<EnvironmentApplication> findByStatusAndCreatedAtBetween(Status status, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    List<EnvironmentApplication> findByCreatedByAndStatusAndCreatedAtBetween(User user, Status status, java.time.LocalDateTime start, java.time.LocalDateTime end);
+    List<EnvironmentApplication> findByCreatedAtBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
+    List<EnvironmentApplication> findByCreatedByAndCreatedAtBetween(User user, java.time.LocalDateTime start, java.time.LocalDateTime end);
 }

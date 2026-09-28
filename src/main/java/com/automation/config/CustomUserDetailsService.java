@@ -1,7 +1,7 @@
 package com.automation.config;
 
 
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

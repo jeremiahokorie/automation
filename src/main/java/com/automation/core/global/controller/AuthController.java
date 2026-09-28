@@ -1,12 +1,15 @@
 package com.automation.core.global.controller;
 
+import com.automation.core.global.dto.request.AbsinAuthRequest;
 import com.automation.core.global.dto.request.AuthRequest;
+
 import com.automation.core.global.dto.request.ChangePasswordRequest;
 import com.automation.core.global.dto.request.ResetPasswordRequest;
 import com.automation.core.global.dto.request.UserRequest;
 import com.automation.core.global.dto.response.AppResponse;
 import com.automation.core.global.dto.response.AuthResponse;
 import com.automation.core.global.dto.response.UserResponse;
+import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.User;
 import com.automation.core.global.service.ServiceImpl.AuthenticationService;
 import com.automation.core.global.service.UserService.RolesService;
@@ -40,16 +43,34 @@ public class AuthController {
 
     private final UserService userService;
     private final RolesService roleService;
+    private final AuthenticationService authenticationService;
 
     @Autowired
+
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired private AuthenticationManager authManager;
-    private AuthenticationService authenticationService;
 
+
+
+    @PostMapping("/login-absin")
+    public ResponseEntity<AppResponse<AuthResponse>> loginAbsin(@RequestBody AbsinAuthRequest request) {
+        try {
+            User user = userService.findByAbsin(request.getAbsin());
+            String token = jwtUtil.generateToken(user);
+            return ResponseEntity.ok()
+                    .body(AppResponse.of(HttpStatus.OK.value(), new AuthResponse(token)));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AppResponse.error(HttpStatus.UNAUTHORIZED.value(), "User not found with provided ABSIN"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(AppResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Absin authentication failed"));
+        }
+    }
 
     @PostMapping("/login")
     public ResponseEntity<AppResponse<AuthResponse>> authenticate(@RequestBody AuthRequest request) {

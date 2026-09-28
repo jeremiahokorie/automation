@@ -3,7 +3,7 @@ package com.automation.core.lands.service.serviceImpl;
 import com.automation.core.basepa.dto.request.ApprovalRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.basepa.model.EnvironmentApplication;
-import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.GlobalException;
 import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.lands.dto.response.CertificateResponse;
 import com.automation.core.lands.dto.response.StatutoryAllocationResponse;
@@ -93,7 +93,7 @@ public class CertificateOfOccupancyServiceImpl implements CertificateOfOccupancy
                 }
             }
         }catch (Exception e){
-            throw new Exception("Error occured while uploading documents");
+            throw new GlobalException("Error occured while uploading documents");
         }
 
         repository.save(allocation);

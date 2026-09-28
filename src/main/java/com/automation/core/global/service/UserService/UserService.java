@@ -17,7 +17,9 @@ public interface UserService {
 
     UserResponse deleteById(Long id);
 
-    User loadUserByUsername(String email) throws UsernameNotFoundException;;
+    User loadUserByUsername(String email) throws UsernameNotFoundException;
+
+    User findByAbsin(String absin);
 
     UserResponse updateUser(Long userId, UserRequest request);
 

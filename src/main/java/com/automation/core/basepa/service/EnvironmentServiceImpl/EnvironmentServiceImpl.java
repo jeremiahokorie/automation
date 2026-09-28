@@ -21,7 +21,7 @@ import com.automation.core.commerce.dto.response.BusinessRenewalResponse;
 import com.automation.core.commerce.dto.response.BusinessSummaryResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.global.exception.CustomException;
-import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.GlobalException;
 import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
@@ -86,7 +86,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         // Step 3: Call the payment gateway
 //        ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
 //        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-//            throw new Exception("Unable to initiate payment");
+//            throw new GlobalException("Unable to initiate payment");
 //        }
 
         // Step 4: Parse the response JSON
@@ -94,7 +94,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 //            JsonNode root = mapper.readTree(paymentResponse.getBody());
 //            int status = root.path("status").asInt();
 //            if (status != 200) {
-//                throw new Exception("Payment failed to initialize");
+//                throw new GlobalException("Payment failed to initialize");
 //            }
 //            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 //            log.info("Authorization URL: {}", authorizationUrl);
@@ -225,7 +225,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             permit.setPermitUrl(permitUrl);
             permit.setPermitGeneratedDate(LocalDateTime.now());
         } catch (IOException e) {
-            throw new Exception("Failed to generate and store environmental permit");
+            throw new GlobalException("Failed to generate and store environmental permit");
         }
 
         environmentRepository.save(permit);
@@ -264,7 +264,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
 
     @Override
     public EnvironmentResponse renewPermit(PermitRenewRequest permitRenewRequest) {
-        EnvironmentApplication renew = environmentRepository.findByoperationalLicenseNumber(permitRenewRequest.getOperationalLicenseNumber()).orElseThrow(()-> new Exception("Permit with Operational Id not found"));
+        EnvironmentApplication renew = environmentRepository.findByoperationalLicenseNumber(permitRenewRequest.getOperationalLicenseNumber()).orElseThrow(()-> new GlobalException("Permit with Operational Id not found"));
         renew.setStatus(Status.PENDING);
 
         if (renew.getOperationalLicenseNumber() == null || renew.getOperationalLicenseNumber().isEmpty()) {
@@ -285,7 +285,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
         // Step 3: Call the payment gateway
         ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
         if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-            throw new Exception("Unable to initiate payment");
+            throw new GlobalException("Unable to initiate payment");
         }
 
         // Step 4: Parse the response JSON
@@ -294,7 +294,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
             JsonNode root = mapper.readTree(paymentResponse.getBody());
             int status = root.path("status").asInt();
             if (status != 200) {
-                throw new Exception("Payment failed to initialize");
+                throw new GlobalException("Payment failed to initialize");
             }
 
 //            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
@@ -325,7 +325,7 @@ public class EnvironmentServiceImpl implements EnvironmentService {
                 .permitType(renew.getPermitType())
                 .operationalLicenseNumber(renew.getOperationalLicenseNumber()).build();
         } catch (IOException e) {
-            throw new Exception("Payment gateway response parsing error");
+            throw new GlobalException("Payment gateway response parsing error");
         }
 
     }

@@ -21,7 +21,7 @@ public class RolePermission {
     private Long id;
 
     @ManyToOne
-    private Roles role;
+    private Role role;
 
     @ManyToOne
     private Permission permission;

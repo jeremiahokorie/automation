@@ -8,7 +8,7 @@ import com.automation.core.global.dto.response.PermissionResponse;
 import com.automation.core.global.dto.response.RolesResponse;
 import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.model.Permission;
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.model.User;
 import com.automation.core.global.service.UserService.AccessControlService;
 import com.automation.util.constant.AppConstant;
@@ -54,7 +54,7 @@ public class AccessControlController {
     }
 
     @PostMapping("/roles/{roleId}/permissions/{permissionId}")
-    public Roles assignPermissionToRole(@PathVariable Long roleId, @PathVariable Long permissionId) {
+    public Role assignPermissionToRole(@PathVariable Long roleId, @PathVariable Long permissionId) {
         return accessControlService.assignPermissionToRole(roleId, permissionId);
     }
 

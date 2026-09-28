@@ -104,19 +104,18 @@ public class WebSecurityConfig{
                                         "/api/auth/register",
                                         "/auth/login",
                                         "/api/business/**",
-                                        "/environment/**",
                                         "/api/environment/**",
                                         "/api/certificates/occupancy/**",
                                         "/auth/access/**",
                                         "/auth/**",
                                         "/reports/**",
+                                        "api/reports/**",
                                         "/inspection/**",
                                         "/wards/**",
                                         "/api/reporting/**",
                                         "/local-governments/**",
                                         "/revenue/**",
-                                        "/tracking/**"
-
+                                        "/api/tracking/**"
                                         //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com
                                 ).permitAll()
                                 // User management
@@ -127,9 +126,9 @@ public class WebSecurityConfig{
                                 .requestMatchers(HttpMethod.PUT, "/api/users/**").hasRole("SUPERADMIN")
 
                                 // Environment registration api/environment/apply-permit
-                                .requestMatchers(HttpMethod.POST, "/api/environment/apply").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/api/environment/apply").authenticated()
-                                .requestMatchers(HttpMethod.PUT, "/api/environment/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
+                                // .requestMatchers(HttpMethod.POST, "/api/environment/apply").authenticated()
+                                // .requestMatchers(HttpMethod.GET, "/api/environment/apply").authenticated()
+                                // .requestMatchers(HttpMethod.PUT, "/api/environment/approve/**").hasAnyRole("SUPERADMIN", "ADMIN")
 
                                 // Business registration
                                 .requestMatchers(HttpMethod.POST, "/api/business/register").authenticated()

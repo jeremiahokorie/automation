@@ -13,7 +13,7 @@ import com.automation.core.commerce.repository.BusinessRepository;
 import com.automation.core.commerce.repository.BusinessTypeRepository;
 import com.automation.core.commerce.service.service.BusinessRegistrationService;
 import com.automation.core.global.exception.CustomException;
-import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.GlobalException;
 import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
@@ -85,7 +85,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         // Call the payment gateway
        // ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
 //        if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-//            throw new Exception("Unable to initiate payment");
+//            throw new GlobalException("Unable to initiate payment");
 //        }
 
         // Parse the response JSON
@@ -93,7 +93,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
 //            JsonNode root = mapper.readTree(paymentResponse.getBody());
 //            int status = root.path("status").asInt();
 //            if (status != 200) {
-//                throw new Exception("Payment failed to initialize");
+//                throw new GlobalException("Payment failed to initialize");
 //            }
 //            String authorizationUrl = root.path("data").path("authorizationUrl").asText();
 
@@ -129,7 +129,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             inspectionRepository.save(inspection);
 
     }else {
-        throw new Exception("Business already exists");
+        throw new GlobalException("Business already exists");
     }
 
         return BusinessRegistrationResponse.builder()
@@ -194,7 +194,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessRenewalRequest.getBusinessNumber());
 
         if (registration.getBusinessNumber() == null || registration.getBusinessNumber().isEmpty()) {
-            throw new Exception("Business not found or not yet due for renewal.");
+            throw new GlobalException("Business not found or not yet due for renewal.");
         }
 
         //payment request
@@ -211,7 +211,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
 
         ResponseEntity<String> paymentResponse = paymentService.initializePayment(paymentRequest);
         if (paymentResponse.getStatusCode() != HttpStatus.OK) {
-            throw new Exception("Unable to initiate payment");
+            throw new GlobalException("Unable to initiate payment");
         }
 
         try {
@@ -219,7 +219,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             JsonNode root = mapper.readTree(paymentResponse.getBody());
             int status = root.path("status").asInt();
             if (status != 200) {
-                throw new Exception("Payment failed to initialize");
+                throw new GlobalException("Payment failed to initialize");
             }
 
             String authorizationUrl = root.path("data").path("authorizationUrl").asText();
@@ -254,7 +254,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
                 .authorizationUrl(authorizationUrl)
                 .businessName(registration.getBusinessName()).build();
         } catch (IOException e) {
-            throw new Exception("Payment gateway response parsing error");
+            throw new GlobalException("Payment gateway response parsing error");
         }
     }
 
@@ -262,7 +262,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     public ApprovalandRejectResponse approveRequest(String businessNumber, ApprovalandRejectRequest comment) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
         if (registration == null) {
-            throw new Exception("Business not found or not yet due for renewal.");
+            throw new GlobalException("Business not found or not yet due for renewal.");
         }
         registration.setStatus(Status.APPROVED);
         registration.setComment(comment.getComment());
@@ -284,7 +284,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
             registration.setPermitUrl(permitUrl);
             registration.setPermitGeneratedDate(LocalDateTime.now());
         } catch (IOException e) {
-            throw new Exception("Failed to generate and store business permit");
+            throw new GlobalException("Failed to generate and store business permit");
         }
 
         businessRepository.save(registration);
@@ -299,7 +299,7 @@ public class BusinessRegistrationServiceImpl implements BusinessRegistrationServ
     public ApprovalandRejectResponse rejectRequest(String businessNumber, ApprovalandRejectRequest request) {
         BusinessRegistration registration = businessRepository.findBybusinessNumber(businessNumber);
         if (registration == null) {
-            throw new Exception("Business not found or not yet due for renewal.");
+            throw new GlobalException("Business not found or not yet due for renewal.");
         }
 
         registration.setStatus(Status.REJECTED);

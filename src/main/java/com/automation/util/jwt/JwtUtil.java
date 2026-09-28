@@ -1,6 +1,6 @@
 package com.automation.util.jwt;
 
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -76,7 +76,7 @@ public class JwtUtil {
         }
 
         List<String> roles = userDetails.getRoles().stream()
-                .map(Roles::getValue)
+                .map(Role::getValue)
                 .collect(Collectors.toList());
 
         claims.put("roles", roles);

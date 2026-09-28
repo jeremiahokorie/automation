@@ -3,7 +3,7 @@ package com.automation.core.lands.controller;
 import com.automation.core.basepa.dto.request.ApprovalRequest;
 import com.automation.core.basepa.dto.response.ApprovalResponse;
 import com.automation.core.global.dto.response.AppResponse;
-import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.GlobalException;
 import com.automation.core.lands.dto.response.CertificateResponse;
 import com.automation.core.lands.model.CertificateOfOccupancy;
 import com.automation.core.lands.service.service.CertificateOfOccupancyService;

@@ -12,8 +12,10 @@ import java.util.UUID;
 @Builder
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class InspectionResponse {
     private Long id;
+
 
     private UUID requestId;
     private String sourceService;
@@ -24,6 +26,6 @@ public class InspectionResponse {
     private String assignedTo;
     private String notes;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -3,7 +3,7 @@ package com.automation.core.mda.service.serviceImpl;
 import com.automation.core.global.dto.request.RolesRequest;
 import com.automation.core.global.dto.response.RolesResponse;
 import com.automation.core.global.exception.CustomException;
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.mda.dto.request.ServiceRequest;
 import com.automation.core.mda.dto.request.mdaRequest;
 import com.automation.core.mda.dto.response.ServiceResponse;

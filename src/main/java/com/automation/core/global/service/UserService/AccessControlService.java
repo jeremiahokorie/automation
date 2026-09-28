@@ -6,7 +6,7 @@ import com.automation.core.global.dto.request.RolesRequest;
 import com.automation.core.global.dto.response.PermissionResponse;
 import com.automation.core.global.dto.response.RolesResponse;
 import com.automation.core.global.model.Permission;
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.model.User;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public interface AccessControlService {
 
     PermissionResponse createPermission(PermissionRequest request);
 
-    Roles assignPermissionToRole(Long roleId, Long permissionId);
+    Role assignPermissionToRole(Long roleId, Long permissionId);
 
     User assignRoleToUser(Long userId, Long roleId);
 

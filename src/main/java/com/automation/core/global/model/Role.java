@@ -20,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "roles")
-public class Roles {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

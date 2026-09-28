@@ -1,7 +1,7 @@
 package com.automation.core.wardactivity.service;
 
 import com.automation.core.global.exception.ResourceNotFoundException;
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.lga.model.Ward;
@@ -31,7 +31,7 @@ import java.util.Set;
 @Service
 public class WardActivityServiceImpl implements WardActivityService {
 
-    private static final Set<String> REPRESENTATIVE_ROLES = Set.of("REPRESENTATIVE", "SUPERADMIN", "ADMIN");
+    private static final Set<String> REPRESENTATIVE_ROLES = Set.of("REPRESENTATIVE", "SUPERADMIN", "ADMIN", "WARD_LEADER");
     private static final Set<String> WARD_LEADER_ROLES = Set.of("WARD_LEADER");
 
     private final ActivityReportRepository activityReportRepository;
@@ -82,7 +82,7 @@ public class WardActivityServiceImpl implements WardActivityService {
     @Override
     public ActivityReportResponse createReport(CreateActivityReportRequest request, String actorEmail) {
         User actor = getUser(actorEmail);
-        if (!isWardLeader(actor)) {
+        if (!isRepresentative(actor)) {
             throw new AccessDeniedException("Only ward leaders can create reports");
         }
 
@@ -188,11 +188,11 @@ public class WardActivityServiceImpl implements WardActivityService {
     }
 
     private boolean isRepresentative(User user) {
-        return user.getRoles() != null && user.getRoles().stream().map(Roles::getValue).anyMatch(REPRESENTATIVE_ROLES::contains);
+        return user.getRoles() != null && user.getRoles().stream().map(Role::getValue).anyMatch(REPRESENTATIVE_ROLES::contains);
     }
 
     private boolean isWardLeader(User user) {
-        return user.getRoles() != null && user.getRoles().stream().map(Roles::getValue).anyMatch(WARD_LEADER_ROLES::contains);
+        return user.getRoles() != null && user.getRoles().stream().map(Role::getValue).anyMatch(WARD_LEADER_ROLES::contains);
     }
 
     private Ward resolveUserWard(User user) {

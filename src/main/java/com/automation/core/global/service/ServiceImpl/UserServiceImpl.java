@@ -6,10 +6,10 @@ import com.automation.core.global.dto.request.UserRequest;
 import com.automation.core.global.dto.response.AdminUserResponse;
 import com.automation.core.global.dto.response.UserResponse;
 import com.automation.core.global.exception.CustomException;
-import com.automation.core.global.exception.Exception;
+import com.automation.core.global.exception.GlobalException;
 import com.automation.core.global.exception.ResourceNotFoundException;
 import com.automation.core.global.model.Permission;
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.PermissionRepository;
 import com.automation.core.global.repository.RoleRepository;
@@ -61,11 +61,11 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserRequest userRequest) {
         Optional<User> user = userRepository.findByEmail(userRequest.getEmail());
 
-        Roles userRole = roleRepository.findByValue("USER")
-                .orElseThrow(() -> new Exception("Default role not found"));
+        Role userRole = roleRepository.findByValue("USER")
+                .orElseThrow(() -> new GlobalException("Default role not found"));
 
         if (user.isPresent()) {
-            throw new Exception("User already exists");
+            throw new GlobalException("User already exists");
         }
 
         User createUser = new User();
@@ -174,6 +174,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByAbsin(String absin) {
+        return userRepository.findByAbsin(absin)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ABSIN: " + absin));
+    }
+
+    @Override
     public User loadUserByUsername(String email) throws UsernameNotFoundException {
         user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
@@ -222,7 +228,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new Exception("Current password is incorrect");
+            throw new GlobalException("Current password is incorrect");
         }
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
@@ -244,14 +250,14 @@ public class UserServiceImpl implements UserService {
            // publisher.publishEvent(new EmailNotificationEvent(this, "password", ImmutableMap.of("recipient", user.getEmail(), "name", user.getFirstName(), "url", resetLink)));
 
         }else {
-            throw new Exception("User not found");
+            throw new GlobalException("User not found");
         }
 
     }
 
     public AdminUserResponse createAdminUser(UserAdminRequest request) {
         Optional<User> users = userRepository.findByEmail(request.getEmail());
-        Roles role = roleRepository.findById(request.getRoleId())
+        Role role = roleRepository.findById(request.getRoleId())
                 .orElseThrow(() -> new RuntimeException("Role not found"));
 
         if (users.isPresent()) {
@@ -307,7 +313,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    private UserResponse buildUserResponseWithPermissions(User user, Roles role) {
+    private UserResponse buildUserResponseWithPermissions(User user, Role role) {
         List<String> permissions = role.getPermissions().stream()
                 .map(Permission::getName)
                 .collect(Collectors.toList());

@@ -1,7 +1,7 @@
 package com.automation;
 
 import com.automation.core.global.model.Permission;
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.repository.PermissionRepository;
 import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.service.UserService.UserService;

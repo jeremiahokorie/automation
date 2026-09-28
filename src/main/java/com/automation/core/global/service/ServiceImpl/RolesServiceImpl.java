@@ -2,7 +2,7 @@ package com.automation.core.global.service.ServiceImpl;
 
 import com.automation.core.global.dto.request.RolesRequest;
 import com.automation.core.global.dto.response.RolesResponse;
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.repository.RoleRepository;
 import com.automation.core.global.service.UserService.RolesService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class RolesServiceImpl implements RolesService {
 
     @Override
     public RolesResponse createRole(RolesRequest roles) {
-        Roles role = new Roles();
+        Role role = new Role();
         role.setName(roles.getName());
         roleRepository.save(role);
         return RolesResponse.builder()

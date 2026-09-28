@@ -5,7 +5,7 @@ import com.automation.core.global.dto.request.RolesRequest;
 import com.automation.core.global.dto.response.PermissionResponse;
 import com.automation.core.global.dto.response.RolesResponse;
 import com.automation.core.global.model.Permission;
-import com.automation.core.global.model.Roles;
+import com.automation.core.global.model.Role;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.PermissionRepository;
 import com.automation.core.global.repository.RoleRepository;
@@ -32,7 +32,7 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Override
     public RolesResponse createRole(RolesRequest request) {
-        Roles role = new Roles();
+        Role role = new Role();
         role.setName(request.getName());
         role.setValue(request.getValue());
         role.setDescription(request.getDescription());
@@ -51,8 +51,8 @@ public class AccessControlServiceImpl implements AccessControlService {
     }
 
     @Override
-    public Roles assignPermissionToRole(Long roleId, Long permissionId) {
-        Roles role = roleRepo.findById(roleId).orElseThrow();
+    public Role assignPermissionToRole(Long roleId, Long permissionId) {
+        Role role = roleRepo.findById(roleId).orElseThrow();
         Permission permission = permissionRepo.findById(permissionId).orElseThrow();
         role.getPermissions().add(permission);
         return roleRepo.save(role);
@@ -61,7 +61,7 @@ public class AccessControlServiceImpl implements AccessControlService {
     @Override
     public User assignRoleToUser(Long userId, Long roleId) {
         User user = userRepo.findById(userId).orElseThrow();
-        Roles role = roleRepo.findById(roleId).orElseThrow();
+        Role role = roleRepo.findById(roleId).orElseThrow();
         user.getRoles().add(role);
         return userRepo.save(user);
     }
@@ -82,7 +82,7 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Override
     public List<RolesResponse> getRoles() {
-        List<Roles> roleResp = roleRepo.findAll();
+        List<Role> roleResp = roleRepo.findAll();
         return roleResp.stream().map(roles1 ->
                 RolesResponse.builder()
                         .id(roles1.getId())
@@ -95,7 +95,7 @@ public class AccessControlServiceImpl implements AccessControlService {
 
     @Override
     public RolesResponse updateRole(Long id, RolesRequest request) {
-        Roles role = roleRepo.findById(id)
+        Role role = roleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         role.setName(request.getName());
         role.setValue(request.getValue());

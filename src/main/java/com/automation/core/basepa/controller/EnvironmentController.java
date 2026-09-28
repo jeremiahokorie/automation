@@ -33,7 +33,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/environment")
+@RequestMapping("/api/environment")
 @RequiredArgsConstructor
 public class EnvironmentController {
     private final EnvironmentService environmentService;

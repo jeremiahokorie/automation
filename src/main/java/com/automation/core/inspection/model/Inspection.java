@@ -3,14 +3,14 @@ package com.automation.core.inspection.model;
 
 import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.commerce.model.BusinessRegistration;
-import com.automation.core.global.model.User;
+import com.automation.core.education.model.LessonCentre;
+import com.automation.core.health.model.HealthFacility;
 import com.automation.core.lands.model.CustomaryAllocationApplication;
 import com.automation.core.lands.model.StatutoryAllocationApplication;
 import com.automation.util.enums.Status;
 import io.swagger.annotations.ApiParam;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -52,6 +52,18 @@ public class Inspection {
     @OneToOne
     @JoinColumn(name = "business_registration_id")
     private BusinessRegistration businessRegistration;
+
+    @OneToOne
+    @JoinColumn(name = "health_facility_registration_id")
+    private HealthFacility healthFacilityRegistration;
+
+    @OneToOne
+    @JoinColumn(name = "school_registration_id")
+    private com.automation.core.education.model.SchoolRegistration schoolRegistration;
+
+    @OneToOne
+    @JoinColumn(name = "lesson_centre_registration_id")
+    private LessonCentre lessonCentreRegistration;
 
     @OneToOne
     @JoinColumn(name = "statutory_allocation_applications_id")
