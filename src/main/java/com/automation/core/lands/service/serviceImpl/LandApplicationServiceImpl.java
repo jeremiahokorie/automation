@@ -131,11 +131,11 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                     String url = storageService.store(file, entity.getId(), fieldName);
                     uploadResults.put(fieldName, "Uploaded Successfully");
                     switch (fieldName) {
-                        case "passportPhoto" -> entity.setPassportPhoto(url);
-                        case "taxClearance" -> entity.setTaxClearance(url);
-                        case "affidavit" -> entity.setAffidavit(url);
-                        case "communityConsentLetter" -> entity.setCommunityConsentLetter(url);
-                        case "developmentSketch" -> entity.setDevelopmentSketch(url);
+                        case "passportPhoto", "passport_photos" -> entity.setPassportPhoto(url);
+                        case "taxClearance", "tax_clearances" -> entity.setTaxClearance(url);
+                        case "affidavit", "affidavits" -> entity.setAffidavit(url);
+                        case "communityConsentLetter", "community_consent_letters" -> entity.setCommunityConsentLetter(url);
+                        case "developmentSketch", "development_sketches" -> entity.setDevelopmentSketch(url);
                     }
                 }
             }

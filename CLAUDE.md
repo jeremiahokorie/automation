@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a Spring Boot 3.4.5 application using Java 17, organized with a domain-driven layered architecture.
 
 ### Project Structure
-- `com.automation.core`: Contains business logic divided into domain modules (e.g., `abiaid`, `commerce`, `health`, `lands`, `revenue`, etc.).
+- `com.automation.core`: Contains business logic divided into domain modules (e.g., `abiaid`, `commerce`, `health`, `lands`, `revenue`, `education`, `inspection`, `tracking`, etc.).
     - **Layered Pattern**: Each domain typically follows:
         - `controller`: REST API endpoints.
         - `service`: Business logic interfaces. Implementations are found in a `serviceImpl` sub-package or alongside the interface.
