@@ -115,7 +115,9 @@ public class WebSecurityConfig{
                                         "/api/reporting/**",
                                         "/local-governments/**",
                                         "/revenue/**",
-                                        "/api/tracking/**"
+                                        "/api/tracking/**",
+                                        "/api/health/**",
+                                        "/api/education/**"
                                         //  process-automation-db-do-user-19197166-0.g.db.ondigitalocean.com
                                 ).permitAll()
                                 // User management

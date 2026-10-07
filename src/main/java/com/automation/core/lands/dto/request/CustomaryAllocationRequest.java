@@ -76,10 +76,10 @@ public class CustomaryAllocationRequest {
         private Boolean isPayed;
 
 
-//        private String passportPhoto;
-//        private String taxClearance;
-//        private String affidavit;
-//        private String communityConsentLetter;
-//        private String developmentSketch;
+        private String passportPhoto;
+        private String taxClearance;
+        private String affidavit;
+        private String communityConsentLetter;
+        private String developmentSketch;
 
     }

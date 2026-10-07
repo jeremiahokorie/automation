@@ -1,6 +1,5 @@
 package com.automation.core.global.dto.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,4 +21,14 @@ public class DashboardResponse {
     private int pendingGroundRent;
     private int approvedGroundRent;
     private int pendingBusinessRegistration;
+
+    private int totalRegisteredSchools;
+    private int pendingSchools;
+    private int approvedSchools;
+    private int rejectedSchools;
+
+    private int totalRegisteredHealthFacilities;
+    private int pendingHealthFacilities;
+    private int approvedHealthFacilities;
+    private int rejectedHealthFacilities;
 }

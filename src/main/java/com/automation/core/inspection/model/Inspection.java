@@ -4,6 +4,7 @@ package com.automation.core.inspection.model;
 import com.automation.core.basepa.model.EnvironmentApplication;
 import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.education.model.LessonCentre;
+import com.automation.core.education.model.SchoolRegistration;
 import com.automation.core.health.model.HealthFacility;
 import com.automation.core.lands.model.CustomaryAllocationApplication;
 import com.automation.core.lands.model.StatutoryAllocationApplication;
@@ -53,13 +54,21 @@ public class Inspection {
     @JoinColumn(name = "business_registration_id")
     private BusinessRegistration businessRegistration;
 
+//    @OneToOne
+//    @JoinColumn(name = "health_facility_id")
+//    private HealthFacility healthFacility;
+//
+//    @OneToOne
+//    @JoinColumn(name = "school_registration_id")
+//    private SchoolRegistration schoolRegistration;
+
     @OneToOne
     @JoinColumn(name = "health_facility_registration_id")
     private HealthFacility healthFacilityRegistration;
 
     @OneToOne
     @JoinColumn(name = "school_registration_id")
-    private com.automation.core.education.model.SchoolRegistration schoolRegistration;
+    private SchoolRegistration schoolRegistration;
 
     @OneToOne
     @JoinColumn(name = "lesson_centre_registration_id")

@@ -30,6 +30,10 @@ public interface LandApplicationService {
 
     Map<String, String> statutoryallocation(StatutoryApplicationRequest statutoryApplicationRequest, Map<String, MultipartFile> documents) throws IOException;
 
+    Map<String, String> submitCustomaryApplication(CustomaryAllocationRequest request, Map<String, MultipartFile> files) throws IOException;
+
+    Map<String, String> submitStatutoryApplication(StatutoryApplicationRequest request, Map<String, MultipartFile> files) throws IOException;
+
     List<StatutoryApplicationResponse> getAllStatutoryAllocations();
 
     List<CustomaryAllocationResponse> getAllCustomaryAllocations();

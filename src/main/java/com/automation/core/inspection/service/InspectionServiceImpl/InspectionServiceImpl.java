@@ -5,9 +5,12 @@ import com.automation.core.basepa.repository.EnvironmentRepository;
 import com.automation.core.commerce.dto.response.BusinessRegistrationResponse;
 import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.commerce.repository.BusinessRepository;
+import com.automation.core.education.model.LessonCentre;
+import com.automation.core.education.model.SchoolRegistration;
 import com.automation.core.global.exception.GlobalException;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
+import com.automation.core.health.model.HealthFacility;
 import com.automation.core.inspection.dto.request.InspectionRequest;
 import com.automation.core.inspection.dto.request.StatusUpdateDto;
 import com.automation.core.inspection.dto.response.InspectionResponse;
@@ -16,11 +19,9 @@ import com.automation.core.inspection.repository.InspectionRepository;
 import com.automation.core.inspection.service.InspectionService.InspectionService;
 import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +37,6 @@ public class InspectionServiceImpl implements InspectionService {
     private final BusinessRepository businessRepository;
     private final EnvironmentRepository environmentRepository;
     private final com.automation.core.tracking.service.ApplicationTrackingService trackingService;
-
-
 
     @Override
     @Transactional
@@ -93,18 +92,6 @@ public class InspectionServiceImpl implements InspectionService {
         };
     }
 
-//    @Override
-//    public InspectionResponse updateInspectionStatus(Long id, StatusUpdateDto dto) {
-//        Inspection inspection = inspectionRepository.findById(id)
-//                .orElseThrow(() -> new GlobalException("Inspection not found"));
-//        inspection.setStatus(Status.valueOf(dto.getNewStatus()));
-//        inspection.setNotes(dto.getNotes());
-//        inspection.setAssignedTo(dto.getUpdatedBy());
-//        inspection.setUpdatedAt(LocalDateTime.now());
-//        inspectionRepository.save(inspection);
-//        return InspectionResponse.builder().id(inspection.getId()).build();
-//    }
-
     @Override
     public List<InspectionResponse> getAllInspectionRequest() {
         List<Inspection> inspections = inspectionRepository.findAllByOrderByCreatedAtDesc();
@@ -132,6 +119,48 @@ public class InspectionServiceImpl implements InspectionService {
         inspection.setApplicationType(inspectionRequest.getApplicationType());
         inspection.setStatus(Status.PENDING);
         inspection.setCreatedAt(LocalDateTime.now());
+        inspectionRepository.save(inspection);
+        return InspectionResponse.builder().id(inspection.getId()).build();
+    }
+
+    @Override
+    public InspectionResponse createInspection(InspectionRequest request, SchoolRegistration school) {
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(request.getRequestId());
+        inspection.setSourceService(request.getSourceService());
+        inspection.setApplicantName(request.getApplicantName());
+        inspection.setApplicationType(request.getApplicationType());
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspection.setSchoolRegistration(school);
+        inspectionRepository.save(inspection);
+        return InspectionResponse.builder().id(inspection.getId()).build();
+    }
+
+    @Override
+    public InspectionResponse createInspection(InspectionRequest request, LessonCentre centre) {
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(request.getRequestId());
+        inspection.setSourceService(request.getSourceService());
+        inspection.setApplicantName(request.getApplicantName());
+        inspection.setApplicationType(request.getApplicationType());
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspection.setLessonCentreRegistration(centre);
+        inspectionRepository.save(inspection);
+        return InspectionResponse.builder().id(inspection.getId()).build();
+    }
+
+    @Override
+    public InspectionResponse createInspection(InspectionRequest request, HealthFacility facility) {
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(request.getRequestId());
+        inspection.setSourceService(request.getSourceService());
+        inspection.setApplicantName(request.getApplicantName());
+        inspection.setApplicationType(request.getApplicationType());
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspection.setHealthFacilityRegistration(facility);
         inspectionRepository.save(inspection);
         return InspectionResponse.builder().id(inspection.getId()).build();
     }

@@ -35,9 +35,21 @@ public class LandApplicationController {
     private final LandApplicationService landApplicationService;
 
 
-    @PostMapping("/submit-customary-data")
+    @PostMapping(value = "/submit-customary", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
-            summary = "Create a new customary application endpoint.",
+            summary = "Submit customary land application with files",
+            description = "Unified endpoint to submit customary application data and required documents in a single request.")
+    public ResponseEntity<?> submitCustomary(
+            @RequestPart("data") CustomaryAllocationRequest request,
+            @RequestPart(value = "files", required = false) Map<String, MultipartFile> files
+    ) throws IOException {
+        Map<String, String> results = landApplicationService.submitCustomaryApplication(request, files);
+        return ResponseEntity.ok(Map.of("message", "Application submitted successfully", "uploads", results));
+    }
+
+
+    @PostMapping("/submit-customary-data")
+    @Operation(summary = "Create a new customary application endpoint.",
             description = " This endpoint will return the ID of the request after a successful creation, pass the ID when user is uploading the files from the /upload-customary-files endpoint, Creates a new customary request in the system with the provided information."
     )
     public ResponseEntity<?> submitForm(@RequestBody CustomaryAllocationRequest formRequest) {
@@ -63,39 +75,6 @@ public class LandApplicationController {
         return ResponseEntity.ok("Files uploaded successfully");
     }
 
-
-    @PostMapping("/submit-statutory-data")
-    @Operation(
-            summary = "Create a new statutory application endpoint.",
-            description = "Creates a new statutory request in the system with the " +
-                    "provided information.This endpoint will return the ID of the request after a successful creation, pass the ID when user is uploading the files from the /upload-statutory-files endpoint"
-    )
-    public ResponseEntity<?> submitStatutoryForm(@RequestBody StatutoryApplicationRequest formRequest) {
-        Long formId = landApplicationService.saveStatutoryFormRequest(formRequest);
-        return ResponseEntity.ok(Map.of("formId", formId));
-    }
-
-    @PostMapping(value = "/upload-statutory-files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(
-            summary = "Upload files for statutory application",
-            description = "This endpoint is for user to upload required document " +
-                    "after filling and submitting their statutory application." +
-                    "Pass the formId returned from the submit-statutory-data response as formId in this request" +
-                    " and upload files"
-    )
-    public ResponseEntity<?> uploadStatutoryFiles(
-            @RequestParam("formId") Long formId,
-            @RequestPart(value = "passportPhoto", required = false) MultipartFile passportPhoto,
-            @RequestPart(value = "taxClearance", required = false) MultipartFile taxClearance,
-            @RequestPart(value = "feeReceipt", required = false) MultipartFile feeReceipt,
-            @RequestPart(value = "ageDeclaration", required = false) MultipartFile ageDeclaration,
-            @RequestPart(value = "naturalizationDoc", required = false) MultipartFile naturalizationDoc,
-            @RequestPart(value = "oathDeclaration", required = false) MultipartFile oathDeclaration
-    ) throws IOException {
-        landApplicationService.uploadFilesStatutory(formId, passportPhoto, taxClearance, feeReceipt, ageDeclaration, naturalizationDoc, oathDeclaration);
-        return ResponseEntity.ok("Files uploaded successfully");
-    }
-
     @GetMapping("/all-customary-allocations")
     @Operation(
             summary = "Get all created statutory application from the database",
@@ -107,21 +86,6 @@ public class LandApplicationController {
                 .message(AppConstant.ApiResponseMessage.GET)
                 .status(HttpStatus.OK.value()).data(allocations).error("").build());
     }
-
-    @GetMapping("/all-statutory-allocations")
-    @Operation(
-            summary = "Get all created customary application from the database",
-            description = "This endpoint is for user to upload required document " +
-                    "after filling and submitting their customary application."
-
-    )
-    public ResponseEntity<AppResponse<List<StatutoryApplicationResponse>>> getAllAllocations() {
-        List<StatutoryApplicationResponse> allocations = landApplicationService.getAllStatutoryAllocations();
-        return ResponseEntity.ok().body(AppResponse.<List<StatutoryApplicationResponse>>builder()
-                .message(AppConstant.ApiResponseMessage.GET)
-                .status(HttpStatus.OK.value()).data(allocations).error("").build());
-    }
-
 
     @GetMapping("/statutory-summary")
     @Operation(
@@ -142,4 +106,68 @@ public class LandApplicationController {
         LandApplicationSummaryResponse landApp = landApplicationService.getAllCustomarySummary();
         return ResponseEntity.ok().body(landApp);
     }
+
+    //    @PostMapping(value = "/submit-statutory", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @Operation(
+//            summary = "Submit statutory land application with files",
+//            description = "Unified endpoint to submit statutory application data and required documents in a single request."
+//    )
+//    public ResponseEntity<?> submitStatutory(
+//            @RequestPart("data") StatutoryApplicationRequest request,
+//            @RequestPart(value = "files", required = false) Map<String, MultipartFile> files
+//    ) throws IOException {
+//        Map<String, String> results = landApplicationService.submitStatutoryApplication(request, files);
+//        return ResponseEntity.ok(Map.of("message", "Application submitted successfully", "uploads", results));
+//    }
+
+
+//    @PostMapping("/submit-statutory-data")
+//    @Operation(
+//            summary = "Create a new statutory application endpoint.",
+//            description = "Creates a new statutory request in the system with the " +
+//                    "provided information.This endpoint will return the ID of the request after a successful creation, pass the ID when user is uploading the files from the /upload-statutory-files endpoint"
+//    )
+//    public ResponseEntity<?> submitStatutoryForm(@RequestBody StatutoryApplicationRequest formRequest) {
+//        Long formId = landApplicationService.saveStatutoryFormRequest(formRequest);
+//        return ResponseEntity.ok(Map.of("formId", formId));
+//    }
+//
+//    @PostMapping(value = "/upload-statutory-files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @Operation(
+//            summary = "Upload files for statutory application",
+//            description = "This endpoint is for user to upload required document " +
+//                    "after filling and submitting their statutory application." +
+//                    "Pass the formId returned from the submit-statutory-data response as formId in this request" +
+//                    " and upload files"
+//    )
+//    public ResponseEntity<?> uploadStatutoryFiles(
+//            @RequestParam("formId") Long formId,
+//            @RequestPart(value = "passportPhoto", required = false) MultipartFile passportPhoto,
+//            @RequestPart(value = "taxClearance", required = false) MultipartFile taxClearance,
+//            @RequestPart(value = "feeReceipt", required = false) MultipartFile feeReceipt,
+//            @RequestPart(value = "ageDeclaration", required = false) MultipartFile ageDeclaration,
+//            @RequestPart(value = "naturalizationDoc", required = false) MultipartFile naturalizationDoc,
+//            @RequestPart(value = "oathDeclaration", required = false) MultipartFile oathDeclaration
+//    ) throws IOException {
+//        landApplicationService.uploadFilesStatutory(formId, passportPhoto, taxClearance, feeReceipt, ageDeclaration, naturalizationDoc, oathDeclaration);
+//        return ResponseEntity.ok("Files uploaded successfully");
+//    }
+
+
+
+//    @GetMapping("/all-statutory-allocations")
+//    @Operation(
+//            summary = "Get all created customary application from the database",
+//            description = "This endpoint is for user to upload required document " +
+//                    "after filling and submitting their customary application."
+//
+//    )
+//    public ResponseEntity<AppResponse<List<StatutoryApplicationResponse>>> getAllAllocations() {
+//        List<StatutoryApplicationResponse> allocations = landApplicationService.getAllStatutoryAllocations();
+//        return ResponseEntity.ok().body(AppResponse.<List<StatutoryApplicationResponse>>builder()
+//                .message(AppConstant.ApiResponseMessage.GET)
+//                .status(HttpStatus.OK.value()).data(allocations).error("").build());
+//    }
+
+
 }

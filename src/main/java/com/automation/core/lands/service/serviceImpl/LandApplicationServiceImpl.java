@@ -1,6 +1,5 @@
 package com.automation.core.lands.service.serviceImpl;
 
-
 import com.automation.core.commerce.dto.response.LandApplicationSummaryResponse;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
@@ -25,11 +24,13 @@ import com.automation.core.lands.repository.LandApplicationRepository;
 import com.automation.core.lands.repository.StatutoryAllocationRepository;
 import com.automation.core.lands.repository.StatutoryApplicationRepository;
 import com.automation.core.lands.service.service.LandApplicationService;
+import com.automation.core.lands.service.service.StorageService;
 import com.automation.util.enums.GlobalStatus;
 import com.automation.util.enums.LandApplicationType;
 import com.automation.util.enums.ReportType;
 import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,20 +46,40 @@ import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
-@RequiredArgsConstructor
+
 @Service
 public class LandApplicationServiceImpl implements LandApplicationService {
 
     private final LandApplicationRepository landApplicationRepository;
     private final StatutoryApplicationRepository statutoryApplicationRepository;
-    private final LocalStorageService localStorageService;
+    private final StorageService storageService;
     private final CustomaryAllocationRepository customaryAllocationRepository;
     private final InspectionRepository inspectionRepository;
     private final UserRepository userRepository;
     private final ApplicationTrackingService trackingService;
+    private final StatutoryAllocationRepository statutoryAllocationRepositoryAlloc;
 
-    private static final String UPLOAD_DIR_ = "/opt/uploads/customary-allocation/";
-    private static final String UPLOAD_DIR = "/opt/uploads/statutory-allocation/";
+    public LandApplicationServiceImpl(
+            LandApplicationRepository landApplicationRepository,
+            StatutoryApplicationRepository statutoryApplicationRepository,
+            @Qualifier("cloudStorageService") StorageService storageService,
+            CustomaryAllocationRepository customaryAllocationRepository,
+            InspectionRepository inspectionRepository,
+            UserRepository userRepository,
+            ApplicationTrackingService trackingService,
+            StatutoryAllocationRepository statutoryAllocationRepositoryAlloc) {
+
+        this.landApplicationRepository = landApplicationRepository;
+        this.statutoryApplicationRepository = statutoryApplicationRepository;
+        this.storageService = storageService;
+        this.customaryAllocationRepository = customaryAllocationRepository;
+        this.inspectionRepository = inspectionRepository;
+        this.userRepository = userRepository;
+        this.trackingService = trackingService;
+        this.statutoryAllocationRepositoryAlloc =
+                statutoryAllocationRepositoryAlloc;
+    }
+
     private static final Map<String, String> REQUIRED_DOCUMENTS = new HashMap<>() {{
         put("passport_photos", "Two Passport Photographs");
         put("tax_clearances", "Tax Clearances");
@@ -76,12 +97,124 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         put("community_consent_letters", "Community Consent Letters");
         put("development_sketches", "Development Sketches");
     }};
-    private final StatutoryAllocationRepository statutoryAllocationRepository;
 
-    public void StatutoryAllocationApplication() throws IOException {
-        Files.createDirectories(Paths.get(UPLOAD_DIR));
+    @Override
+    public Map<String, String> submitCustomaryApplication(CustomaryAllocationRequest request, Map<String, MultipartFile> files) throws IOException {
+        CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
+        entity.setFirstName(request.getFirstName());
+        entity.setLastName(request.getLastName());
+        entity.setApplicationDate(LocalDate.now());
+        entity.setApplicationFeeAmount(request.getApplicationFeeAmount());
+        entity.setLandPurpose(request.getLandPurpose());
+        entity.setCommunityConsentDate(request.getCommunityConsentDate());
+        entity.setCommunityLeaderTitle(request.getCommunityLeaderTitle());
+        entity.setEmail(request.getEmail());
+        entity.setGender(request.getGender());
+        entity.setHomeAddress(request.getHomeAddress());
+        entity.setLga(request.getLga());
+        entity.setMaritalStatus(request.getMaritalStatus());
+        entity.setNationality(request.getNationality());
+        entity.setOccupation(request.getOccupation());
+        entity.setPhoneNumber(request.getPhoneNumber());
+        entity.setStateOfOrigin(request.getStateOfOrigin());
+        entity.setTownOrArea(request.getTownOrArea());
+        entity.setPurposeDetail(request.getPurposeDetail());
+        entity.setStatus(Status.PENDING);
+        entity = customaryAllocationRepository.save(entity);
+
+        Map<String, String> uploadResults = new HashMap<>();
+        if (files != null) {
+            for (Map.Entry<String, MultipartFile> entry : files.entrySet()) {
+                String fieldName = entry.getKey();
+                MultipartFile file = entry.getValue();
+                if (file != null && !file.isEmpty()) {
+                    String url = storageService.store(file, entity.getId(), fieldName);
+                    uploadResults.put(fieldName, "Uploaded Successfully");
+                    switch (fieldName) {
+                        case "passportPhoto" -> entity.setPassportPhoto(url);
+                        case "taxClearance" -> entity.setTaxClearance(url);
+                        case "affidavit" -> entity.setAffidavit(url);
+                        case "communityConsentLetter" -> entity.setCommunityConsentLetter(url);
+                        case "developmentSketch" -> entity.setDevelopmentSketch(url);
+                    }
+                }
+            }
+        }
+        customaryAllocationRepository.save(entity);
+
+        User user = userRepository.findByEmail(entity.getEmail()).orElse(null);
+        if (user != null) {
+            trackingService.registerApplication("LANDS_CUSTOMARY", entity.getId(), user);
+        }
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(UUID.randomUUID());
+        inspection.setSourceService("CUSTOMARY LAND ALLOCATION");
+        inspection.setApplicantName(entity.getFirstName() + " " + entity.getLastName());
+        inspection.setApplicationType(entity.getLandPurpose());
+        inspection.setCustomaryAllocationApplication(entity);
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspectionRepository.save(inspection);
+
+        return uploadResults;
     }
 
+    @Override
+    public Map<String, String> submitStatutoryApplication(StatutoryApplicationRequest request, Map<String, MultipartFile> files) throws IOException {
+        StatutoryAllocationApplication entity = new StatutoryAllocationApplication();
+        entity.setFirstName(request.getFirstName());
+        entity.setLastName(request.getLastName());
+        entity.setApplicationDate(LocalDate.now());
+        entity.setApplicationFeeAmount(request.getApplicationFeeAmount());
+        entity.setApplicationNo(request.getApplicationNo());
+        entity.setApplicationFeeType(request.getApplicationFeeType());
+        entity.setAssignedDate(request.getAssignedDate());
+        entity.setGender(request.getGender());
+        entity.setHomeAddress(request.getHomeAddress());
+        entity.setLga(request.getLga());
+        entity.setMaritalStatus(request.getMaritalStatus());
+        entity.setNationality(request.getNationality());
+        entity.setOccupation(request.getOccupation());
+        entity.setPhoneNumber(request.getPhoneNumber());
+        entity.setStateOfOrigin(request.getStateOfOrigin());
+        entity.setTownOrArea(request.getTownOrArea());
+        entity.setExistingLandLocation(request.getExistingLandLocation());
+        entity.setAcquiringAuthority(request.getAcquiringAuthority());
+        entity.setOwnsStateLand(request.getOwnsStateLand());
+        entity.setIsLandDeveloped(request.getIsLandDeveloped());
+        entity.setOtherFeesBreakdown(request.getOtherFeesBreakdown());
+        entity.setIsAssignorOrAssignee(request.getIsAssignorOrAssignee());
+        entity.setStatus(Status.PENDING);
+        entity = statutoryApplicationRepository.save(entity);
+
+        Map<String, String> uploadResults = new HashMap<>();
+        if (files != null) {
+            for (Map.Entry<String, MultipartFile> entry : files.entrySet()) {
+                String fieldName = entry.getKey();
+                MultipartFile file = entry.getValue();
+                if (file != null && !file.isEmpty()) {
+                    String url = storageService.store(file, entity.getId(), fieldName);
+                    uploadResults.put(fieldName, "Uploaded Successfully");
+                    switch (fieldName) {
+                        case "passportPhoto" -> entity.setPassportPhotos(url);
+                        case "taxClearance" -> entity.setTaxClearances(url);
+                        case "feeReceipt" -> entity.setFeeReceipt(url);
+                        case "ageDeclaration" -> entity.setDeclarationOfAge(url);
+                        case "naturalizationDoc" -> entity.setNaturalizationDoc(url);
+                        case "oathDeclaration" -> entity.setOathDeclaration(url);
+                    }
+                }
+            }
+        }
+        statutoryApplicationRepository.save(entity);
+
+        User user = userRepository.findByEmail(entity.getEmail()).orElse(null);
+        if (user != null) {
+            trackingService.registerApplication("LANDS_STATUTORY", entity.getId(), user);
+        }
+
+        return uploadResults;
+    }
 
     @Override
     public List<LandApplicationResponse> getByTypeAndDate(LandApplicationType type, LocalDate start, LocalDate end) {
@@ -119,16 +252,13 @@ public class LandApplicationServiceImpl implements LandApplicationService {
 
         switch (reportType) {
             case DAILY:
-                // No grouping needed
                 return applications.stream().map(this::mapToResponse).toList();
-
             case MONTHLY:
                 return applications.stream()
                         .collect(Collectors.groupingBy(app -> YearMonth.from(app.getApplicationDate())))
                         .entrySet().stream()
                         .flatMap(entry -> entry.getValue().stream().map(this::mapToResponse))
                         .toList();
-
             case YEARLY:
                 return applications.stream()
                         .collect(Collectors.groupingBy(app -> app.getApplicationDate().getYear()))
@@ -142,142 +272,12 @@ public class LandApplicationServiceImpl implements LandApplicationService {
 
     @Override
     public Map<String, String> customLandApplication(CustomaryAllocationRequest customaryAllocationRequest, Map<String, MultipartFile> documents) throws IOException {
-        CustomaryAllocationApplication customaryAllocationApplication = new CustomaryAllocationApplication();
-        customaryAllocationApplication.setFirstName(customaryAllocationRequest.getFirstName());
-        customaryAllocationApplication.setLastName(customaryAllocationRequest.getLastName());
-        customaryAllocationApplication.setApplicationDate(LocalDate.now());
-        customaryAllocationApplication.setApplicationFeeAmount(customaryAllocationRequest.getApplicationFeeAmount());
-        customaryAllocationApplication.setLandPurpose(customaryAllocationRequest.getLandPurpose());
-        customaryAllocationApplication.setCommunityConsentDate(customaryAllocationRequest.getCommunityConsentDate());
-        customaryAllocationApplication.setCommunityLeaderTitle(customaryAllocationRequest.getCommunityLeaderTitle());
-        customaryAllocationApplication.setEmail(customaryAllocationRequest.getEmail());
-        customaryAllocationApplication.setGender(customaryAllocationRequest.getGender());
-        customaryAllocationApplication.setHomeAddress(customaryAllocationRequest.getHomeAddress());
-        customaryAllocationApplication.setLga(customaryAllocationRequest.getLga());
-        customaryAllocationApplication.setMaritalStatus(customaryAllocationRequest.getMaritalStatus());
-        customaryAllocationApplication.setNationality(customaryAllocationRequest.getNationality());
-        customaryAllocationApplication.setOccupation(customaryAllocationRequest.getOccupation());
-        customaryAllocationApplication.setPhoneNumber(customaryAllocationRequest.getPhoneNumber());
-        customaryAllocationApplication.setStateOfOrigin(customaryAllocationRequest.getStateOfOrigin());
-        customaryAllocationApplication.setTownOrArea(customaryAllocationRequest.getTownOrArea());
-        customaryAllocationApplication.setPurposeDetail(customaryAllocationRequest.getPurposeDetail());
-        Map<String, String> response = new HashMap<>();
-        for (String key : CUST_REQUIRED_DOCUMENTS.keySet()) {
-            MultipartFile file = documents.get(key);
-            if (file == null || file.isEmpty()) {
-                response.put(key, "Missing " + CUST_REQUIRED_DOCUMENTS.get(key));
-                continue;
-            }
-
-            // Ensure the upload directory exists
-            Path uploadDirPath = Path.of(UPLOAD_DIR_);
-            Files.createDirectories(uploadDirPath);
-
-            // Build and save the file path
-            String filePath = UPLOAD_DIR_ + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Files.copy(file.getInputStream(), Path.of(filePath));
-
-            response.put(key, "Uploaded Successfully");
-            // Save file path to entity
-            switch (key) {
-                case "passport_photos" -> customaryAllocationApplication.setPassportPhoto(filePath);
-                case "tax_clearances" -> customaryAllocationApplication.setTaxClearance(filePath);
-                case "affidavits" -> customaryAllocationApplication.setAffidavit(filePath);
-                case "community_consent_letters" -> customaryAllocationApplication.setCommunityConsentLetter(filePath);
-                case "development_sketches" -> customaryAllocationApplication.setDevelopmentSketch(filePath);
-
-            }
-        }
-
-        // Save the allocation record
-        customaryAllocationApplication.setStatus(Status.PENDING);
-        customaryAllocationRepository.save(customaryAllocationApplication);
-
-        // Register in centralized tracking
-        User user = userRepository.findByEmail(customaryAllocationApplication.getEmail())
-                .orElse(null);
-        if (user != null) {
-            trackingService.registerApplication("LANDS_CUSTOMARY", customaryAllocationApplication.getId(), user);
-        }
-
-
-        Inspection inspection = new Inspection();
-        inspection.setRequestId(UUID.randomUUID());
-        inspection.setSourceService("CUSTOMARY LAND ALLOCATION");
-        inspection.setApplicantName(customaryAllocationApplication.getFirstName() + " " + customaryAllocationApplication.getLastName());
-        inspection.setApplicationType(customaryAllocationApplication.getLandPurpose());
-        inspection.setCustomaryAllocationApplication(customaryAllocationApplication);
-        inspection.setStatus(Status.PENDING);
-        inspection.setCreatedAt(LocalDateTime.now());
-        inspectionRepository.save(inspection);
-
-        return response;
+        return submitCustomaryApplication(customaryAllocationRequest, documents);
     }
 
     @Override
     public Map<String, String> statutoryallocation(StatutoryApplicationRequest statutoryApplicationRequest, Map<String, MultipartFile> documents) throws IOException {
-        StatutoryAllocationApplication allocationApplication = new StatutoryAllocationApplication();
-        allocationApplication.setFirstName(statutoryApplicationRequest.getFirstName());
-        allocationApplication.setLastName(statutoryApplicationRequest.getLastName());
-        allocationApplication.setApplicationDate(LocalDate.now());
-        allocationApplication.setApplicationFeeAmount(statutoryApplicationRequest.getApplicationFeeAmount());
-        allocationApplication.setApplicationNo(statutoryApplicationRequest.getApplicationNo());
-        allocationApplication.setApplicationFeeType(statutoryApplicationRequest.getApplicationFeeType());
-        allocationApplication.setAssignedDate(statutoryApplicationRequest.getAssignedDate());
-        allocationApplication.setGender(statutoryApplicationRequest.getGender());
-        allocationApplication.setHomeAddress(statutoryApplicationRequest.getHomeAddress());
-        allocationApplication.setLga(statutoryApplicationRequest.getLga());
-        allocationApplication.setMaritalStatus(statutoryApplicationRequest.getMaritalStatus());
-        allocationApplication.setNationality(statutoryApplicationRequest.getNationality());
-        allocationApplication.setOccupation(statutoryApplicationRequest.getOccupation());
-        allocationApplication.setPhoneNumber(statutoryApplicationRequest.getPhoneNumber());
-        allocationApplication.setStateOfOrigin(statutoryApplicationRequest.getStateOfOrigin());
-        allocationApplication.setTownOrArea(statutoryApplicationRequest.getTownOrArea());
-        allocationApplication.setExistingLandLocation(statutoryApplicationRequest.getExistingLandLocation());
-        allocationApplication.setAcquiringAuthority(statutoryApplicationRequest.getAcquiringAuthority());
-        allocationApplication.setOwnsStateLand(statutoryApplicationRequest.getOwnsStateLand());
-       // allocationApplication.setOathDeclaration(statutoryApplicationRequest.getOathDeclaration());
-        allocationApplication.setIsLandDeveloped(statutoryApplicationRequest.getIsLandDeveloped());
-        allocationApplication.setOtherFeesBreakdown(statutoryApplicationRequest.getOtherFeesBreakdown());
-        allocationApplication.setIsAssignorOrAssignee(statutoryApplicationRequest.getIsAssignorOrAssignee());
-
-        Map<String, String> response = new HashMap<>();
-        for (String key : REQUIRED_DOCUMENTS.keySet()) {
-            MultipartFile file = documents.get(key);
-            if (file == null || file.isEmpty()) {
-                response.put(key, "Missing " + REQUIRED_DOCUMENTS.get(key));
-                continue;
-            }
-
-            // Ensure the upload directory exists
-            Path uploadDirPath = Path.of(UPLOAD_DIR);
-            Files.createDirectories(uploadDirPath);
-
-            // Build and save the file path
-            String filePath = UPLOAD_DIR + key + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Files.copy(file.getInputStream(), Path.of(filePath));
-
-            response.put(key, "Uploaded Successfully");
-            // Save file path to entity
-            switch (key) {
-                case "passport_photos" -> allocationApplication.setPassportPhotos(filePath);
-                case "tax_clearances" -> allocationApplication.setTaxClearances(filePath);
-                case "declaration_of_age" -> allocationApplication.setDeclarationOfAge(filePath);
-                case "administrative_charges" -> allocationApplication.setAdministrativeCharges(filePath);
-                case "processing_fees" -> allocationApplication.setFeeReceipt(filePath);
-                case "naturalization_doc" -> allocationApplication.setNaturalizationDoc(filePath);
-                case "oath_decorations" -> allocationApplication.setOathDeclaration(filePath);
-            }
-        }
-
-        statutoryApplicationRepository.save(allocationApplication);
-
-        // Register in centralized tracking
-        User user = userRepository.findByEmail(allocationApplication.getEmail()).orElse(null);
-        if (user != null) {
-            trackingService.registerApplication("LANDS_STATUTORY", allocationApplication.getId(), user);
-        }
-        return response;
+        return submitStatutoryApplication(statutoryApplicationRequest, documents);
     }
 
     @Override
@@ -298,7 +298,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .titleOther(statutoryAllocationApplication.getTitleOther())
                 .stateOfOrigin(statutoryAllocationApplication.getStateOfOrigin())
                 .nationality(statutoryAllocationApplication.getNationality())
-                .stateOfOrigin(statutoryAllocationApplication.getStateOfOrigin())
                 .placeOfBirth(statutoryAllocationApplication.getPlaceOfBirth())
                 .gpsAccuracy(statutoryAllocationApplication.getGpsAccuracy())
                 .lga(statutoryAllocationApplication.getLga())
@@ -315,7 +314,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .ownsStateLand(statutoryAllocationApplication.getOwnsStateLand())
                 .email(statutoryAllocationApplication.getEmail())
                 .gender(statutoryAllocationApplication.getGender())
-                .existingLandLocation(statutoryAllocationApplication.getExistingLandLocation())
                 .homeAddress(statutoryAllocationApplication.getHomeAddress())
                 .passportPhoto(statutoryAllocationApplication.getPassportPhotos())
                 .taxClearance(statutoryAllocationApplication.getTaxClearances())
@@ -385,11 +383,11 @@ public class LandApplicationServiceImpl implements LandApplicationService {
     @Override
     public LandApplicationSummaryResponse getAllStatutorySummary() {
         LandApplicationSummaryResponse environment = new LandApplicationSummaryResponse();
-        environment.setTotalApproved((int) statutoryAllocationRepository.countByStatus(Status.APPROVED));
-        environment.setTotalRejected((int) statutoryAllocationRepository.countByStatus(Status.REJECTED));
-        environment.setTotalPending((int) statutoryAllocationRepository.countByStatus(Status.PENDING));
-        environment.setTotalReviewed((int) statutoryAllocationRepository.countByStatus(Status.REVIEWED));
-        environment.setTotalAppliedRequest(Math.toIntExact(statutoryAllocationRepository.count()));
+        environment.setTotalApproved((int) statutoryAllocationRepositoryAlloc.countByStatus(Status.APPROVED));
+        environment.setTotalRejected((int) statutoryAllocationRepositoryAlloc.countByStatus(Status.REJECTED));
+        environment.setTotalPending((int) statutoryAllocationRepositoryAlloc.countByStatus(Status.PENDING));
+        environment.setTotalReviewed((int) statutoryAllocationRepositoryAlloc.countByStatus(Status.REVIEWED));
+        environment.setTotalAppliedRequest(Math.toIntExact(statutoryAllocationRepositoryAlloc.count()));
         return environment;
     }
 
@@ -404,35 +402,111 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         return customaryAllocationApplication;
     }
 
-
     @Override
     public void uploadFilesCustomary(Long id,
-                            MultipartFile passportPhoto,
-                            MultipartFile taxClearance,
-                            MultipartFile affidavit,
-                            MultipartFile communityConsentLetter,
-                            MultipartFile developmentSketch
-    ) throws IOException {
+                                    MultipartFile passportPhoto,
+                                    MultipartFile taxClearance,
+                                    MultipartFile affidavit,
+                                    MultipartFile communityConsentLetter,
+                                    MultipartFile developmentSketch
+                            ) throws IOException {
         CustomaryAllocationApplication entity = customaryAllocationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Form id not found"));
 
         if (passportPhoto != null && !passportPhoto.isEmpty()) {
-            String path = store(passportPhoto, id, "passportPhoto");
+            String path = storageService.store(passportPhoto, id, "passportPhoto");
             entity.setPassportPhoto(path);
         }
         if (taxClearance != null && !taxClearance.isEmpty()) {
-            entity.setTaxClearance(store(taxClearance, id, "taxClearance"));
+            entity.setTaxClearance(storageService.store(taxClearance, id, "taxClearance"));
         }
         if (affidavit != null && !affidavit.isEmpty()) {
-            entity.setAffidavit(store(affidavit, id, "affidavit"));
+            entity.setAffidavit(storageService.store(affidavit, id, "affidavit"));
         }
         if (communityConsentLetter != null && !communityConsentLetter.isEmpty()) {
-            entity.setCommunityConsentLetter(store(communityConsentLetter, id, "communityConsentLetter"));
+            entity.setCommunityConsentLetter(storageService.store(communityConsentLetter, id, "communityConsentLetter"));
         }
         if (developmentSketch != null && !developmentSketch.isEmpty()) {
-            entity.setDevelopmentSketch(store(developmentSketch, id, "developmentSketch"));
+            entity.setDevelopmentSketch(storageService.store(developmentSketch, id, "developmentSketch"));
         }
         customaryAllocationRepository.save(entity);
+    }
+
+    @Override
+    public void uploadFilesStatutory(Long formId, MultipartFile passportPhoto, MultipartFile taxClearance, MultipartFile feeReceipt, MultipartFile ageDeclaration, MultipartFile naturalizationDoc, MultipartFile oathDeclaration) throws IOException {
+        StatutoryAllocationApplication entity = statutoryApplicationRepository.findById(formId)
+                .orElseThrow(() -> new NoSuchElementException("Form id not found"));
+
+        if (passportPhoto != null && !passportPhoto.isEmpty()) {
+            String path = storageService.store(passportPhoto, formId, "passportPhoto");
+            entity.setPassportPhotos(path);
+        }
+        if (taxClearance != null && !taxClearance.isEmpty()) {
+            entity.setTaxClearances(storageService.store(taxClearance, formId, "taxClearance"));
+        }
+        if (feeReceipt != null && !feeReceipt.isEmpty()) {
+            entity.setFeeReceipt(storageService.store(feeReceipt, formId, "feeReceipt"));
+        }
+        if (ageDeclaration != null && !ageDeclaration.isEmpty()) {
+            entity.setDeclarationOfAge(storageService.store(ageDeclaration, formId, "ageDeclaration"));
+        }
+        if (naturalizationDoc != null && !naturalizationDoc.isEmpty()) {
+            entity.setNaturalizationDoc(storageService.store(naturalizationDoc, formId, "naturalizationDoc"));
+        }
+        if (oathDeclaration != null && !oathDeclaration.isEmpty()) {
+            entity.setOathDeclaration(storageService.store(oathDeclaration, formId, "oathDeclaration"));
+        }
+
+        statutoryApplicationRepository.save(entity);
+    }
+
+    @Override
+    public Long saveFormRequest(CustomaryAllocationRequest formRequest) {
+        CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
+        entity.setApplicationDate(LocalDate.now());
+        entity.setStatus(Status.PENDING);
+        entity.setPurposeDetail(formRequest.getPurposeDetail());
+        entity.setLga(formRequest.getLga());
+        entity.setNationality(formRequest.getNationality());
+        entity.setApplicantTitle(formRequest.getApplicantTitle());
+        entity.setStateOfOrigin(formRequest.getStateOfOrigin());
+        entity.setEmail(formRequest.getEmail());
+        entity.setMaritalStatus(formRequest.getMaritalStatus());
+        entity.setNationality(formRequest.getNationality());
+        entity.setStateOfOrigin(formRequest.getStateOfOrigin());
+        entity.setEmail(formRequest.getEmail());
+        entity.setFirstName(formRequest.getFirstName());
+        entity.setLastName(formRequest.getLastName());
+        entity.setIsPayed(formRequest.getIsPayed());
+        entity.setGender(formRequest.getGender());
+        entity.setTownOrArea(formRequest.getTownOrArea());
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setProposedBuildingType(formRequest.getProposedBuildingType());
+        entity.setProposedDevelopmentCost(formRequest.getProposedDevelopmentCost());
+        entity.setLandPurpose(formRequest.getLandPurpose());
+        entity.setOccupation(formRequest.getOccupation());
+        entity.setTownOrArea(formRequest.getTownOrArea());
+        entity.setHomeAddress(formRequest.getHomeAddress());
+        entity.setExistingLandLocation(formRequest.getExistingLandLocation());
+        entity.setCommunityLeaderTitle(formRequest.getCommunityLeaderTitle());
+        entity = customaryAllocationRepository.save(entity);
+
+        User user = userRepository.findByEmail(entity.getEmail()).orElse(null);
+        if (user != null) {
+            trackingService.registerApplication("LANDS_CUSTOMARY", entity.getId(), user);
+        }
+
+        Inspection inspection = new Inspection();
+        inspection.setRequestId(UUID.randomUUID());
+        inspection.setSourceService("CUSTOMARY LAND ALLOCATION");
+        inspection.setApplicantName(formRequest.getFirstName() +" "+ formRequest.getLastName());
+        inspection.setApplicationType(formRequest.getLandPurpose());
+        inspection.setCustomaryAllocationApplication(entity);
+        inspection.setStatus(Status.PENDING);
+        inspection.setCreatedAt(LocalDateTime.now());
+        inspectionRepository.save(inspection);
+
+        return entity.getId();
     }
 
     @Override
@@ -489,87 +563,6 @@ public class LandApplicationServiceImpl implements LandApplicationService {
         return entity.getId();
     }
 
-
-    @Override
-    public void uploadFilesStatutory(Long formId, MultipartFile passportPhoto, MultipartFile taxClearance, MultipartFile feeReceipt, MultipartFile ageDeclaration, MultipartFile naturalizationDoc, MultipartFile oathDeclaration) throws IOException {
-        StatutoryAllocationApplication entity = statutoryApplicationRepository.findById(formId)
-                .orElseThrow(() -> new NoSuchElementException("Form id not found"));
-
-        if (passportPhoto != null && !passportPhoto.isEmpty()) {
-            String path = store(passportPhoto, formId, "passportPhoto");
-            entity.setPassportPhotos(path);
-        }
-        if (taxClearance != null && !taxClearance.isEmpty()) {
-            entity.setTaxClearances(store(taxClearance, formId, "taxClearance"));
-        }
-        if (feeReceipt != null && !feeReceipt.isEmpty()) {
-            entity.setFeeReceipt(store(feeReceipt, formId, "feeReceipt"));
-        }
-        if (ageDeclaration != null && !ageDeclaration.isEmpty()) {
-            entity.setDeclarationOfAge(store(ageDeclaration, formId, "ageDeclaration"));
-        }
-        if (naturalizationDoc != null && !naturalizationDoc.isEmpty()) {
-            entity.setNaturalizationDoc(store(naturalizationDoc, formId, "naturalizationDoc"));
-        }
-        if (oathDeclaration != null && !oathDeclaration.isEmpty()) {
-            entity.setOathDeclaration(store(oathDeclaration, formId, "oathDeclaration"));
-        }
-
-        // Save the updated entity
-        statutoryApplicationRepository.save(entity);
-    }
-
-    @Override
-    public Long saveFormRequest(CustomaryAllocationRequest formRequest) {
-        // Validate required fields
-        CustomaryAllocationApplication entity = new CustomaryAllocationApplication();
-        entity.setApplicationDate(LocalDate.now());
-        entity.setStatus(Status.PENDING);
-        entity.setPurposeDetail(formRequest.getPurposeDetail());
-        entity.setLga(formRequest.getLga());
-        entity.setNationality(formRequest.getNationality());
-        entity.setApplicantTitle(formRequest.getApplicantTitle());
-        entity.setStateOfOrigin(formRequest.getStateOfOrigin());
-        entity.setEmail(formRequest.getEmail());
-        entity.setMaritalStatus(formRequest.getMaritalStatus());
-        entity.setNationality(formRequest.getNationality());
-        entity.setStateOfOrigin(formRequest.getStateOfOrigin());
-        entity.setEmail(formRequest.getEmail());
-        entity.setFirstName(formRequest.getFirstName());
-        entity.setLastName(formRequest.getLastName());
-        entity.setIsPayed(formRequest.getIsPayed());
-        entity.setGender(formRequest.getGender());
-        entity.setTownOrArea(formRequest.getTownOrArea());
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setProposedBuildingType(formRequest.getProposedBuildingType());
-        entity.setProposedDevelopmentCost(formRequest.getProposedDevelopmentCost());
-        entity.setLandPurpose(formRequest.getLandPurpose());
-        entity.setOccupation(formRequest.getOccupation());
-        entity.setTownOrArea(formRequest.getTownOrArea());
-        entity.setHomeAddress(formRequest.getHomeAddress());
-        entity.setExistingLandLocation(formRequest.getExistingLandLocation());
-        entity.setCommunityLeaderTitle(formRequest.getCommunityLeaderTitle());
-        entity = customaryAllocationRepository.save(entity);
-
-        // Register in centralized tracking
-        User user = userRepository.findByEmail(entity.getEmail()).orElse(null);
-        if (user != null) {
-            trackingService.registerApplication("LANDS_CUSTOMARY", entity.getId(), user);
-        }
-
-        Inspection inspection = new Inspection();
-        inspection.setRequestId(UUID.randomUUID());
-        inspection.setSourceService("CUSTOMARY LAND ALLOCATION");
-        inspection.setApplicantName(formRequest.getFirstName() +" "+ formRequest.getLastName());
-        inspection.setApplicationType(formRequest.getLandPurpose());
-        inspection.setCustomaryAllocationApplication(entity);
-        inspection.setStatus(Status.PENDING);
-        inspection.setCreatedAt(LocalDateTime.now());
-        inspectionRepository.save(inspection);
-
-        return entity.getId();
-    }
-
     private LandApplicationResponse mapToResponse(LandApplication app) {
         return LandApplicationResponse.builder()
                 .id(app.getId())
@@ -586,14 +579,7 @@ public class LandApplicationServiceImpl implements LandApplicationService {
                 .declarationOfAge(app.getDeclarationOfAge())
                 .localGovernmentConfirmationLetter(app.getLocalGovernmentConfirmationLetter())
                 .taxClearances(app.getTaxClearances())
+                .certificateUrl(app.getCertificateUrl())
                 .build();
-    }
-
-    private String store(MultipartFile file, Long id, String fieldName) throws IOException {
-       if (localStorageService != null) {
-            return localStorageService.store(file, id, fieldName);
-        } else {
-            throw new IllegalStateException("No storage service configured");
-        }
     }
 }

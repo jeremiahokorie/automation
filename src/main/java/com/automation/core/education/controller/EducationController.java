@@ -3,11 +3,14 @@ package com.automation.core.education.controller;
 import com.automation.core.education.dto.request.LessonCentreRegistrationRequest;
 import com.automation.core.education.dto.request.SchoolRegistrationRequest;
 import com.automation.core.education.dto.response.EducationRegistrationResponse;
+import com.automation.core.education.dto.response.EducationSummaryResponse;
 import com.automation.core.education.service.EducationService;
 import com.automation.core.global.model.User;
 import com.automation.util.enums.Status;
 import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,17 +25,43 @@ public class EducationController {
     @PostMapping("/register-school")
     @ApiOperation("Register a new School")
     public ResponseEntity<EducationRegistrationResponse> registerSchool(
-            @RequestBody SchoolRegistrationRequest request,
-            @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(educationService.registerSchool(request, user));
+            @Valid @RequestBody SchoolRegistrationRequest request) {
+        return ResponseEntity.ok(educationService.registerSchool(request));
+    }
+
+    @GetMapping("/schools")
+    @ApiOperation("Get paginated schools")
+    public ResponseEntity<Page<EducationRegistrationResponse>> getSchools(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) Status status) {
+        return ResponseEntity.ok(educationService.getSchools(page, size, sortBy, sortDir, status));
     }
 
     @PostMapping("/register-lesson-centre")
     @ApiOperation("Register a new Lesson Centre")
     public ResponseEntity<EducationRegistrationResponse> registerLessonCentre(
-            @RequestBody LessonCentreRegistrationRequest request,
-            @AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(educationService.registerLessonCentre(request, user));
+            @Valid @RequestBody LessonCentreRegistrationRequest request) {
+        return ResponseEntity.ok(educationService.registerLessonCentre(request));
+    }
+
+    @GetMapping("/lesson-centres")
+    @ApiOperation("Get paginated lesson centres")
+    public ResponseEntity<Page<EducationRegistrationResponse>> getLessonCentres(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) Status status) {
+        return ResponseEntity.ok(educationService.getLessonCentres(page, size, sortBy, sortDir, status));
+    }
+
+    @GetMapping("/summary")
+    @ApiOperation("Get education registration summary")
+    public ResponseEntity<EducationSummaryResponse> getSummary() {
+        return ResponseEntity.ok(educationService.getEducationSummary());
     }
 
     @PutMapping("/review/{id}")

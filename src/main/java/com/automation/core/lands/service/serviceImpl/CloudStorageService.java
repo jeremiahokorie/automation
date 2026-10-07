@@ -1,35 +1,50 @@
 package com.automation.core.lands.service.serviceImpl;
 
-
+import com.automation.config.GithubProperties;
+import com.automation.core.lands.service.service.StorageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
+import java.util.Map;
+
 
 @Service
-public class CloudStorageService {
-//    private final S3Client s3;
-//    private final String bucket = "your-bucket-name";
-//
-//    public CloudStorageService() {
-//        this.s3 = S3Client.builder()
-//                .region(Region.US_EAST_1)
-//                .build();
-//    }
-//
-//    public String upload(MultipartFile file, Long formId, String fieldName) throws IOException {
-//        String key = formId + "/" + fieldName + "/" + file.getOriginalFilename();
-//        s3.putObject(PutObjectRequest.builder()
-//                        .bucket(bucket)
-//                        .key(key)
-//                        .contentType(file.getContentType())
-//                        .build(),
-//                RequestBody.fromInputStream(file.getInputStream(), file.getSize())
-//        );
-//
-//        //method to retrieve files
-//
-//
-//        return s3.utilities().getUrl(builder -> builder.bucket(bucket).key(key)).toExternalForm();
-//    }
+@RequiredArgsConstructor
+public class CloudStorageService implements StorageService {
+
+    private final RestClient githubClient;
+    private final GithubProperties githubProperties;
+
+    @Override
+    public String store(MultipartFile file, Long formId, String fieldName) throws IOException {
+        String filename = file.getOriginalFilename();
+        String path = String.format("uploads/land/%d/%s_%s", formId, fieldName, filename);
+
+        String encodedContent = Base64.getEncoder().encodeToString(file.getBytes());
+
+        Map<String, Object> body = Map.of(
+                "message", "Upload document for land application " + formId,
+                "content", encodedContent,
+                "branch", githubProperties.branch()
+        );
+
+        githubClient.put()
+                .uri("/repos/{owner}/{repo}/contents/{path}",
+                        githubProperties.owner(),
+                        githubProperties.repo(),
+                        path)
+                .body(body)
+                .retrieve()
+                .toBodilessEntity();
+
+        return String.format("https://raw.githubusercontent.com/%s/%s/%s/%s",
+                githubProperties.owner(),
+                githubProperties.repo(),
+                githubProperties.branch(),
+                path);
+    }
 }
