@@ -73,8 +73,20 @@ public class ApplicationTrackingServiceImpl implements ApplicationTrackingServic
 
     @Override
     public void updateStatusByApplicationId(Long applicationId, ApplicationStatus status, String stage, String officer, String comment) {
-        ApplicationTracking tracking = trackingRepository.findByApplicationId(applicationId)
-                .orElseThrow(() -> new RuntimeException("Tracking record not found for application ID: " + applicationId));
+        ApplicationTracking tracking = trackingRepository.findFirstByApplicationIdOrderByCreatedAtDesc(applicationId)
+                .orElseGet(() -> {
+                    log.warn("Tracking record not found for application ID: {}. Creating new record.", applicationId);
+                    // We can't easily get the User and ServiceId here without more context,
+                    // so we create a skeletal record. These will be updated/enriched
+                    // when the full registration is known or manually corrected.
+                    return ApplicationTracking.builder()
+                            .applicationId(applicationId)
+                            .trackingReference(generateTrackingReference())
+                            .currentStatus(ApplicationStatus.PENDING)
+                            .currentStage("AUTO_CREATED")
+                            .createdAt(LocalDateTime.now())
+                            .build();
+                });
 
         updateStatus(tracking.getTrackingReference(), status, stage, officer, comment);
     }

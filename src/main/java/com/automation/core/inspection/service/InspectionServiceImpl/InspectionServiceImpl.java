@@ -7,10 +7,12 @@ import com.automation.core.commerce.model.BusinessRegistration;
 import com.automation.core.commerce.repository.BusinessRepository;
 import com.automation.core.education.model.LessonCentre;
 import com.automation.core.education.model.SchoolRegistration;
+import com.automation.core.education.repository.SchoolRegistrationRepository;
 import com.automation.core.global.exception.GlobalException;
 import com.automation.core.global.model.User;
 import com.automation.core.global.repository.UserRepository;
 import com.automation.core.health.model.HealthFacility;
+import com.automation.core.health.repository.HealthFacilityRegistrationRepository;
 import com.automation.core.inspection.dto.request.InspectionRequest;
 import com.automation.core.inspection.dto.request.StatusUpdateDto;
 import com.automation.core.inspection.dto.response.InspectionResponse;
@@ -19,6 +21,7 @@ import com.automation.core.inspection.repository.InspectionRepository;
 import com.automation.core.inspection.service.InspectionService.InspectionService;
 import com.automation.util.enums.Status;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,6 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 public class InspectionServiceImpl implements InspectionService {
     private final InspectionRepository inspectionRepository;
@@ -37,6 +41,8 @@ public class InspectionServiceImpl implements InspectionService {
     private final BusinessRepository businessRepository;
     private final EnvironmentRepository environmentRepository;
     private final com.automation.core.tracking.service.ApplicationTrackingService trackingService;
+    private final SchoolRegistrationRepository schoolRegistrationRepository;
+    private final HealthFacilityRegistrationRepository healthFacilityRegistrationRepository;
 
     @Override
     @Transactional
@@ -68,6 +74,27 @@ public class InspectionServiceImpl implements InspectionService {
             syncTrackingStatus(environment.getId(), newStatus, "INSPECTION_COMPLETED", dto.getUpdatedBy(), dto.getNotes());
         }
 
+        if (inspection.getSchoolRegistration() != null) {
+            SchoolRegistration school = inspection.getSchoolRegistration();
+            school.setStatus(newStatus);
+            schoolRegistrationRepository.save(school);
+
+            // Sync with Tracking
+            syncTrackingStatus(school.getId(), newStatus, "INSPECTION_COMPLETED", dto.getUpdatedBy(), dto.getNotes());
+        }
+
+        if (inspection.getHealthFacilityRegistration() != null) {
+            HealthFacility health = inspection.getHealthFacilityRegistration();
+            health.setStatus(newStatus);
+            healthFacilityRegistrationRepository.save(health);
+
+            // Sync with Tracking
+            syncTrackingStatus(health.getId(), newStatus, "INSPECTION_COMPLETED", dto.getUpdatedBy(), dto.getNotes());
+        }
+        
+
+
+
         inspectionRepository.save(inspection);
 
         return InspectionResponse.builder().id(inspection.getId()).build();
@@ -78,8 +105,8 @@ public class InspectionServiceImpl implements InspectionService {
             com.automation.core.tracking.enums.ApplicationStatus trackingStatus = mapInspectionStatusToTrackingStatus(inspectionStatus);
             trackingService.updateStatusByApplicationId(applicationId, trackingStatus, stage, officer, comment);
         } catch (Exception e) {
-            // Log error but don't fail the inspection update
-            java.util.logging.Logger.getLogger(InspectionServiceImpl.class.getName()).severe("Failed to sync tracking status: " + e.getMessage());
+            log.error("CRITICAL: Failed to sync tracking status for application {}: {}", applicationId, e.getMessage());
+            throw new GlobalException("Failed to synchronize application tracking status. Please contact administration.");
         }
     }
 

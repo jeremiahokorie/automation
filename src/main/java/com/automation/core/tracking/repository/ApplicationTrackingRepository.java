@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ApplicationTrackingRepository extends JpaRepository<ApplicationTracking, Long>, JpaSpecificationExecutor<ApplicationTracking> {
     Optional<ApplicationTracking> findByTrackingReference(String trackingReference);
-    Optional<ApplicationTracking> findByApplicationId(Long applicationId);
+    Optional<ApplicationTracking> findFirstByApplicationIdOrderByCreatedAtDesc(Long applicationId);
 }
